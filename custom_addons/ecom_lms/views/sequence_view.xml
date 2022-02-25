@@ -1,0 +1,8 @@
+<odoo noupdate="1">
+    <record id="sequence_course_journey_form" model="ir.sequence">
+        <field name="name">Course Journey Form Seq</field>
+        <field name="code">course.journey.seq</field>
+        <field eval="4" name="padding" />
+        <field name="prefix">JR</field>
+    </record>
+</odoo>

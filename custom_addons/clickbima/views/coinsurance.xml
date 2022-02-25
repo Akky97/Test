@@ -1,0 +1,139 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="policytransactionlist12">
+            <field name="name">policytransaction list</field>
+            <field name="model">policytransaction</field>
+            <field name="arch" type="xml">
+               <tree>
+                    <field name="fy" string="Financial Year"/>
+                    <field name="name" string="Docket Details"/>
+                    <field name="date2"/>
+                    <field name="type" string="Tran. Type"/>
+                    <field name="coins" string="Co-Ins"/>
+                    <field name="endo_ins" string="Endo_Ins"/>
+                    <field name="clientname" string="Client Name"/>
+                    <field name="insurername123" string="Insurer Name"/>
+                    <field name="insurerbranch" string="Insurer Branch" invisible="1"/>
+                    <field name="product_id" string="Scheme "/>
+                    <field name="segment" string="Category" invisible="1"/>
+                    <field name="name1" string="Subcategory" invisible="1"/>
+                    <field name="policyno" string="Policy No"/>
+                    <field name="startfrom" string="Start Date"/>
+                    <field name="expiry" string="Expiry Date"/>
+                    <field name="suminsured" string="Sum Insured"/>
+                    <field name="brokerageprem" placeholder="Brokerage Prem."/>
+                    <field name="netprem" sum="Net Prem" string="Net Prem" invisible="1"/>
+                    <field name="grossprem" sum="Gross Prem" string="Gross Prem"/>
+                    <field name="netcomm" string="IRDA Comm" invisible="1"/>
+                    <field name="netcommission" string="Reward Comm" invisible="1"/>
+                    <field name="rm" string="Sales Person"/>
+                    <field name="pipeline_id" invisible="1"/>
+                    <field name="sale_order_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="policytransactionform12">
+            <field name="name">policytransaction form</field>
+            <field name="model">policytransaction</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="clientname" string="Client Name"/>
+                            <field name="insurername123" string="Insurer Name"/>
+                            <field name="insurerbranch" string="Insurer Branch"/>
+                        </group>
+
+                        <field name="co_insurer_id" string="Co-Insurer">
+                            <form string="Co-Insurer">
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="co_insurer_id"
+                                                   invisible="1"/>
+                                            <field name="line_no"/>
+                                            <field name="co_insurer_name"
+                                                   options="{'no_create': True, 'no_create_edit':True}"/>
+                                            <field name="co_insurer_branch"
+                                                   options="{'no_create': True, 'no_create_edit':True}"/>
+                                            <field name="co_type"
+                                                   options="{'no_create': True, 'no_create_edit':True}"/>
+                                            <field name="co_broker"
+                                                   options="{'no_create': True, 'no_create_edit':True}"
+                                                   attrs="{'invisible':[('co_type','=','self')]}"/>
+                                            <field name="co_share"/>
+                                            <field name="co_sum_insured" sum="co_sum_insured"/>
+                                            <field name="co_brokerage_pre"/>
+                                        </group>
+                                        <group>
+
+                                            <field name="co_commission"
+                                                   sum="co_commission"/>
+                                            <!--<field name="co_brokerage_pre"/>-->
+                                            <field name="co_commission_amount"/>
+                                            <field name="co_rate"/>
+                                            <field name="co_reward_amount"/>
+                                            <field name="co_remark"/>
+                                        </group>
+                                    </group>
+                                </sheet>
+                            </form>
+                            <tree string="Co-Insurer">
+                                <field name="co_insurer_id" invisible="1"/>
+                                <field name="line_no"/>
+                                <field name="co_insurer_name"
+                                       options="{'no_create': True, 'no_create_edit':True}"/>
+                                <field name="co_insurer_branch"
+                                       options="{'no_create': True, 'no_create_edit':True}"/>
+                                <field name="co_type"
+                                       options="{'no_create': True, 'no_create_edit':True}"/>
+                                <field name="co_broker"/>
+                                <field name="co_share" sum="co_share"/>
+                                <field name="co_sum_insured"
+                                       sum="co_sum_insured"/>
+                                <field name="co_brokerage_pre"/>
+                                <field name="co_commission"
+                                       sum="co_commission"/>
+
+                                <field name="co_commission_amount"/>
+                                <field name="co_rate"/>
+                                <field name="co_reward_amount"/>
+                                <field name="co_remark"/>
+
+                            </tree>
+                        </field>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_hotel_invoice_tree1" model="ir.actions.act_window">
+
+            <field name="name">Co-insurer</field>
+            <field name="res_model">policytransaction</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field eval="False" name="view_id"/>
+            <field name="domain">[('coins','=','Yes')]</field>
+        </record>
+
+        <record id="action_hotel_invoice_tree1_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="clickbima.policytransactionlist12"/>
+            <field name="act_window_id" ref="action_hotel_invoice_tree1"/>
+        </record>
+
+        <record id="action_hotel_invoice_tree1_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="clickbima.policytransactionform12"/>
+            <field name="act_window_id" ref="action_hotel_invoice_tree1"/>
+        </record>
+
+        <menuitem name="Co Insurance" id="list_222" parent="clickbima.menu_7" action="action_hotel_invoice_tree1" sequence="4"/>
+    </data>
+</odoo>

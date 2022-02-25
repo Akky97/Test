@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_upload_or_delete_users"
+            name="Users Setting"
+            action="base.action_res_users"
+            sequence="100"/>
+
+        <menuitem id="main_menu_upload_or_delete_users"
+             name="Settings"
+             parent="menu_upload_or_delete_users"
+             sequence="0"/>
+
+
+
+        <menuitem id="menu_create_temporary_acccount"
+             name="Create Temporary Account"
+             parent="main_menu_upload_or_delete_users"
+             action="ecom_lms.action_temporary_account"
+             sequence="3"/>
+
+        <menuitem id="menu_customer_registration"
+             name="Customer Registration"
+             parent="main_menu_upload_or_delete_users"
+             action="ecom_lms.action_customer_registration"
+             sequence="4"/>
+
+
+
+        <record id="menu_upload_or_delete_users" model="ir.ui.menu">
+            <field name="name">Users Setting</field>
+            <field name="groups_id" eval="[(4, ref('ecom_lms.upload_or_delete_users_group'))]"/>
+        </record>
+
+
+
+        <record id="website_slides.website_slides_menu_courses" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('ecom_lms.upload_or_delete_users_group'),ref('ecom_lms.trainer_user_group'),ref('ecom_lms.regional_admin_user_group'),ref('ecom_lms.admin_user_group'),ref('ecom_lms.super_admin_group')])]"/>
+        </record>
+
+        <record id="ecom_lms.course_journey_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('ecom_lms.upload_or_delete_users_group'),ref('ecom_lms.trainer_user_group'),ref('ecom_lms.regional_admin_user_group'),ref('ecom_lms.admin_user_group'),ref('ecom_lms.super_admin_group')])]"/>
+        </record>
+
+        <record id="ecom_lms.custom_abc_quiz_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('ecom_lms.upload_or_delete_users_group'),ref('ecom_lms.trainer_user_group'),ref('ecom_lms.regional_admin_user_group'),ref('ecom_lms.admin_user_group'),ref('ecom_lms.super_admin_group')])]"/>
+        </record>
+
+        <record id="website.menu_dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('ecom_lms.upload_or_delete_users_group'),ref('ecom_lms.trainer_user_group'),ref('ecom_lms.regional_admin_user_group'),ref('ecom_lms.admin_user_group'),ref('ecom_lms.super_admin_group')])]"/>
+        </record>
+
+        <record id="website_slides.website_slides_menu_report" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('ecom_lms.upload_or_delete_users_group'),ref('ecom_lms.regional_admin_user_group'),ref('ecom_lms.admin_user_group'),ref('ecom_lms.super_admin_group')])]"/>
+        </record>
+
+
+
+    </data>
+</odoo>

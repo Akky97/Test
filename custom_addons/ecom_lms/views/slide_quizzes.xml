@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_quizzes_question_form" model="ir.ui.view">
+            <field name="name">quizzes.question.form</field>
+            <field name="model">quizzes.question</field>
+            <field name="arch" type="xml">
+                <form string="Quizzes">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_redirect_to_quiz_members" string="Attendees" type="object" icon="fa-users" class="oe_stat_button">
+<!--                                <field name="members_count" string="Attendees" widget="statinfo"/>-->
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <field name="quiz_image" widget="image" class="oe_avatar" />
+                        <div class="oe_title">
+                            <div>
+                                <label for="name" string="Quiz Title" class="oe_edit_only"/>
+                            </div>
+                            <h1>
+                                <field name="name" default_focus="1" placeholder="e.g. How to grow your business with Odoo?"/>
+                                <div>
+                                    <label for="description_short" string="Description"/>
+                                </div>
+                                <field name="description_short"/>
+                                <field name="active" invisible="1"/>
+<!--                                <field name="is_category" invisible="1"/>-->
+                            </h1>
+<!--                            <field name="tag_ids" attrs="{'invisible': [('is_category', '=', True)]}" widget="many2many_tags" placeholder="Tags..."/>-->
+                        </div>
+                        <notebook>
+                            <page name="quiz" string="Quiz">
+                                <group name="questions" string="Questions">
+                                    <field name="custom_quiz_ids" nolabel="1">
+                                        <tree>
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="question"/>
+                                        </tree>
+                                    </field>
+                                    <field name="active" invisible="1"/>
+                                </group>
+                            </page>
+                            <page name="configure" string="Configure">
+                                <group>
+                                    <fied name="active" invisible="1"/>
+                                    <field name="random_question" />
+                                    <field name="feedback_time" />
+                                    <field name="result_stored" />
+                                    <field name="is_resume" />
+                                    <field name="is_skipping" />
+                                    <field name="is_jumping" />
+                                    <field name="is_backward_navigation" />
+                                    <field name="is_repeat_until_correct" />
+                                    <field name="is_mark_doubtful" />
+                                    <field name="is_passed_status" />
+                                    <field name="display_solution" />
+                                    <field name="multiple_take" />
+<!--                                    <field name="quiz_attendee_name" widget="many2many_tags"/>-->
+                                    <field name="num_of_takes" attrs="{'invisible': [('multiple_take', '=', False)]}"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_quizzes_question_tree" model="ir.ui.view">
+            <field name="name">quizzes.question.tree</field>
+            <field name="model">quizzes.question</field>
+            <field name="arch" type="xml">
+                <tree string="Quiz Title">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="responsible_person_id"/>
+                    <field name="description_short"/>
+                    <field name="no_of_attempts" invisible="1"/>
+<!--                    <field name="quiz_attendee"/>-->
+                    <field name="quiz_attendee_name" widget="many2many_tags" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="inherited_view_slide_question_tree" model="ir.ui.view">
+            <field name="name">inherited.slide.question.tree</field>
+            <field name="model">slide.question</field>
+            <field name="inherit_id" ref="website_slides.slide_question_view_tree_report"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='slide_id']" position="after">
+                    <field name="custom_question_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="abc_quiz_action" model="ir.actions.act_window">
+            <field name="name">Quizzes</field>
+            <field name="res_model">quizzes.question</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Quizzes.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="custom_abc_quiz_root" name="Quiz" action="abc_quiz_action"
+                  parent="website_slides.website_slides_menu_courses" groups="base.group_system"/>
+
+        <menuitem id="independent_quiz_menu" name="Independent Quiz" parent="website_slides.website_slides_menu_report"  action="abc_quiz_action" groups="ecom_lms.regional_admin_user_group"/>
+
+</odoo>

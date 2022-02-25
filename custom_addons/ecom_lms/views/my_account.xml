@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="documentation_page" name="Documentation Page" inherit_id="portal.portal_my_home" customize_show="True" priority="50">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="replace">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Certifications</t>
+                <t t-set="url" t-value="'/my/certifications'"/>
+                <!-- <t t-set="placeholder_count" t-value="'timesheet_count'"/> -->
+            </t>
+        </xpath>
+    </template>
+    <template id="account_details" name="Account Details" inherit_id="portal.portal_my_details">
+        <xpath expr="//div[hasclass('o_portal_details')]" position="replace">
+            <div class="col-lg-12">
+                <div class="row">
+                
+                	<div t-attf-class="form-group #{error.get('first_name') and 'o_has_error' or ''} col-xl-6">
+
+                        <label class="col-form-label" for="name">First Name</label>
+                        <input type="text" name="first_name" readonly="readonly" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="request.env.user.firstname" />
+                    </div>
+
+                    <div t-attf-class="form-group #{error.get('first_name') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="name">Last Name</label>
+                        <input type="text" name="last_name" readonly="readonly" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="request.env.user.middlename" />
+                    </div>
+
+                    <div t-attf-class="form-group #{error.get('first_name') and 'o_has_error' or ''} col-xl-6">
+
+                        <label class="col-form-label" for="name">Middle Name</label>
+                        <input type="text" name="middle_name" readonly="readonly" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="request.env.user.lastname" />
+                    </div>
+                    
+                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="phone">Phone 1</label>
+                        <input type="tel" name="phone1" readonly="readonly" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.phone_number1" />
+                    </div>
+                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="phone">Phone 2</label>
+                        <input type="tel" name="phone2" readonly="readonly" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.phone_number2" />
+                    </div>
+                
+
+                    <!-- <div t-attf-class="form-group #{error.get('first_name') and 'o_has_error' or ''} col-xl-6">
+
+                        <label class="col-form-label" for="name">First Name</label>
+                        <input type="text" name="first_name" readonly="readonly" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="name or partner.name" />
+                    </div>
+
+                    <div t-attf-class="form-group #{error.get('first_name') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="name">Last Name</label>
+                        <input type="text" name="last_name" readonly="readonly" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="name or partner.name" />
+                    </div>
+
+                    <div t-attf-class="form-group #{error.get('first_name') and 'o_has_error' or ''} col-xl-6">
+
+                        <label class="col-form-label" for="name">Middle Name</label>
+                        <input type="text" name="middle_name" readonly="readonly" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="name or partner.name" />
+                    </div>
+ -->
+
+                    <div t-attf-class="form-group #{error.get('email') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="email">Email</label>
+                        <input type="email" name="email" readonly="readonly" t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}" t-att-value="email or partner.email" />
+                    </div>
+                    <div class="clearfix" />
+
+                    <!-- <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="phone">Phone</label>
+                        <input type="tel" name="phone" readonly="readonly" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="phone or partner.phone" />
+                    </div> -->
+
+                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="date_of_birth">Date Of Birth</label>
+                        <input type="date" name="date_of_birth" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.date_of_birth" readonly="1"/>
+                    </div>
+                    
+                    <div t-if="request.env.user.is_employee and request.env.user.emp_code" t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="emp_code">Employee Code</label>
+                        <input type="text" name="emp_code" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.emp_code" readonly="1"/>
+                    </div>
+                    
+                    <div t-if="request.env.user.customer_code" t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="cust_code">Customer Code</label>
+                        <input type="text" name="cust_code" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.customer_code" readonly="1"/>
+                    </div>
+                    
+                    <div t-if="request.env.user.pre_joinee_code" t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="pre_joinee_code">Pre Joinee Code</label>
+                        <input type="text" name="pre_joinee_code" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.pre_joinee_code" readonly="1"/>
+                    </div>
+                    
+                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="region">Region</label>
+                        <input type="text" name="region" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.region" readonly="1"/>
+                    </div>
+                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="gender">Gender</label>
+                        <input type="text" name="gender" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="request.env.user.gender" readonly="1"/>
+                    </div>
+                    <div class="clearfix" />
+                    <!-- <div t-attf-class="form-group #{error.get('street') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="street">Street</label>
+                        <input type="text" name="street" readonly="readonly" t-attf-class="form-control #{error.get('street') and 'is-invalid' or ''}" t-att-value="street or partner.street"/>
+                    </div> -->
+                    
+                    <div t-attf-class="form-group #{error.get('street') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="street">Street</label>
+                        <input type="text" name="street" readonly="readonly" t-attf-class="form-control #{error.get('street') and 'is-invalid' or ''}" t-att-value="request.env.user.street_address"/>
+                    </div>
+                    <div t-attf-class="form-group #{error.get('city') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="city">City</label>
+                        <input type="text" name="city" readonly="readonly" t-attf-class="form-control #{error.get('city') and 'is-invalid' or ''}" t-att-value="request.env.user.city" />
+                    </div>
+                    <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label label-optional" for="zipcode">Zip / Postal Code</label>
+                        <input type="text" name="zipcode" readonly="readonly" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="request.env.user.pincode" />
+                    </div>
+                    <!-- <div t-attf-class="form-group #{error.get('city') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="city">City</label>
+                        <input type="text" name="city" readonly="readonly" t-attf-class="form-control #{error.get('city') and 'is-invalid' or ''}" t-att-value="city or partner.city" />
+                    </div> 
+                    <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label label-optional" for="zipcode">Zip / Postal Code</label>
+                        <input type="text" name="zipcode" readonly="readonly" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="zipcode or partner.zip" />
+                    </div>-->
+                    
+                     <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label label-optional" for="country">Country</label>
+                        <input type="text" name="country" readonly="readonly" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="request.env.user.country_id.name" />
+                    </div>
+                    
+                    <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label label-optional" for="state">State / Province</label>
+                        <input type="text" name="state" readonly="readonly" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="request.env.user.state_id.name" />
+                    </div>
+                    <!-- <div t-attf-class="form-group #{error.get('country_id') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label" for="country_id">Country</label>
+                        <select name="country_id" readonly="readonly" t-attf-class="form-control #{error.get('country_id') and 'is-invalid' or ''}">
+                            <option value="">Country...</option>
+                            <t t-foreach="countries or []" t-as="country">
+                                <option t-att-value="country.id" t-att-selected="country.id == int(country_id) if country_id else country.id == partner.country_id.id">
+                                    <t t-esc="country.name" />
+                                </option>
+                            </t>
+                        </select>
+                    </div> 
+                    <div t-attf-class="form-group #{error.get('state_id') and 'o_has_error' or ''} col-xl-6">
+                        <label class="col-form-label label-optional" for="state_id">State / Province</label>
+                        <select name="state_id" readonly="readonly" t-attf-class="form-control #{error.get('state_id') and 'is-invalid' or ''}">
+                            <option value="">select...</option>
+                            <t t-foreach="states or []" t-as="state">
+                                <option t-att-value="state.id" style="display:none;" t-att-data-country_id="state.country_id.id" t-att-selected="state.id == partner.state_id.id">
+                                    <t t-esc="state.name" />
+                                </option>
+                            </t>
+                        </select>
+                    </div>-->
+                    <input type="hidden" name="redirect" t-att-value="redirect"/>
+
+                    <!-- <div class="clearfix">
+                        <button type="submit" class="btn btn-primary float-right mb32 ">
+                            Confirm
+                            <span class="fa fa-long-arrow-right" />
+                        </button>
+                    </div> -->
+                </div>
+            </div>
+
+
+        </xpath>
+    </template>
+
+
+    <template id="useful-links" name="Useful Links" inherit_id="website.footer_custom">
+
+        <xpath expr="//ul[hasclass('list-unstyled')]" position="inside">
+            <li><a href="/privacypolicy">Privacy Policy</a></li>
+
+        </xpath>
+    </template>
+
+</odoo>

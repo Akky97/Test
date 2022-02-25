@@ -1,0 +1,108 @@
+<odoo>
+<data>
+
+    <template id="non_life_insurerwise_report">
+       <t t-call="report.html_container">
+
+            <t t-call="report.external_layout">
+                <div class="page">
+                    <style>
+                        table,td,th{
+                        font-size:15px;
+                        }
+                    </style>
+
+                    <table style="width:100%" class="table table-bordered">
+
+
+                    <thead>
+                          <tr>
+                              <th class="text-left" colspan="5"><h4>Security Insurance Broker(India) Pvt Ltd</h4></th>
+                        </tr>
+                        <tr>
+                        <th class="text-center">Financial Year</th>
+                        <th class="text-center" colspan="2">2020-2021</th>
+                        <th class="text-center">Quater</th>
+                        <th  class="text-center">1</th>
+                        </tr>
+                    </thead>
+
+                    <br/>
+
+                    <thead>
+                        <tr>
+                        <th class="text-center">#</th>
+                        <th colspan="2" class="text-center" >Engineering </th>
+                        <th colspan="2" class="text-center">Fire</th>
+                        <th  colspan="2" class="text-center">Health</th>
+                        <th  colspan="2" class="text-center">Liability</th>
+                        <th colspan="2" class="text-center">Marine Cargo</th>
+                        <th  colspan="2" class="text-center">Marine Hull</th>
+                        <th  colspan="2" class="text-center">Miscellaneous</th>
+                        <th colspan="2" class="text-center">Motor</th>
+                        <th  colspan="2" class="text-center">#</th>
+                        </tr>
+                    </thead>
+                    <br/>
+                    <thead>
+                        <tr>
+                        <th class="text-center" >Name of Insurars</th>
+                        <th class="text-center">No. of Policies</th>
+                        <th class="text-center" >Premium</th>
+                            <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                            <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                            <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                            <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                            <th class="text-center"> No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                            <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                            <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+                              <th class="text-center">No. of Policies</th>
+                        <th class="text-center">Premium</th>
+
+                        </tr>
+                    </thead>
+
+                        <tbody>
+                            <t t-foreach="docs" t-as="o">
+                            <tr>
+                            <td><span t-field="o.company_id"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            <td><span t-field="o.policyno"/></td>
+                            <td><span t-field="o.brokerageprem"/></td>
+                            </tr>
+                            </t>
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+            </t>
+        </t>
+
+    </template>
+
+</data>
+</odoo>

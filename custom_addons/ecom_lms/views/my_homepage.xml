@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="my_homepage_veiw" name="my_homepage_veiw_template">
+
+          <t name="" t-name="website.my_homepage_veiw">
+
+  <t t-call="website.layout">
+      <style>
+          .card-img-top{
+              padding-top: 70%;
+                background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+                background-size: cover;
+                background-position: center;
+          }
+          .pwa_previous_course_submission_btn{
+            display:none;
+            text-align:center;
+            color:#0D7FE3
+          }
+          .pwa_pre_course_calendar_date_section{
+          font-size: 31px;
+          }
+          .pwa_pre_course_calendar_box{
+              width: 100%;
+              margin-top: 26px;
+          }
+
+        .card-text{
+          overflow: hidden;
+          white-space: nowrap;
+          }
+          .o_wslides_desc_truncate_3{
+                white-space: nowrap;
+                width: 138px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 27px;
+          }
+          .Leader_board_card_text{
+          font-size: 20px;
+          }
+          .pwa_banner_heading{
+          font-size: 40px;
+          }
+          .pwa_home_search_bar{
+          margin-left: 31%;
+          margin-right: -21%;
+          margin-top:10px;
+          }
+          .Leader_board_card_title{
+          font-size:25px;
+          }
+          .pwa_Suggested_section_view{
+          display: flex;
+          }
+          @media(max-width: 771px){
+          .pwa_previous_course_submission_btn{
+            display:block;
+            text-align:center;
+            color:#0D7FE3
+          }
+          .pwa_previous_course_view_all_btn{
+            display:none;
+          }
+          .pwa_pre_course_head{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .pwa_Suggested_section_view{
+             display: contents;
+          }
+            .card-text{
+          overflow: hidden;
+          white-space: nowrap;
+          }
+          .o_wslides_desc_truncate_3{
+            white-space: nowrap;
+                width: 138px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 26px;
+          }
+          .Leader_class_work{
+          display:none;
+          }
+               .pwa_banner_heading{
+              font-size: 20px;
+              }
+              .Leader_board_card{
+                  margin-top: 19px;
+              }
+               .Leader_board_card_title{
+                margin-top: -23px;
+                font-size: inherit;
+              }
+              .pwa_home_search_bar{
+                margin-left: 15%;
+                margin-top: 10px;
+                width: 118% !important;
+                position: absolute;
+              }
+          .card-body {
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+        }
+          }
+          @media (max-width: 560px){
+                      .pwa_Previous_course_container{
+                          width: 95%;
+                      }
+                      .pwa_pre_course_calendar_section{
+                      font-size:12px
+                          }
+                         .pwa_pre_course_calendar_date_section{
+                        font-size:20px
+                        }
+          }
+          @media (max-width: 360px){
+           .card-img-top{
+              padding-top: 74% !important;
+                background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+                background-size: cover;
+                background-position: center;
+          }
+                  .pwa_pre_course_para{
+                    font-size:11px
+                  }
+                .pwa_pre_course_calendar_box{
+                      width: auto;
+                      margin-top: 26px;
+                  }
+          .card-footer{
+          display:none;
+          }
+          }
+          @media (max-width: 325px){
+          .pwa_pre_course_para{
+          }
+          .pwa_Previous_course_container{
+              width: 95%;
+          }
+          .pwa_banner_heading {
+                font-size: 17px;
+            }
+          .pwa_Suggested_view_icon{
+            font-size: 9px;
+          }
+
+          .pwa_home_search_bar {
+                margin-left: 6%;
+                margin-top: 10px;
+                width: 129% !important;
+                position: absolute;
+            }
+           .Leader_board_card_title{
+                margin-top: -23px;
+                font-size: 13px;
+              }
+          .Leader_board_card_text{
+          font-size: 13px;
+          }
+          .o_wslides_desc_truncate_3 {
+            white-space: nowrap;
+            width: 88px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 26px;
+        }
+         .card-body{
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
+          .font-weight-bold{
+          font-size: 10px;
+          }
+          .badge{
+          font-size: 8px;
+          }
+
+          }
+          @media (max-width: 290px){
+          .align-items-center {
+            align-items: center !important;
+            white-space: nowrap;
+            width: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+        }
+          .card-body{
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
+          }
+      </style>
+
+    <t t-set="pageName" t-value="'homepage'"/>
+    <div id="wrap" class="oe_structure oe_empty">
+
+      <section class="s_cover parallax bg-black-50 pt96 pb96 o_colored_level s_parallax_is_fixed s_parallax_no_overflow_hidden" data-scroll-background-ratio="1" data-snippet="s_cover" data-name="Cover" style="position: relative;" id="What-would-you-like-to-learn-today%3F" data-anchor="true">
+        <span class="s_parallax_bg oe_img_bg" style="text-align: center; background-position: 50% 0px; background-image: url(&quot;/web/image/website.s_cover_default_image&quot;);"/>
+        <div class="o_we_bg_filter bg-black-50"/>
+        <div class="s_allow_columns container">
+          <div style="text">
+             <h1 style="text-align: center;">
+            <span class="pwa_banner_heading" style="">What would you like to learn today?</span>
+          </h1>
+<!--          <p class="lead" style="text-align: center;">&amp;nbsp;&amp;nbsp;</p>-->
+<!--          <p style="text-align: center;"/>-->
+          <div class="row">
+            <div class="col-8">
+                    <form style="display: flow-root;" method="GET" class="form-inline o_wslides_nav_navbar_right order-lg-3" t-attf-action="/slides/pwa/all" role="search">
+                        <div class="input-group pwa_home_search_bar" style="">
+                            <input style="border-radius: 6px;height: 45px;" type="search" name="search" class="form-control" placeholder="Search for videos, courses, books and audiobooks" aria-label="Search" t-att-value="search_term"/>
+                           <div class="input-group-append">
+                                <button style="margin-left: 24px;background-color: #ffff;border-radius: 6px;" class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+                                    <i class="fa fa-search"/>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+          </div>
+
+            </div>
+<!--            <input class="col-8 form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Search for videos, courses, books and audiobooks"/>-->
+<!--            <p class="col-4">-->
+<!--              <i class="fa fa-1x bg-primary fa-search padding-large rounded" data-original-title="" title="" aria-describedby="tooltip428331" style="&#10;"/>-->
+<!--            </p>-->
+          </div>
+        </div>
+      </section>
+<section class="mt-3">
+    <div class="container pwa_Previous_course_container">
+         <h1>Previous courses</h1>
+            <div class="row border">
+                <div class="col-12" style="height: 428px;overflow: scroll;overflow-x: hidden;text-align: -webkit-center;">
+                    <div class="row shadow border rounded p-3 mb-5 bg-white pwa_pre_course_calendar_box" style="">
+                        <div class="col-2 shadow p-1 bg-white rounded" style="text-align:center">
+                            <div class="pwa_pre_course_calendar_section">
+                                <p class="bg-primary" style="margin-bottom: 0rem;">Due</p>
+                               <span class="pwa_pre_course_calendar_date_section" style=""> 03</span>
+                                <br/>
+                                Oct
+                                <br/>
+                                2021
+                            </div>
+
+                        </div>
+                         <div class="col-8" style="text-align: left;">
+
+                                <h1 class="pwa_pre_course_head">Digital Transformation with ELSA</h1>
+                                <p class="pwa_pre_course_para">Arrange by proposal Trial</p>
+                        </div>
+                         <div class="col-2">
+                             <i class="fa fa-1x rounded fa-ellipsis-v"/>
+
+                        </div>
+
+                    </div>
+                    <div class="row shadow border p-3 mb-5 bg-white pwa_pre_course_calendar_box" style="">
+                        <div class="col-2 shadow p-1 bg-white rounded" style="text-align:center">
+
+                            <div class="pwa_pre_course_calendar_section">
+                                <p class="bg-primary" style="margin-bottom: 0rem;">Due</p>
+                               <span class="pwa_pre_course_calendar_date_section" style=""> 03</span>
+                                <br/>
+                                Oct
+                                <br/>
+                                2021
+                            </div>
+
+
+                        </div>
+                         <div class="col-8" style="text-align: left;">
+                                <h1 class="pwa_pre_course_head">Digital Transformation with ELSA</h1>
+                                <p class="pwa_pre_course_para">Arrange by proposal Trial</p>
+
+                        </div>
+                         <div class="col-2">
+                             <i class="fa fa-1x rounded fa-ellipsis-v"/>
+
+                        </div>
+
+                    </div>
+                     <p class="pwa_previous_course_submission_btn" style="">
+                        <a style="color:#0D7FE3" href="#" data-original-title="" title="" aria-describedby="tooltip736886">View all Submission</a>
+                    </p>
+
+                </div>
+
+
+            </div>
+            <p class="pwa_previous_course_view_all_btn mt-2" style="text-align:end;">
+                <a style="color:#0D7FE3" href="#" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+            </p>
+    </div>
+</section>
+<!--      <section class="s_text_block pt32 pb32 o_colored_level" data-snippet="s_text_block" data-name="Text" style="height:610px;overflow:scroll">-->
+<!--        <div class="container border rounded s_allow_columns" style="height:610px;overflow:scroll">-->
+<!--          <h1>Previous courses</h1>-->
+<!--          <div class="overflow-y:scroll">-->
+<!--            <div class="row shadow p-3 mb-5 bg-white rounded">-->
+<!--              <div class="col-2 col-sm-1 shadow p-1 bg-white rounded" style="text-align:center">-->
+<!--                <p class="bg-primary">Due</p>-->
+<!--                <h1>03</h1>-->
+<!--                <h3>Oct</h3>-->
+<!--                <h5>2021</h5>-->
+<!--              </div>-->
+<!--              <div class="col-8 col-sm-9">-->
+<!--                <h1>Digital Transformation with ELSA</h1>-->
+<!--                <p>Arrange by proposal Trial</p>-->
+<!--              </div>-->
+<!--              <div class="col-1 col-sm-1" style="&#10;    /* position: absolute; */&#10;    /* margin-right: 0%; */&#10;">-->
+<!--                <i class="fa fa-1x rounded fa-ellipsis-v"/>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="row shadow p-3 mb-5 bg-white rounded">-->
+<!--              <div class="col-2 col-sm-1 shadow p-1 bg-white rounded" style="text-align:center">-->
+<!--                <p class="bg-primary">Due</p>-->
+<!--                <h1>03</h1>-->
+<!--                <h3>Oct</h3>-->
+<!--                <h5>2021</h5>-->
+<!--              </div>-->
+<!--              <div class="col-9 col-sm-10">-->
+<!--                <h1>Digital Transformation with ELSA</h1>-->
+<!--                <p>Arrange by proposal Trial</p>-->
+<!--              </div>-->
+<!--              <div class="col-1 col-sm-1">-->
+<!--                <i class="fa fa-1x rounded fa-ellipsis-v"/>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <p style="text-align:center">-->
+<!--            <a href="#" data-original-title="" title="" aria-describedby="tooltip736886">View all Submission</a>-->
+<!--          </p>-->
+<!--        </div>-->
+<!--      </section>-->
+
+
+
+
+      <section class="Leader_class_work"  t-if="request.env.user.is_employee and request.env.user.emp_code">
+
+              <div class="container">
+                 <h1>Leader Boardnew</h1>
+                  <div class="row">
+                      <div class="col-12">
+                          <div id="inam" class="carousel slide" data-ride="carousel">
+                              <div class="carousel-inner">
+
+                                  <div class="carousel-item active" >
+
+                                          <div class="container">
+                                                <div class="row">
+                                                  <t t-if="users">
+                                                  <t t-set="counter" t-value="1"/>
+                                                  <t t-foreach="users" t-as="user">
+                                                      <div class="col-lg-4 col-md-4 col-6">
+                                                          <div class="card Leader_board_card" style="box-shadow: 0px 6px 12px #0000002b;" >
+
+                                                                <img t-att-class="img_class if img_class else 'rounded-circle float-left'"
+                                                                                  t-att-style="img_style if img_style else 'object-fit: cover;width: 63%;padding: 17px 10px;margin-left: 16%;'"
+                                                                                  t-att-src="'/profile/avatar/%s?field=image_128' % user.id"
+                                                                                  t-att-alt="user.name"/>
+                                                                 <div class="card-body" style="text-align:center">
+                                                                    <h4 style="" class="card-title Leader_board_card_title"><span class="font-weight-bold" t-esc="user.name"/></h4>
+                                                                    <p style="" class="card-text Leader_board_card_text"><t t-esc="user.rank_id.name"/> | <span class="badge badge-success"><t t-esc="user.karma"/> xp</span></p>
+
+
+                                                                  </div>
+
+
+
+                                                          </div>
+
+                                                      </div>
+
+                                                  </t>
+                                                  </t>
+                                                </div>
+
+                                          </div>
+
+
+                                  </div>
+
+
+                              </div>
+<!--                              <a href="#inam" class="carousel-control-prev" data-slide="prev">-->
+<!--                                  <span class="carousel-control-prev-icon"></span>-->
+<!--                              </a>-->
+<!--                              <a href="#inam" class="carousel-control-next" data-slide="next">-->
+<!--                                  <span class="carousel-control-next-icon"></span>-->
+<!--                              </a>-->
+
+                          </div>
+
+                        <div style="margin-top: 30px;">
+<!--                              <div class="float-left" >-->
+<!--                              <button class="pl-4 pr-4">-->
+<!--                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--                                </svg>-->
+<!--                              </button>-->
+<!--                              <button class="pr-4 pl-4">-->
+<!--                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--                                </svg>-->
+<!--                              </button>-->
+<!--                              </div>-->
+                              <div class="float-right"  >
+                                <p style="text-align:right">
+                                  <a href="/profile/users" title="" aria-describedby="tooltip736886">View all</a>
+                                </p>
+                              </div>
+                        </div>
+
+
+                      </div>
+
+                  </div>
+
+
+              </div>
+
+      </section>
+
+
+      <section t-if="channels_resumed" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Resume Learning</h1>
+               <div class="row">
+                      <div class="col-12">
+                          <div id="inam" class="carousel slide" data-ride="carousel">
+                              <div class="carousel-inner">
+
+                                  <div class="carousel-item active" >
+
+                                          <div class="container">
+
+                                                <div class="row mx-n2 mt8">
+                                                    <t t-foreach="channels_resumed[:5]" t-as="channel">
+                                                      <div class="col-lg-4 col-md-4 col-6 d-flex flex-grow-1" >
+                                                            <t t-call="ecom_lms.course_card_ecom"/>
+                                                      </div>
+
+                                                    </t>
+
+                                                </div>
+
+                                          </div>
+
+
+                                  </div>
+
+
+
+                              </div>
+<!--                              <a href="#inam" class="carousel-control-prev" data-slide="prev">-->
+<!--                                  <span class="carousel-control-prev-icon"></span>-->
+<!--                              </a>-->
+<!--                              <a href="#inam" class="carousel-control-next" data-slide="next">-->
+<!--                                  <span class="carousel-control-next-icon"></span>-->
+<!--                              </a>-->
+
+                          </div>
+
+
+
+
+                      </div>
+
+                  </div>
+
+
+
+          <div>
+<!--            <div class="float-left">-->
+<!--              <button class="pl-4 pr-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--              <button class="pr-4 pl-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--            </div>-->
+            <div class="float-right">
+              <p style="text-align:right">
+                <a href="/slides/resumed/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+                <section t-if="channels_assign" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Assigned Courses</h1>
+
+          <!-- Anchal - code  -->
+
+          <div class="row mx-n2 mt8">
+                    <t t-foreach="channels_assign[:3]" t-as="channel">
+                        <div class="col-md-4 col-6 px-2 d-flex flex-grow-1">
+                            <t t-call="ecom_lms.course_card_ecom"/>
+                        </div>
+                    </t>
+         </div>
+<!--          <div class="float-left">-->
+<!--              <button class="pl-4 pr-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--              <button class="pr-4 pl-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--            </div>-->
+            <div class="float-right">
+              <p style="text-align:right">
+                  <a href="/slides/pwa/assigned/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+<!--                <a href="/journey/all" data-original-title="" title="" aria-describedby="tooltip736886">back all</a>-->
+              </p>
+            </div>
+        </div>
+       </section>
+
+        <section t-if="channels_complete" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Completed Course</h1>
+
+          <!-- Anchal - code  -->
+
+          <div class="row mx-n2 mt8">
+                    <t t-foreach="channels_complete[:4]" t-as="channel">
+                        <div class="col-md-4 col-6 px-2 d-flex flex-grow-1">
+                            <t t-call="ecom_lms.course_card_ecom"/>
+                        </div>
+                    </t>
+         </div>
+<!--          <div class="float-left">-->
+<!--              <button class="pl-4 pr-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--              <button class="pr-4 pl-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--            </div>-->
+            <div class="float-right">
+              <p style="text-align:right">
+                  <a href="/slides/completed/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+<!--                <a href="/journey/all" data-original-title="" title="" aria-describedby="tooltip736886">back all</a>-->
+              </p>
+            </div>
+        </div>
+       </section>
+
+      <section t-if="channels_feature" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Featured Courses</h1>
+
+          <!-- Anchal - code  -->
+          <div class="row mx-n2 mt8">
+             <t t-foreach="channels_feature[:5]" t-as="channel">
+                 <div class="col-md-4 col-6 px-2 col-xs-12 d-flex flex-grow-1">
+                     <t t-call="ecom_lms.course_card_ecom"/>
+                 </div>
+             </t>
+         </div>
+<!--          <div class="float-left">-->
+<!--              <button class="pl-4 pr-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--              <button class="pr-4 pl-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--            </div>-->
+            <div class="float-right">
+              <p style="text-align:right">
+                <a href="/slides/featured/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+              </p>
+            </div>
+        </div>
+       </section>
+
+
+      <section t-if="channels_suggested"  class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+            <div class=" justify-content-between pwa_Suggested_section_view">
+                <div>
+                    <h1>Suggested Course</h1>
+                </div>
+                <div class="pwa_Suggested_view_icon">
+                        <span><i class="fa fa-1x rounded fa-play-circle-o"/>Watch
+                        </span>
+                        <span><i class="fa fa-1x rounded fa-book"/>Read
+                        </span>
+                        <span><i class="fa fa-1x rounded fa-volume-up"/>Listen
+                        </span>
+                </div>
+            </div>
+          <!-- Anchal Code -->
+                 <div class="row mx-n2 mt8">
+                     <t t-foreach="channels_suggested[:5]" t-as="channel">
+                         <div class="col-md-4 col-6 px-2 col-xs-12 d-flex flex-grow-1">
+                             <t t-call="ecom_lms.course_card_ecom"/>
+                         </div>
+                     </t>
+                 </div>
+
+
+
+<!--          <div class="float-left">-->
+<!--            <button class="pl-4 pr-4">-->
+<!--              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--              </svg>-->
+<!--            </button>-->
+<!--            <button class="pr-4 pl-4">-->
+<!--              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--              </svg>-->
+<!--            </button>-->
+<!--          </div>-->
+          <div class="float-right">
+            <p style="text-align:right">
+              <a href="/slides/suggested/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      <section t-if="journey_details" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Journey</h1>
+
+          <!-- Anchal - code  -->
+          <div class="row mx-n2 mt8">
+             <t t-foreach="journey_details[:5]" t-as="journey">
+                  <div class="col-md-4 col-6 px-2 col-xs-12 d-flex flex-grow-1">
+                      <t t-call="ecom_lms.pwa_journey_card"/>
+                  </div>
+              </t>
+             </div>
+<!--          <div class="float-left">-->
+<!--              <button class="pl-4 pr-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--              <button class="pr-4 pl-4">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--                </svg>-->
+<!--              </button>-->
+<!--            </div>-->
+            <div class="float-right">
+              <p style="text-align:right">
+                  <a href="/journey/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+<!--                <a href="/journey/all" data-original-title="" title="" aria-describedby="tooltip736886">back all</a>-->
+              </p>
+            </div>
+        </div>
+       </section>
+       
+       
+       
+       <section t-if="journey_suggested" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Suggested Journey</h1>
+          <div class="row mx-n2 mt8">
+             <t t-foreach="journey_suggested[:5]" t-as="journey">
+                  <div class="col-md-4 col-6 px-2 col-xs-12 d-flex flex-grow-1">
+                      <t t-call="ecom_lms.pwa_journey_card"/>
+                  </div>
+              </t>
+             </div>
+            <div class="float-right">
+              <p style="text-align:right">
+                  <a href="/slides/journey/suggested/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+              </p>
+            </div>
+        </div>
+       </section>
+
+
+      <section t-if="quizzes_details" class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+          <h1>Quizzes</h1>
+
+          <!-- Anchal - code  -->
+          <div class="row mx-n2 mt8">
+             <t t-foreach="quizzes_details[:5]" t-as="quizzes">
+                 <div class="col-md-4 col-6 px-2 col-xs-12 d-flex flex-grow-1">
+                     <t t-call="ecom_lms.quiz_card"/>
+                 </div>
+             </t>
+         </div>
+
+            <div class="float-right">
+              <p style="text-align:right">
+                <a href="/quizzes/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+              </p>
+            </div>
+        </div>
+       </section>
+        <section t-if="channels_suggested"  class="s_four_columns bg-50 pt32 o_colored_level pb8" data-vcss="001" data-snippet="s_four_columns" data-name="Columns" style="position: relative;">
+        <div class="container">
+            <div class=" justify-content-between pwa_Suggested_section_view">
+                <div>
+                    <h1>Explore More Course</h1>
+                </div>
+                <div class="pwa_Suggested_view_icon">
+                        <span><i class="fa fa-1x rounded fa-play-circle-o"/>Watch
+                        </span>
+                        <span><i class="fa fa-1x rounded fa-book"/>Read
+                        </span>
+                        <span><i class="fa fa-1x rounded fa-volume-up"/>Listen
+                        </span>
+                </div>
+            </div>
+          <!-- Anchal Code -->
+                 <div class="row mx-n2 mt8">
+                     <t t-foreach="channels_suggested[:5]" t-as="channel">
+                         <div class="col-md-4 col-6 px-2 col-xs-12 d-flex flex-grow-1">
+                             <t t-call="ecom_lms.course_card_ecom"/>
+                         </div>
+                     </t>
+                 </div>
+
+
+
+<!--          <div class="float-left">-->
+<!--            <button class="pl-4 pr-4">-->
+<!--              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewbox="0 0 16 16">-->
+<!--                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>-->
+<!--              </svg>-->
+<!--            </button>-->
+<!--            <button class="pr-4 pl-4">-->
+<!--              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewbox="0 0 16 16">-->
+<!--                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>-->
+<!--              </svg>-->
+<!--            </button>-->
+<!--          </div>-->
+          <div class="float-right">
+            <p style="text-align:right">
+              <a href="/slides/suggested/pwa/all" data-original-title="" title="" aria-describedby="tooltip736886">View all</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </t>
+</t>
+
+    </template>
+</odoo>

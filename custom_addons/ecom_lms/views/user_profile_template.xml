@@ -1,0 +1,103 @@
+<odoo>
+	<template id="user_profile_sub_nav_inherit_ecom" inherit_id="website_profile.user_profile_sub_nav" >
+		<xpath expr="//nav" position="replace">
+			<nav aria-label="breadcrumb" class="col d-none d-md-flex">
+                        <ol class="breadcrumb bg-transparent mb-0 pl-0 py-0">
+                            <li t-if="request.env.user.is_employee and request.env.user.emp_code" t-attf-class="breadcrumb-item #{'active' if not view_user else ''}">
+                                <a href="/profile/users">Users</a>
+                            </li>
+                            <li t-if="view_user" class="breadcrumb-item active">
+                                <a><t t-esc="view_user"/></a>
+                            </li>
+                            <li t-if="course_bool" class="breadcrumb-item active">
+                            	
+                            	<a href="/course-wise/leadership">Coursewise Leadership Board</a>
+                            </li>
+                            <li t-if="region_bool" class="breadcrumb-item active">
+                            	
+                            	<a href="/region-wise/leadership">Regionwise Leadership Board</a>
+                            </li>
+                        </ol>
+                    </nav>
+          </xpath>
+     </template>
+	
+	
+	<template id="users_page_content_ecom"  inherit_id="website_profile.users_page_content">
+        <xpath expr="//div[@class='container mb32']" postition="inside">
+            <t t-if='course_bool and not users'>
+                <div class='alert alert-warning'>No Record Found </div>
+            </t>
+            <t t-if='region_bool and not users'>
+                <div class='alert alert-warning'>No Record Found </div>
+            </t>
+        </xpath>
+	</template>
+	
+	
+	<template id="users_page_header_inherit_ecom" inherit_id="website_profile.users_page_header" >
+	    <xpath expr="//div[@class='form-group btn-group']" position="after">
+	    	<div class="form-inline py-4 float-right">
+	    		<form role="form" action="/course-wise/leadership" method="post">
+	    		<!-- <t t-set="multi_upload" t-value=""/> -->
+	    		<!-- <form role="form" t-att-action="'/course-wise/leadership/%s' % (multi_upload)" method="post"> -->
+	                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+	                <t t-if ="all_courses_ids">
+			           <strong class="form-group text-white mr-2">Courses :</strong>
+			               <div class="form-group btn-group">
+			               	<select name="channel_id" id="select_id1">
+			                   <option value="">Courses...</option>
+			                        <t t-foreach="all_courses_ids" t-as="course_id">
+			                            <option t-att-value="course_id" id="option_id1">
+			                                <t t-esc="course_id.name"/>
+			                                <!-- <t t-set="multi_upload" t-value="course_id"/> -->
+			                            </option>
+
+
+			                        </t>
+			                    </select>
+			               </div>
+
+			                <div class="clearfix oe_login_buttons">
+							<button type="submit" class="btn btn-primary pull-left">Submit</button>
+						</div>
+					 </t>
+
+               	</form>
+
+	          	<form role="form" action="/region-wise/leadership" method="post">
+	                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+	                <t t-if ="all_courses_ids">
+				           <strong class="form-group text-white mr-2">Region :</strong>
+				               <div class="form-group btn-group">
+				               	<select class="form-control form-control-sm" name="res_state_id" id="select_state_id1">
+			                    	<option value="select">Select.....</option>
+			                        <option value="north">North</option>
+			                        <option value="south">South</option>
+			                        <option value="east">East</option>
+			                        <option value="west">West</option>
+			                        <option value="ihq">IHQ</option>
+			                        <option value="central">Central</option>
+			                    </select>
+				               
+				               	<!-- <select name="res_state_id" id="select_state_id1">
+				                   <option value="">Region...</option>
+				                        <t t-foreach="all_state_ids" t-as="state_id">
+				                            <option t-att-value="state_id" id="option_state_id1">
+				                                <t t-esc="state_id.name"/>
+				                            </option>
+				                        </t>
+			                    </select> -->
+				               </div>
+				                <div class="clearfix oe_login_buttons">
+								<button type="submit" class="btn btn-primary pull-left">Submit</button>
+							</div>
+						 </t>
+		               </form>
+		          	</div>
+			           
+	   	</xpath>
+	
+	</template>
+</odoo>
+	

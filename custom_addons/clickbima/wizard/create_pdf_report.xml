@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="pdf_report_form" model="ir.ui.view">
+            <field name="name">pdf.report.wizard</field>
+            <field name="model">report.pdf</field>
+            <field name="arch" type="xml">
+                <form string="Generate Report">
+                    <group>
+                        <field name="start_date"/>
+                    </group>
+                    <footer>
+                        <button name="test_report3" string="Print" type="object" class="btn btn-sm btn-primary" default_focus="1"/>
+                        <button name="test_report" string="General Business Report" type="object" class="btn-primary"/>
+                        <button name="test_report1" string="Non-Life Insurer Wise Report" type="object" class="btn-primary"/>
+                        <button name="test_report2" string="Non-Life Top 10 Client" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn btn-sm btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="create_report_wizard_pdf" model="ir.actions.act_window">
+            <field name="name">Print PDF</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">report.pdf</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pdf_report_form"/>
+            <field name="target">new</field>
+        </record>
+
+<!--     <menuitem name="PDF Reports" id="list_2059" parent="clickbima.menu_3" action="create_report_wizard_pdf" sequence="2"/>-->
+
+</odoo>

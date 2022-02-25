@@ -1,0 +1,46 @@
+<odoo>
+    <data>
+        <record id="region_wise_report_form_view" model="ir.ui.view">
+            <field name="name">region.wise.report.form</field>
+            <field name="model">region.wise.report</field>
+            <field name="arch" type="xml">
+                <form string="Region Wise Report">
+                <group>
+                	<group >
+                		<field name="course_journey" required="1" widget="radio"/>
+                		<field name="region" required="1"/>
+                        <!-- <field name="user_ids" widget="many2many_tags"/> -->
+                    </group>
+                </group>
+                     <footer>
+                         <button name="button_print" string="Print" type="object" class="oe_highlight" />
+                         <button string="Cancel" class="oe_link" special="cancel" /> 
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_region_wise_report_print" model="ir.actions.act_window">
+            <field name="name">Region Wise Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">region.wise.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+        
+       <record id="region_wise_report_view" model="ir.ui.view">
+			<field name="name">Region Wise Report</field>
+			<field name="model">regionwise.view.report</field>
+			<field name="arch" type="xml">
+				<form string="Excel Report file" create="false" edit="false" duplicate="false" delete="false">
+                    <group>
+                        <field name="excel_file" readonly="1" filename="file_name" />
+                        <field name="file_name" invisible="1" />
+				    </group>
+				</form>
+			</field>
+		</record> 
+		
+		<menuitem id="region_wise_report_view_menu" name="Region Wise Report" parent="website_slides.website_slides_menu_report" action="action_region_wise_report_print" sequence="2"/>
+    </data>
+</odoo>

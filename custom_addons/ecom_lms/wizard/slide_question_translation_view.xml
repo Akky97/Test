@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id ="slide_qus_title_translation_wiz_form_view" model="ir.ui.view">
+            <field name="name">Translate Slide Question</field>
+            <field name="model">slide.question.title.translation</field>
+            <field name="arch" type="xml">
+                <form string="Translate Slide Question">
+                    <notebook>
+                            <page string="Translate Lesson" >
+                                <field name="slide_qus_lang_translation_ids" >
+                                    <tree editable="bottom">
+                                        <field name="language_id"/>
+                                        <field name="translation_value"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    <footer>
+                        <button name="translate_done" string="OK"  class="oe_highlight" type="object"/> 
+					    <button string="Cancel" special="cancel"/>
+				    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_slide_qus_title_translation_wiz" model="ir.actions.act_window">
+            <field name="name">Translate Slide Question</field>
+            <field name="res_model">slide.question.title.translation</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="lms_pwa_all_courses_filter" name="lms_pwa_all_courses_filter_template">
+      <t t-name="website.desktop">
+  <t t-call="website.layout">
+      <style>
+               .accordion .card-header:after {
+                font-family: 'FontAwesome';
+                content: "\f056";
+                float: right;
+            }
+            .accordion .card-header.collapsed:after {
+                /* symbol for "collapsed" panels */
+                content: "\f055";
+            }
+            .card-img-top{
+            padding-top: 50%;
+            background-image: url(/web/image/slide.channel/1/image_1024?unique=83d4aab);
+            background-size: cover;
+            background-position: center;
+          }
+          .o_wslides_desc_truncate_3{
+            white-space: nowrap;
+            width: 251px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 27px;
+          }
+           .view_all_card_text_section_btn {
+                    display:none;
+                    padding: 4px 5px;
+                    font-size: 7px;
+                }
+          @media(max-width: 765px) {
+                        .view_all_card_text_section_btn{
+                             display:block;
+                            padding: 4px 5px;
+                            font-size: 12px;
+                        }
+                      .pwa_filter_page_sub_para{
+                      font-size:11px
+                      }
+                      .pwa_filter_view_card_head{
+                            white-space: nowrap;
+                            width: 128px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            height: 27px;
+                      }
+                      .o_wslides_desc_truncate_3{
+                        white-space: nowrap;
+                        width: 138px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        height: 27px;
+                          }
+                      .container, .o_container_small {
+                        max-width: 586px;
+                        }
+                        .pwa_filter_section{
+                         display:none;
+                        }
+              .filter_short_by_section{
+              display:none;
+              }
+
+              .filter_name_heading_dots {
+                    margin: -5px 16px;
+                }
+              .card-img-top{
+                padding-top: 75% !important;
+                background-image: url(/web/image/slide.channel/1/image_1024?unique=83d4aab);
+                background-size: cover;
+                background-position: center;
+              }
+          }
+              @media(max-width: 330px) {
+                .page-link {
+                    position: relative;
+                    display: block;
+                    /* padding: 0.5rem 0.75rem; */
+                    margin-left: -1px;
+                    line-height: 1.25;
+                    color: #267372;
+                    background-color: #FFFFFF;
+                    border: 1px solid #DEE2E6;
+                    padding: 8px 6px;
+                }
+                  .pagination {
+                        display: -webkit-box;
+                        display: -webkit-flex;
+                        display: flex;
+                        padding-left: 4px;
+                        list-style: none;
+                        border-radius: 0.25rem;
+                    }
+                    .card-img-top {
+                        padding-top: 114% !important;
+                        background-image: url(/web/image/slide.channel/1/image_1024?unique=83d4aab);
+                        background-size: cover;
+                        background-position: center;
+                        width: 132%;
+                        float: right;
+                    }
+                .o_wslides_desc_truncate_3 {
+                    white-space: nowrap;
+                    width: 138px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    height: 21px;
+                    font-size: 12px;
+                }
+                .filter_name_heading_dots {
+                    margin: -11px 4px;
+                }
+                  .pwa_filter_view_card_head{
+                    font-size: 20px;
+                    }
+                  .pwa_filter_page_sub_para{
+                  font-size: 10px;
+                  }
+                .view_all_card_text_section_btn {
+                    padding: 4px 5px;
+                    font-size: 7px;
+                }
+              }
+
+
+
+      </style>
+    <div id="wrap" class="oe_structure oe_empty">
+
+
+
+        <section class="mt-3 mb-5">
+
+            <div class="container">
+
+
+
+
+        <div class="row">
+          <div class="col-3 pwa_filter_section">
+               <p>
+              <i class="fa fa-1x rounded fa-filter"/>
+              <b>Filter by</b>
+            </p>
+              <div class="form-inline ml-auto d-none d-md-flex" t-if="search_slide_type or search_my or search_tags or search_channel_tag_id or categ_val_bool or filter_lang_val_bool">
+                            <a href="/slides/pwa/all" class="btn btn-info text-nowrap mr-2" role="button" title="Clear filters">
+                                <i class="fa fa-eraser"/> Clear filters
+                            </a>
+                        </div>
+<!--            <hr/>-->
+
+    <div id="accordion" class="accordion mt-3">
+        <div class="card shadow bg-white">
+                <form role="form" action="/slides/all/pwa/category" method="post" class="form-inline o_wslides_nav_navbar_right d-none d-md-flex">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <t t-if ="category_details">
+
+                                        <div class="" style="display:flex">
+                                  <!--  <div class="form-group btn-group"> -->
+                                                <select name="category_id" id="select_id2" style="width: 217px;height: 48px;border: none;background-color: white;">
+                                                    <option value="">Category...</option>
+                                                    <t t-foreach="category_details" t-as="categ_id">
+                                                    <option t-att-value="categ_id" id="categ_id2">
+                                                        <t t-esc="categ_id.name"/>
+                                                        <t t-set="multi_upload" t-value="course_id"/>
+                                                    </option>
+
+                                                    </t>
+                                                </select>
+
+                                                <div class="input-group-append">
+
+                                                <button class="btn oe_search_button" type="submit" aria-label="Submit" title="Submit">
+                                                    <i class="fa fa-search"/>
+                                                </button>
+                                                </div>
+                                        </div>
+
+
+                             </t>
+
+                </form>
+            <div style="text-align: center;">
+                                <t t-if="categ_val_bool and filter_categ_id">
+                        <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2" style="background-color: #e1e1e1;">
+                                  <i class="fa fa-tag mr-2 text-muted"/>
+                                    Category
+                                    <t t-esc="filter_categ_id"/>
+                                    <a href="/slides/pwa/all" class="btn border-0 py-1">&#215;</a>
+                                  <!-- Category
+                                  >  <input name="filter_categ" t-att-value="filter_categ_id" readonly="1"/> -->
+                                </span>
+                   </t>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+               <div id="accordion" class="accordion mt-3">
+        <div class="card shadow bg-white">
+              <form role="form" action="/slides/all/lang/pwa/filter" method="post" class="form-inline o_wslides_nav_navbar_right d-none d-md-flex">
+	    		<!-- <t t-set="multi_upload" t-value=""/> -->
+	    		<!-- <form role="form" t-att-action="'/course-wise/leadership/%s' % (multi_upload)" method="post"> -->
+	                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+			           <!-- <strong class="form-group text-white mr-2">Switch Language :</strong> -->
+
+			            <div style="display:flex">
+                              <select name="filtered_language" id="filtered_language" style="width: 217px;height: 48px;border: none;background-color: white;">
+			                    	<option value="select">Filter Language..</option>
+			                        <option value="english">English</option>
+			                        <option value="hindi">Hindi</option>
+			                        <option value="gujarati">Gujarati</option>
+			                        <option value="marathi">Marathi</option>
+			                        <option value="assamese">Assamese</option>
+			                        <option value="tamil">Tamil</option>
+			                        <option value="kannada">Kannada</option>
+			                        <option value="malyalam">Malyalam</option>
+			                        <option value="telugu">Telugu</option>
+			                    </select>
+
+			                    <div class="input-group-append">
+
+			                        <button class="btn oe_search_button" type="submit" aria-label="Submit" title="Submit">
+                                        <i class="fa fa-search"/>
+                                    </button>
+						        </div>
+                        </div>
+
+
+
+               	</form>
+                    <div style="text-align:center">
+                              <t t-if="filter_lang_val_bool and filter_lang_selected">
+				<span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2" style="background-color: #e1e1e1;">
+	                      <i class="fa fa-tag mr-2 text-muted"/>
+	                      	Language
+	                      	<t t-esc="filter_lang_selected"/>
+	                      	<a href="/slides/pwa/all" class="btn border-0 py-1">&#215;</a>
+	                      <!-- Category
+	                      >  <input name="filter_categ" t-att-value="filter_categ_id" readonly="1"/> -->
+	                    </span>
+           </t>
+                    </div>
+
+
+        </div>
+
+    </div>
+
+<!--    <div id="accordion" class="accordion mt-3">-->
+<!--        <div class="card shadow bg-white">-->
+
+<!--            <div class="card-header collapsed bg-white p-2 mt-1" data-toggle="collapse" data-parent="#accordion" href="#collapseThree5">-->
+<!--                <a class="card-title" style="font-size:25px">-->
+<!--                     Role-->
+<!--                </a>-->
+<!--            </div>-->
+<!--            <div id="collapseThree5" class="collapse" data-parent="#accordion" >-->
+<!--                <div class="card-body" style="background-color: #E9ECEF !important;">-->
+<!--                       <div class="bg-200 d-flex justify-content-between">-->
+<!--              <div>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--                <input type="checkbox"/>-->
+<!--                <span class="ml-1">Lorem Ipsum</span>-->
+<!--                <br/>-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                <span>05</span>-->
+<!--                <br/>-->
+<!--                <span>56</span>-->
+<!--                <br/>-->
+<!--                <span>44</span>-->
+<!--                <br/>-->
+<!--                <span>22</span>-->
+<!--                <br/>-->
+<!--                <span>44</span>-->
+<!--                <br/>-->
+<!--                <span>43</span>-->
+<!--                <br/>-->
+<!--                <span>20</span>-->
+<!--                <br/>-->
+<!--                <span>45</span>-->
+<!--                <br/>-->
+<!--                <span>47</span>-->
+<!--                <br/>-->
+<!--                <span>85</span>-->
+<!--                <br/>-->
+<!--                <span>65</span>-->
+<!--                <br/>-->
+<!--                <span>75</span>-->
+<!--                <br/>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+
+
+<!--              <div id="accordion" class="accordion mt-3">-->
+<!--                         <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>-->
+<!--                        <ul class="navbar-nav flex-grow-1">-->
+<!--                            <t t-foreach="tag_groups" t-as="tag_group">-->
+<!--                                <div class="card shadow bg-white mb-2">-->
+<!--                                <li t-att-class="'nav-item dropdown ml16 %s' % ('active' if tag_group in search_tag_groups else '')">-->
+<!--                                        <div class="card-header collapsed bg-white p-1 mt-1" data-toggle="collapse" data-parent="#accordion" href="#collapseThree4">-->
+<!--                                                  <a class="card-title" style="font-size:20px"-->
+<!--                                                    href="/slides/pwa/all"-->
+<!--                                                    t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"-->
+<!--                                                    role="button"-->
+<!--                                                    t-esc="tag_group.name"/>-->
+
+<!--                                        </div>-->
+<!--                                        <div style="margin-left: -17px;" id="collapseThree4" class="collapse" data-parent="#accordion" >-->
+<!--                                        <div class="card-body" style="background-color: #E9ECEF !important;">-->
+<!--                                        <div class="bg-200 d-flex justify-content-between">-->
+<!--                                                <div>-->
+<!--                                                    <t t-foreach="tag_group.tag_ids" t-as="tag">-->
+<!--                                                    <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"-->
+<!--                                                        t-att-href="'/slides/pwa/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"-->
+<!--                                                        t-esc="tag.name"/>-->
+<!--                                                    </t>-->
+<!--                                                </div>-->
+
+<!--                                        </div>-->
+<!--                                        </div>-->
+<!--                                        </div>-->
+<!--                                    &lt;!&ndash; <div class="dropdown-menu" t-att-id="'navToogleTagGroup%s' % tag_group.id"> &ndash;&gt;-->
+
+<!--                                   &lt;!&ndash;  </div> &ndash;&gt;-->
+<!--                                </li>-->
+<!--                                </div>-->
+<!--                            </t>-->
+<!--                        </ul>-->
+
+
+
+
+<!--              </div>-->
+<!--               <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>-->
+<!--                        <ul class="navbar-nav flex-grow-1">-->
+<!--                            <t t-foreach="tag_groups" t-as="tag_group">-->
+<!--                                <li t-att-class="'nav-item dropdown ml16 %s' % ('active' if tag_group in search_tag_groups else '')">-->
+<!--                                    <a class="nav-link dropdown-toggle"-->
+<!--                                        href="/slides/pwa/all"-->
+<!--                                        t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"-->
+<!--                                        role="button" data-toggle="dropdown"-->
+<!--                                        aria-haspopup="true" aria-expanded="false"-->
+<!--                                        t-esc="tag_group.name"/>-->
+<!--                                    &lt;!&ndash; <div class="dropdown-menu" t-att-id="'navToogleTagGroup%s' % tag_group.id"> &ndash;&gt;-->
+<!--                                        <t t-foreach="tag_group.tag_ids" t-as="tag">-->
+<!--                                            <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"-->
+<!--                                                t-att-href="'/slides/pwa/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"-->
+<!--                                                t-esc="tag.name"/>-->
+<!--                                        </t>-->
+<!--                                   &lt;!&ndash;  </div> &ndash;&gt;-->
+<!--                                </li>-->
+<!--                            </t>-->
+<!--                        </ul>-->
+
+               <div id="accordion" class="accordion mt-3">
+                     <div>
+                              <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>
+                                    <ul class="nav nav-pills" style="display: flow-root;">
+                                          <t t-foreach="tag_groups" t-as="tag_group">
+                                      <li class=""  t-att-class="'shadow nav-item dropdown mb-3 %s' % ('active' if tag_group in search_tag_groups else '')">
+                                        <a style="padding: 12px 13px;border: 1px solid #e1e1e1;border-radius: 3px;" class="nav-link dropdown-toggle" data-toggle="dropdown" href="/slides/pwa/all" role="button" aria-haspopup="true" aria-expanded="false"  t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"
+                                                        t-esc="tag_group.name"/>
+                                        <div class="dropdown-menu" style="width: 100%;">
+                                            <t t-foreach="tag_group.tag_ids" t-as="tag">
+                                                            <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"
+                                                                t-att-href="'/slides/pwa/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"
+                                                                t-esc="tag.name"/>
+                                            </t>
+
+                                        </div>
+                                      </li>
+                                        </t>
+                                    </ul>
+                     </div>
+               </div>
+
+
+
+
+
+          </div>
+          <div class="col-md-9 col-12">
+               <form style="display: flow-root;" method="GET" class="form-inline o_wslides_nav_navbar_right order-lg-3" t-attf-action="/slides/pwa/all" role="search">
+                        <div class="input-group" style="margin-right: 18%;margin-top:10px">
+                            <input style="border-radius: 6px;height: 37px;" type="search" name="search" class="form-control" placeholder="Search for videos, courses, books and audiobooks" aria-label="Search" t-att-value="search_term"/>
+                           <div class="input-group-append">
+                                <p style="background-color: #ffff;border-radius: 6px;margin-left: 2px;" class="" >
+                                         <button class="btn btn-primary ml-1 oe_search_button" type="submit" aria-label="Search" title="Search" style="padding: 4px 19px;">Search</button>
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+
+            <div class="d-flex">
+
+<!--              <input class="col-8 form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Search for videos, courses, books and audiobooks"/>-->
+<!--              <span class="btn btn-primary ml-1">Search</span>-->
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <!-- <h1>5,567 Results for Analytics</h1> -->
+                <h1><t t-esc="len(channels)"/> Results for <t t-esc="search_term"/></h1>
+              </div>
+              
+<!--              <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>-->
+<!--                        <ul class="navbar-nav flex-grow-1">-->
+<!--                            <t t-foreach="tag_groups" t-as="tag_group">-->
+<!--                                <li t-att-class="'nav-item dropdown ml16 %s' % ('active' if tag_group in search_tag_groups else '')">-->
+<!--                                    <a class="nav-link dropdown-toggle"-->
+<!--                                        href="/slides/pwa/all"-->
+<!--                                        t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"-->
+<!--                                        role="button" data-toggle="dropdown"-->
+<!--                                        aria-haspopup="true" aria-expanded="false"-->
+<!--                                        t-esc="tag_group.name"/>-->
+<!--                                    &lt;!&ndash; <div class="dropdown-menu" t-att-id="'navToogleTagGroup%s' % tag_group.id"> &ndash;&gt;-->
+<!--                                        <t t-foreach="tag_group.tag_ids" t-as="tag">-->
+<!--                                            <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"-->
+<!--                                                t-att-href="'/slides/pwa/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"-->
+<!--                                                t-esc="tag.name"/>-->
+<!--                                        </t>-->
+<!--                                   &lt;!&ndash;  </div> &ndash;&gt;-->
+<!--                                </li>-->
+<!--                            </t>-->
+<!--                        </ul>-->
+
+               <!-- <div class="collapse navbar-collapse" id="navbarTagGroups">
+                        <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>
+                        <ul class="navbar-nav flex-grow-1">
+                            <t t-foreach="tag_groups" t-as="tag_group">
+                                <li t-att-class="'nav-item dropdown ml16 %s' % ('active' if tag_group in search_tag_groups else '')">
+                                    <a class="nav-link dropdown-toggle"
+                                        href="/slides/all"
+                                        t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"
+                                        role="button" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false"
+                                        t-esc="tag_group.name"/>
+                                    <div class="dropdown-menu" t-att-id="'navToogleTagGroup%s' % tag_group.id">
+                                        <t t-foreach="tag_group.tag_ids" t-as="tag">
+                                            <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"
+                                                t-att-href="'/slides/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"
+                                                t-esc="tag.name"/>
+                                        </t>
+                                    </div>
+                                </li>
+                            </t>
+                        </ul>
+                        Clear filtering (desktop)
+                        <div class="form-inline ml-auto d-none d-md-flex" t-if="search_slide_type or search_my or search_tags or search_channel_tag_id">
+                            <a href="/slides/all" class="btn btn-info text-nowrap mr-2" role="button" title="Clear filters">
+                                <i class="fa fa-eraser"/> Clear filters
+                            </a>
+                        </div>
+                        Search box (desktop)
+                        <form method="GET" class="form-inline o_wslides_nav_navbar_right d-none d-md-flex">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control"
+                                    placeholder="Search courses" aria-label="Search"
+                                    t-att-value="search_term"/>
+                                <input t-if="search_tags" type="hidden" name="tags" t-att-value="str(search_tags.ids)"/>
+                                <input t-if="search_my" type="hidden" name="my" t-att-value="1"/>
+                                <input t-if="search_slide_type" type="hidden" name="slide_type" t-att-value="search_slide_type" />
+                                <div class="input-group-append">
+                                    <button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+                                        <i class="fa fa-search"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div> -->
+
+
+
+              <div class="filter_short_by_section">
+                <i class="fa fa-1x rounded fa-sort-amount-asc"/>
+                <span>Sort by</span>
+                <select>
+                  <option value="value">Best Match</option>
+                </select>
+              </div>
+            </div>
+            <section class="s_text_image o_colored_level pt10 pb10" data-snippet="s_image_text" data-name="Image - Text" style="">
+              <div class="container">
+
+                  <div t-if="not channels and not search_term and not search_slide_type and not search_my and not search_tags and not search_channel_tag_id">
+                        <p class="h2">No course available yet.</p>
+<!--                        <p groups="website_slides.group_website_slides_officer">Click on "New" in the top-right corner to write your first course.</p>-->
+                    </div>
+                    <div t-elif="search_term and not channels" class="alert alert-info mb-5">
+                        No course was found matching your search <code><t t-esc="search_term"/></code>.
+                    </div>
+                    <div t-elif="not channels" class="alert alert-info mb-5">
+                        No course was found matching your search.
+                    </div>
+                  <div t-else="">
+                       <t t-foreach="channels" t-as="channel">
+
+                <div class="row pt-3 shadow border rounded p-3 mb-2">
+
+                  <div class=" o_colored_level bg-white col-lg-4 col-4">
+                            <t t-set="course_image_val" t-value="website.image_url(channel, 'image_1024')"/>
+                            <div t-if="channel.image_1024" class="card-img-top" t-attf-style=" background-image: url(#{course_image_val});"/>
+
+                            <div t-else="" class="o_wslides_gradient card-img-top position-relative" style="padding-top: 50%; opacity: 0.8">
+                            <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-white-75" style="right:0; bottom: 0"/>
+                            </div>
+                  </div>
+                  <div class=" o_color o_colored_level bg-white col-lg-8 col-8">
+                    <div class="d-flex justify-content-between">
+                      <span class="filter_name_heading">
+                        <h3 class="pwa_filter_view_card_head" ><a class="card-title h5 mb-2 o_wslides_desc_truncate_2" t-attf-href="/pwa/slides/#{slug(channel)}" t-esc="channel.name"/></h3>
+                      </span>
+                      <div class="filter_name_heading_dots">
+                        <i class="fa fa-1x mt-3 fa-ellipsis-v"/>
+                      </div>
+                    </div>
+                    <div class="font-weight-light o_wslides_desc_truncate_3" t-field="channel.description_short"/>
+                <div class="d-flex justify-content-between">
+                      <div>
+                        <h5 class="pwa_filter_page_sub_para">Lorem Ipsum Dollar</h5>
+                      </div>
+                        <div><a style="" href="#" class="btn btn-primary mb-2 view_all_card_text_section_btn">Start course</a>
+                            </div>
+                    </div>
+
+                  </div>
+                </div>
+                             </t>
+                  </div>
+              </div>
+            </section>
+
+            <div class="conatiner">
+              <nav aria-label="Page navigation example">
+                <ul class="pagination" style="text-align:end">
+                  <li class="page-item">
+                    <a class="page-link" href="#">
+                      <img style="" src="/ecom_lms/static/src/img/Path_img1.svg" alt="" loading="lazy"/>
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">1</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">4</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">5</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">6</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">7</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">8</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">9</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">10</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">
+                      <img style="" src="/ecom_lms/static/src/img/Path_newimg.svg" alt="" loading="lazy"/>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+       </section>
+    </div>
+  </t>
+</t>
+
+    </template>
+</odoo>

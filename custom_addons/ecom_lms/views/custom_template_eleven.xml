@@ -1,0 +1,99 @@
+<odoo>
+    <data>
+        <record id="mail_template_certification_custom_eleven" model="mail.template">
+            <field name="name">Certification 11</field>
+            <field name="model_id" ref="survey.model_survey_user_input"/>
+            <field name="subject">Certification: ${object.survey_id.display_name}</field>
+            <field name="email_from">${(object.survey_id.create_uid.email_formatted or user.email_formatted or user.company_id.catchall_formatted) |safe}</field>
+            <field name="email_to">${(object.partner_id.email_formatted or object.email) |safe}</field>
+            <field name="body_html" type="xml">
+                <div style="background:#F0F0F0;color:#515166;padding:10px 0px;font-family:Arial,Helvetica,sans-serif;font-size:14px;">
+                    <table style="width:600px;margin:5px auto;">
+                        <tbody>
+                            <tr><td>
+                                <!-- We use the logo of the company that created the survey (to handle multi company cases) -->
+                                <a href="/"><img src="/logo.png?company=${object.survey_id.create_uid.company_id.id}" style="vertical-align:baseline;max-width:100px;" /></a>
+                            </td><td style="text-align:right;vertical-align:middle;">
+                                    Certification: ${object.survey_id.display_name}
+                            </td></tr>
+                        </tbody>
+                    </table>
+                    <table style="width:600px;margin:0px auto;background:white;border:1px solid #e1e1e1;">
+                        <tbody>
+                            <tr><td style="padding:15px 20px 10px 20px;">
+                                <p>Dear <span>${object.partner_id.name or 'participant'}</span></p>
+                                <p>
+                                    Here is, in attachment, your certification document for
+                                        <strong>${object.survey_id.display_name}</strong>
+                                </p>
+                                <p>Congratulations for succeeding the test!</p>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </field>
+            <field name="report_template" ref="certification_report_custom_eleven_main"/>
+            <field name="report_name">Certification Document</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <template id="certification_report_view_custom_eleven">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="user_input">
+                    <link href='https://fonts.googleapis.com/css?family=Montserrat:700,800' rel='stylesheet' type='text/css'/>
+                    <div id="o_survey_certification" t-att-data-oe-model="user_input._name" t-att-data-oe-id="user_input.id" t-att-class="'article  modern %s' % layout_color" style="background-image: url(/ecom_lms/static/src/img/eleven.png); width:100% !important; height:240mm; background-size: cover; ">
+                        <div class="certification" style="text-align:center; padding:0 0 0 0 !important;">
+                    <div t-if="user_input.test_entry" class="test-entry"/>
+                             <t t-if="user_input.qr_code">
+                              <div style="max-height:0px; max-width:0px; margin-left:82% !important; padding-top:22px !important;">
+                                 <img  t-att-src="image_data_uri(user_input.qr_code)"/>
+                            </div>
+                             </t>
+
+
+                    <div class="certification-bottom" style="padding:40mm 0 0 5mm !important;">
+                        <div t-if="user_input.scoring_success">
+                            <p style="font-size:66px !important; color:#5C5240; line-height: 1.0;"><b>CERTIFICATE</b></p>
+                            <p style=" font-size:28px; color:#5C5240; line-height: 1.0;"><b>OF ACHIEVEMENT</b></p>
+                            <br></br>
+                            <p style=" font-size:28px; color:#5C5240; line-height: 0.5; letter-spacing:3px; font-weight:800 !important;"><b>This certificate is proudly presented to</b></p><br/>
+
+                            <p  t-esc="user_input.partner_id.name or user_input.email" style="font-size:26px;"/><br/>
+
+                            <p style="font-family: Montserrat, sans-serif; font-size:28px; color:#5C5240; line-height: 1.0; letter-spacing:3px;"><b>For successfully completing certification in</b></p>
+                            <p t-field="user_input.survey_id.display_name" style="font-family: Montserrat, sans-serif; font-size:28px; color:#5C5240;"/><br/>
+
+                        </div>
+                        <div t-else="">
+                            <h5>Certification Failed</h5>
+                        </div>
+                        <div class="row" style="top:220mm; padding-top:12%;">
+                            <table width="100%">
+                            <tr>
+                                <th width="50%" style="padding-left:5%;"><p t-field="user_input.create_date" t-options='{"format": "dd/MM/yyyy"}' style="font-family: Montserrat, sans-serif; color:#444440; line-height: 0.5; font-size:16px;"/></th>
+                                <th width="20%" style="padding-right:20%"><p style="font-family: Montserrat, sans-serif !important; color:#444440; line-height: 0.5; font-size:16px !important; max-width:20px !important; max-height:30px !important;"><span t-field="user_input.survey_id.signature_tem" style="max-widht:20px; max-height:30px;"/></p></th>
+                            </tr>
+                            <tr>
+                                <th width="50%" style="padding-left:5%;"><hr style="border-top: 1px solid #444440; width:15%; margin-left:42%"/></th>
+                                <th width="30% "> <hr style="border-top: 1px solid #444440; width:40%; margin-left:3%;"/></th>
+                            </tr>
+                            <tr>
+                                <th style="padding-left:5%;" width="50%"><p style="font-family: Montserrat, sans-serif; color:#444440; line-height: 0.5; font-size:16px;">DATE</p></th>
+                                <th width="20%" style="padding-right:20%"><p style="font-family: Montserrat, sans-serif; color:#444440; line-height: 0.5; font-size:16px;">SAURABH DEEP SINGH</p>
+                                <p style="font-family: Montserrat, sans-serif; color:#444440; line-height: 0.5; font-size:16px;">EVP &amp; CHRO</p>
+                                </th>
+                            </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>

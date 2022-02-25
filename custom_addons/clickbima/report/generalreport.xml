@@ -1,0 +1,160 @@
+<odoo>
+<report
+		    id="general_report"
+        	string="Non-Life-Insurerwise Report"
+        	model="policytransaction"
+        	report_type="qweb-pdf"
+        	name="clickbima.non_life_insurerwise_report"
+        	file="clickbima.non_life_insurerwise_report"
+        	/>
+
+    <report id="report_action_id"
+            model="registerdetail.report"
+            string="Register Detail Report"
+            report_type="xlsx"
+            name="clickbima.res_partner.xlsx"
+            file="clickbima.res_partner.xlsx"
+            attachment_use="False"/>
+
+	<report id="report_renewal"
+            model="renewaldetail.report"
+            string="Renewal Detail Report"
+            report_type="xlsx"
+            name="clickbima.renewal.xlsx"
+            file="clickbima.renewal.xlsx"
+            attachment_use="False"/>
+
+	<report id="bus_comp_detail"
+            model="buscompdetail.report"
+            string="Business Comparison Detail Report"
+            report_type="xlsx"
+            name="clickbima.bus_comp_detail.xlsx"
+            file="clickbima.bus_comp_detail.xlsx"
+            attachment_use="False"/>
+
+	<report id="brokerage_rep_detail"
+            model="brokeragereport.report"
+            string="Brokerage Report"
+            report_type="xlsx"
+            name="clickbima.brok_comp_rep.xlsx"
+            file="clickbima.brok_comp_rep.xlsx"
+            attachment_use="False"/>
+
+<!--	<report id="general_report_excel1"-->
+<!--            model="create.report"-->
+<!--            string="General Report"-->
+<!--            report_type="xlsx"-->
+<!--            name="clickbima.general_report_excel.xlsx"-->
+<!--            file="clickbima.general_report_excel.xlsx"-->
+<!--            attachment_use="False"/>-->
+
+
+	<report id="general_report_excel1"
+            model="idrageneralbusiness.report"
+            string="General Report"
+            report_type="xlsx"
+            name="clickbima.general_report_excel.xlsx"
+            file="clickbima.general_report_excel.xlsx"
+            attachment_use="False"/>
+
+	<report id="policy_detail"
+            model="policydetail.report"
+            string="Policy Detail Report"
+            report_type="xlsx"
+            name="clickbima.policy_detail.xlsx"
+            file="clickbima.policy_detail.xlsx"
+            attachment_use="False"/>
+
+<!--    <report id="bus_detail_compare"-->
+<!--            model="busdetailcom.report"-->
+<!--            string="Business Detail Comparison Report"-->
+<!--            report_type="xlsx"-->
+<!--            name="clickbima.bus_detail_compare.xlsx"-->
+<!--            file="clickbima.bus_detail_compare.xlsx"-->
+<!--            attachment_use="False"/>-->
+
+	<report id="compare_report_excel1"
+            model="comparebusiness.report"
+            string="Business Comparison Report"
+            report_type="xlsx"
+            name="clickbima.compare_report_excel.xlsx"
+            file="clickbima.compare_report_excel.xlsx"
+            attachment_use="False"/>
+
+
+	<report id="non_life_insurer_excel1"
+            model="idranonlife.report"
+            string="Non_Life_Insurerwise Report"
+            report_type="xlsx"
+            name="clickbima.non_life_insurer.xlsx"
+            file="clickbima.non_life_insurer.xlsx"
+            attachment_use="False"/>
+
+
+		<report id="client_portfolio_excel"
+            model="clientportfolio.report"
+            string="Client Protfolio Report"
+            report_type="xlsx"
+            name="clickbima.client_portfolio_report.xlsx"
+            file="clickbima.client_portfolio_report.xlsx"
+            attachment_use="False"/>
+
+
+	<report id="non_life_top10_client_excel1"
+            model="idraclient.report"
+            string="Non Life Top 10 Client Report"
+            report_type="xlsx"
+            name="clickbima.non_life_top10_client.xlsx"
+            file="clickbima.non_life_top10_client.xlsx"
+            attachment_use="False"/>
+
+	<report id="business_summary_excel1"
+            model="businesssummary.report"
+            string="Business Summary Report"
+            report_type="xlsx"
+            name="clickbima.business_summary.xlsx"
+            file="clickbima.business_summary.xlsx"
+            attachment_use="False"/>
+
+	<report id="business_details_excel1"
+            model="businessdetail.report"
+            string="Business Details Report"
+            report_type="xlsx"
+            name="clickbima.business_detail.xlsx"
+            file="clickbima.business_detail.xlsx"
+            attachment_use="False"/>
+
+	<report id="irda_claims_excel"
+            model="irdaclaimssummary.report"
+            string="IRDA Claims Summary Report"
+            report_type="xlsx"
+            name="clickbima.irda_claims_summary.xlsx"
+            file="clickbima.irda_claims_summary.xlsx"
+            attachment_use="False"/>
+
+	<report id="irda_claims_detail"
+            model="irdaclaimsdetail.report"
+            string="IRDA Claims Detail Report"
+            report_type="xlsx"
+            name="clickbima.irda_claims_detail.xlsx"
+            file="clickbima.irda_claims_detail.xlsx"
+            attachment_use="False"/>
+
+
+	<report id="irda_claims_pending_excel"
+            model="irdapending.report"
+            string="IRDA Claims Pending Ageing Report"
+            report_type="xlsx"
+            name="clickbima.irda_claims_pending.xlsx"
+            file="clickbima.irda_claims_pending.xlsx"
+            attachment_use="False"/>
+
+	<report id="irda_claims_settled_excel"
+            model="irdasettled.report"
+            string="IRDA Claims Settled Ageing Report"
+            report_type="xlsx"
+            name="clickbima.irda_claims_settled.xlsx"
+            file="clickbima.irda_claims_settled.xlsx"
+            attachment_use="False"/>
+
+</odoo>

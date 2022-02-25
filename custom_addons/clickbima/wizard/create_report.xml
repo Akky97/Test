@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="create_report_form" model="ir.ui.view">
+            <field name="name">create.report.wizard</field>
+            <field name="model">create.report</field>
+            <field name="arch" type="xml">
+                <form string="Generate Report">
+                    <group>
+                        <field name="fiscal_year" options="{'no_create': True, 'no_create_edit':True}" />
+                        <field name="monthly" widget="radio" options="{'horizontal': true}" />
+                        <field name="months" attrs="{'invisible':['|',('monthly','=','quatar'),('monthly','=','none')]}"/>
+                        <field name="quarter" attrs="{'invisible':['|',('monthly','=','monthly'),('monthly','=','none')]}"/>
+                        <field name="date_from"  attrs="{'invisible':['|',('monthly','=','monthly'),('monthly','=','none')]}"/>
+                        <field name="date_to"  attrs="{'invisible':['|',('monthly','=','monthly'),('monthly','=','none')]}"/>
+                        <field name="groupby"/>
+
+
+
+                    </group>
+                    <footer>
+<!--                        <button name="generate_xlsx_report" string="Print" type="object" class="btn btn-sm btn-primary" default_focus="1"/>-->
+<!--                        <button name="test_report" string="General Business Report" type="object" class="btn-primary"/>-->
+                        <button name="test_report1" string="Non-Life Insurer Wise Report" type="object" class="btn-primary"/>
+                        <button name="test_report2" string="Non-Life Top 10 Client" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn btn-sm btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="create_report_wizard" model="ir.actions.act_window">
+            <field name="name">Print Excel</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">create.report</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="create_report_form"/>
+            <field name="target">new</field>
+        </record>
+
+<!--       <menuitem name="Excel Reports" id="list_20591" parent="clickbima.menu_19" action="create_report_wizard" sequence="1"/>-->
+</odoo>

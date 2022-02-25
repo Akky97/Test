@@ -1,0 +1,226 @@
+<odoo>
+    <data>
+              <record model="ir.ui.view" id="endosermenttreeview122">
+            <field name="name">policytransaction list</field>
+            <field name="model">policytransaction</field>
+            <field name="arch" type="xml">
+               <tree>
+                    <field name="fy" string="Financial Year"/>
+                    <field name="name" string="Docket Details"/>
+                    <field name="date2"/>
+                    <field name="type" string="Tran. Type"/>
+                    <field name="coins" string="Co-Ins"/>
+                    <field name="endo_ins" string="Endo_Ins"/>
+                    <field name="clientname" string="Client Name"/>
+                    <field name="insurername123" string="Insurer Name"/>
+                    <field name="insurerbranch" string="Insurer Branch" invisible="1"/>
+                    <field name="product_id" string="Scheme "/>
+                    <field name="segment" string="Category" invisible="1"/>
+                    <field name="name1" string="Subcategory" invisible="1"/>
+                    <field name="policyno" string="Policy No"/>
+                    <field name="startfrom" string="Start Date"/>
+                    <field name="expiry" string="Expiry Date"/>
+                    <field name="suminsured" string="Sum Insured"/>
+                    <field name="brokerageprem" placeholder="Brokerage Prem."/>
+                    <field name="netprem" sum="Net Prem" string="Net Prem" invisible="1"/>
+                    <field name="grossprem" sum="Gross Prem" string="Gross Prem"/>
+                    <field name="netcomm" string="IRDA Comm" invisible="1"/>
+                    <field name="netcommission" string="Reward Comm" invisible="1"/>
+                    <field name="rm" string="Sales Person"/>
+                    <field name="pipeline_id" invisible="1"/>
+                    <field name="sale_order_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+      <record model="ir.ui.view" id="endosermentformview122">
+            <field name="name">policytransaction form</field>
+            <field name="model">policytransaction</field>
+            <field name="arch" type="xml">
+                 <form>
+                    <sheet>
+                        <group>
+                            <field name="clientname" string="Client Name"/>
+                            <field name="insurername123" string="Insurer Name"/>
+                            <field name="insurerbranch" string="Insurer Branch"/>
+                        </group>
+
+                         <field name="claim_id" string="Claim">
+                                    <form string="Claim">
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                <field name="claim_id"  invisible="1"/>
+                                                    <field name="line_no" string="Claim-ID"/>
+                                                <field name="name" invisible="1" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_manual" string="Claim-ID Manual" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_date" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_type" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_date_int" string="Claim Date Intimation" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_contact_person" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_contact_insured" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_is_tpa"   attrs="{'invisible':['|',('claim_type','=',False),('claim_type','=',548)]}" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                </group>
+
+                                            <group>
+                                                <field name="claim_is_survey" attrs="{'invisible':['|',('claim_type','=',False),('claim_type','=',547)]}"  options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_amount"/>
+                                                <field name="claim_status" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_sub_status" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="write_date" string="Last Updated Date"/>
+                                                <field name="claim_pri_diagnosis" string="Claim Pre Diagnosis"/>
+                                                <field name="claim_remark"/>
+                                            </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                    <tree string="Claim">
+                                         <field name="line_no" string="Claim-ID"/>
+                                         <field name="name"  invisible="1" options="{'no_create': True, 'no_create_edit':True}"/>
+                                               <field name="claim_manual" string="Claim-ID Manual" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_date" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_type" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_date_int" string="Claim Date Intimation" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_contact_person" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_contact_insured" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_is_tpa"   attrs="{'invisible':['|',('claim_type','=',False),('claim_type','=',67)]}" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_is_survey" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_amount"/>
+                                                <field name="claim_status" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="claim_sub_status" options="{'no_create': True, 'no_create_edit':True}"/>
+                                                <field name="write_date" string="Last Updated Date"/>
+                                                <field name="claim_pri_diagnosis" string="Claim Pre Diagnosis"/>
+                                                <field name="claim_remark"/>
+                                    </tree>
+                                </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+      <record id="endos_hotel_invoice_tree111" model="ir.actions.act_window">
+
+            <field name="name">Claim's</field>
+            <field name="res_model">policytransaction</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field eval="False" name="view_id"/>
+            <field name="domain">[('claims','=','Yes')]</field>
+      </record>
+
+      <record id="endo_hotel_invoice_tree1_view55" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="clickbima.endosermenttreeview122"/>
+            <field name="act_window_id" ref="endos_hotel_invoice_tree111"/>
+        </record>
+       <record id="endo_hotel_invoice_tree1_view56" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="clickbima.endosermentformview122"/>
+            <field name="act_window_id" ref="endos_hotel_invoice_tree111"/>
+        </record>
+
+
+
+    <menuitem name="Claim" id="list_2212" parent="clickbima.menu_7" action="endos_hotel_invoice_tree111" sequence="8"/>
+         <!--<record model="ir.ui.view" id="12_claim_data_tree">-->
+            <!--<field name="name">Claim Entry list</field>-->
+            <!--<field name="model">policytransaction</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<tree>-->
+                    <!--<field name="clientname" string="Client Name"/>-->
+                    <!--<field name="insurername123" string="Insurer Name"/>-->
+                    <!--<field name="insurerbranch" string="Insurer Branch" invisible="1"/>-->
+                    <!--<field name="product_id" string="Scheme "/>-->
+                    <!--<field name="segment" string="Category" invisible="1"/>-->
+                <!--</tree>-->
+            <!--</field>-->
+        <!--</record>-->
+       <!--<record model="ir.ui.view" id="11_claim_data_form">-->
+            <!--<field name="name">Claim Entry form</field>-->
+            <!--<field name="model">policytransaction</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<form>-->
+                    <!--<sheet>-->
+                        <!--<group>-->
+                            <!--<field name="clientname" string="Client Name"/>-->
+                            <!--<field name="insurername123" string="Insurer Name"/>-->
+                            <!--<field name="insurerbranch" string="Insurer Branch"/>-->
+                        <!--</group>-->
+
+                         <!--<field name="claim_id" string="Claim">-->
+                                    <!--<form string="Claim">-->
+                                        <!--<sheet>-->
+                                            <!--<group>-->
+                                                <!--<group>-->
+                                                <!--<field name="claim_id"  invisible="1"/>-->
+                                                    <!--<field name="line_no" string="Claim-ID"/>-->
+                                                <!--<field name="name" invisible="1" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_manual" string="Claim-ID Manual" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_date" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_type" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_date_int" string="Claim Date Intimation" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_contact_person" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_contact_insured" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_is_tpa"   attrs="{'invisible':['|',('claim_type','=',False),('claim_type','=',548)]}" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--</group>-->
+
+                                            <!--<group>-->
+                                                <!--<field name="claim_is_survey" attrs="{'invisible':['|',('claim_type','=',False),('claim_type','=',547)]}"  options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_amount"/>-->
+                                                <!--<field name="claim_status" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_sub_status" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="write_date" string="Last Updated Date"/>-->
+                                                <!--<field name="claim_pri_diagnosis" string="Claim Pre Diagnosis"/>-->
+                                                <!--<field name="claim_remark"/>-->
+                                            <!--</group>-->
+                                            <!--</group>-->
+                                        <!--</sheet>-->
+                                    <!--</form>-->
+                                    <!--<tree string="Claim">-->
+                                         <!--<field name="line_no" string="Claim-ID"/>-->
+                                         <!--<field name="name"  invisible="1" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                               <!--<field name="claim_manual" string="Claim-ID Manual" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_date" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_type" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_date_int" string="Claim Date Intimation" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_contact_person" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_contact_insured" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_is_tpa"   attrs="{'invisible':['|',('claim_type','=',False),('claim_type','=',67)]}" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_is_survey" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_amount"/>-->
+                                                <!--<field name="claim_status" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="claim_sub_status" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                <!--<field name="write_date" string="Last Updated Date"/>-->
+                                                <!--<field name="claim_pri_diagnosis" string="Claim Pre Diagnosis"/>-->
+                                                <!--<field name="claim_remark"/>-->
+                                    <!--</tree>-->
+                                <!--</field>-->
+                    <!--</sheet>-->
+                <!--</form>-->
+            <!--</field>-->
+        <!--</record>-->
+      <!--<record id="action_claim_policy_id_12" model="ir.actions.act_window">-->
+            <!--<field name="name">Claim Entry</field>-->
+            <!--<field name="res_model">policytransaction</field>-->
+            <!--<field name="view_type">form</field>-->
+            <!--<field name="view_mode">tree,form</field>-->
+            <!--<field eval="False" name="view_id"/>-->
+            <!--<field name="domain">[('claims','=','Yes')]</field>-->
+        <!--</record>-->
+        <!--<record id="action_claim_hotel_invoice1" model="ir.actions.act_window.view">-->
+            <!--<field eval="40" name="sequence"/>-->
+            <!--<field name="view_mode">tree</field>-->
+            <!--<field name="view_id" ref="clickbima.12_claim_data_tree"/>-->
+            <!--<field name="act_window_id" ref="action_claim_policy_id_12"/>-->
+        <!--</record>-->
+      <!--<record id="action_claim_hotel_invoice" model="ir.actions.act_window.view">-->
+            <!--<field eval="40" name="sequence"/>-->
+            <!--<field name="view_mode">form</field>-->
+            <!--<field name="view_id" ref="clickbima.11_claim_data_form"/>-->
+            <!--<field name="act_window_id" ref="action_claim_policy_id_12"/>-->
+        <!--</record>-->
+<!--<menuitem name="Claim's" id="12232423rw" parent="clickbima.menu_7" action="action_claim_policy_id_12" sequence="8"/>-->
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id = "customer_registeration_form_view" model="ir.ui.view">
+            <field name="name">temporary.account.form.view</field>
+            <field name="model">temporary.account</field>
+            <field name="arch" type="xml">
+                <form string="Generate Temporary Account">
+                    <group>
+                        <group>
+                            <field name="upload_file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="generate_account" string="Generate Accounts"  class="oe_highlight" type="object"/>
+					    <button string="Cancel" special="cancel"/>
+				    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_temporary_account" model="ir.actions.act_window">
+            <field name="name">Temporary Account</field>
+            <field name="res_model">temporary.account</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+       <menuitem id="temporary_account_menu" name="Create Temporary Account" parent="base.menu_users" action="ecom_lms.action_temporary_account" sequence="4"/>
+    </data>
+</odoo>

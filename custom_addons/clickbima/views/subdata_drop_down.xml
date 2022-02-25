@@ -1,0 +1,51 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="subdatadropdown">
+      <field name="name">subdata.subdata list</field>
+      <field name="model">subdata.subdata</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="subdatadropdownform">
+      <field name="name">subdata.subdata form</field>
+      <field name="model">subdata.subdata</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="name"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="subdatadropdownactionwindow">
+      <field name="name">Info Sub Data(Admin)</field>
+      <field name="res_model">subdata.subdata</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <!--<record model="ir.actions.server" id="subdatadropdownaction">-->
+      <!--<field name="name">subdata.subdata server</field>-->
+      <!--<field name="model_id" ref="model_subdatadropdown"/>-->
+      <!--<field name="code">-->
+        <!--action = {-->
+          <!--"type": "ir.actions.act_window",-->
+          <!--"view_mode": "tree,form",-->
+          <!--"res_model": self._name,-->
+        <!--}-->
+      <!--</field>-->
+    <!--</record>-->
+    <menuitem name="Sub-Data Dropdown" id="list_5" parent="clickbima.menu_1" action="subdatadropdownactionwindow" sequence="7"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

@@ -1,0 +1,107 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="fyyearlist">
+      <field name="name">fyyear list</field>
+      <field name="model">fyyear</field>
+      <field name="arch" type="xml">
+        <tree import="false">
+
+                 <field name="sequence" widget="handle" />
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="ex_active"/>
+
+
+
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="fyyearform">
+      <field name="name">fyyear form</field>
+      <field name="model">fyyear</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+
+              <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="ex_active"/>
+
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+       <!-- Search op on models -->
+    <record id="fyyear_search_view" model="ir.ui.view">
+			<field name="name">fyyear.search.view</field>
+			<field name="model">fyyear</field>
+			<field name="arch" type="xml">
+				<search string="Idra Search">
+					<field name="name"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="ex_active"/>
+                    <filter string="Is Active" domain="[('ex_active', '!=', False)]" name="is_true"/>
+                    <filter string="Is Not Active" domain="[('ex_active', '!=', True)]" name="is_false"/>
+				</search>
+			</field>
+		</record>
+
+    <record model="ir.ui.view" id="fyyearpivot">
+      <field name="name">fyyear pivot</field>
+      <field name="model">fyyear</field>
+      <field name="arch" type="xml">
+        <pivot>
+<!--                <field name="name"/>-->
+<!--                <field name="date_start" />-->
+<!--                <field name="date_end" />-->
+<!--                <field name="ex_active"/>-->
+        </pivot>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="fyyeargraph">
+      <field name="name">fyyear graph</field>
+      <field name="model">fyyear</field>
+      <field name="arch" type="xml">
+        <graph>
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="ex_active"/>
+        </graph>
+      </field>
+    </record>
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="fyyear_action_window">
+      <field name="name">Fiscal Year</field>
+      <field name="res_model">fyyear</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban,search</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="fyyear_action_server">
+      <field name="name">fyyear server</field>
+      <field name="model_id" ref="model_fyyear"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Fiscal Year" id="list_1235" parent="clickbima.menu_0" action="fyyear_action_window" sequence="7"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

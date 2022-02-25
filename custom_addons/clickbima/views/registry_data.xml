@@ -1,0 +1,117 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="registryentrylist">
+      <field name="name">Register-Master</field>
+      <field name="model">registryentry</field>
+      <field name="arch" type="xml">
+        <tree import="false">
+          <!--<field name="name"/>-->
+          <field name="broker"/>
+          <field name="location"/>
+          <field name="financial"/>
+          <field name="register_name"/>
+          <field name="category"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="registryentryform">
+      <field name="name">Register-Master</field>
+      <field name="model">registryentry</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <!--<field name="name" placeholder="Company"/>-->
+              <field name="broker" placeholder="---Broker---"  options="{'no_create': True, 'no_create_edit':True,'no_open': True}" />
+              <field name="location"  options="{'no_create': True, 'no_create_edit':True,'no_open': True}" placeholder="---Select One---"/>
+              <field name="financial"  options="{'no_quick_create': True, 'no_create_edit' : True,'no_open': True}" placeholder="---Select FY---"/>
+<!--              <field name="register" placeholder="Register Name" invisible="1"/>-->
+              <field name="register_name" placeholder="---Register Name---"  options="{'no_quick_create': True, 'no_create_edit' : True,'no_open': True}"/>
+              <field name="category" widget="many2many_tags" placeholder="---Category---"  options="{'no_quick_create': True, 'no_create_edit' : True,'no_open': True}"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="registryentry_search_view">
+      <field name="name">Register-Master.search</field>
+<!--      <field name="res_model">registryentry</field>-->
+      <field name="model">registryentry</field>
+      <field name="arch" type="xml">
+        <search string="Register-Master Search">
+          <field name="broker"/>
+          <field name="location"/>
+          <field name="financial"/>
+          <field name="register_name"/>
+          <field name="category"/>
+           <group expand="0" string="Group By">
+                  <filter string="Broker Name" name="groupby_brokername" context="{'group_by': 'broker'}"/>
+                  <filter string="Location " name="groupby_location" context="{'group_by': 'location'}"/>
+                  <filter string="Register Name" name="groupby_register_name" context="{'group_by': 'register_name'}"/>
+                  <filter string="Financial Year" name="groupby_financial" context="{'group_by': 'financial'}"/>
+                   <filter string="Category" name="groupby_category" context="{'group_by': 'category'}"/>
+           </group>
+        </search>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="registryentrygraph">
+      <field name="name">Register-Master</field>
+      <field name="model">registryentry</field>
+      <field name="arch" type="xml">
+        <graph>
+          <!--<field name="name"/>-->
+          <field name="broker"/>
+          <field name="location"/>
+          <field name="financial"/>
+          <field name="register_name"/>
+          <field name="category"/>
+
+        </graph>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="registryentrypivot">
+      <field name="name">Register-Master</field>
+      <field name="model">registryentry</field>
+      <field name="arch" type="xml">
+        <pivot>
+<!--          <field name="name"/>-->
+<!--          <field name="broker"/>-->
+<!--          <field name="location"/>-->
+<!--          <field name="financial"/>-->
+<!--          <field name="register_name"/>-->
+
+        </pivot>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="registryentry_action_window">
+      <field name="name">Register-Master</field>
+      <field name="res_model">registryentry</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban,search</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="registryentry_action_server">
+      <field name="name">Register-Master</field>
+      <field name="model_id" ref="model_registryentry"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Register-Master" id="list_7" parent="clickbima.menu_1" action="registryentry_action_window" sequence="9"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

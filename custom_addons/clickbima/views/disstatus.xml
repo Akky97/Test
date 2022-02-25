@@ -1,0 +1,113 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="dispatchstatuslist">
+      <field name="name">dispatchstatus list</field>
+      <field name="model">dispatchstatus</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="insuername"/>
+          <field name="policydept"/>
+          <field name="location"/>
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="dispatchstatusform">
+      <field name="name">dispatchstatus form</field>
+      <field name="model">dispatchstatus</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+            <group>
+              <field name="name" placeholder="---Select One---"/>
+              <field name="insuername" placeholder="Insurer Name"/>
+              <field name="policydept" placeholder="Policy Dept."/>
+              <field name="regdate" placeholder="Reg. Date - From"/>
+            </group>
+              <group>
+                <field name="location" placeholder="Location"/>
+                <field name="insurer" placeholder="Insurer Branch"/>
+                <field name="policystatus" placeholder="Policy Staus"/>
+                <field name="insurerbranch" placeholder="Date to"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="dispatchstatussearch">
+      <field name="name">dispatchstatus search</field>
+      <field name="model">dispatchstatus</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="name"/>
+          <field name="insuername"/>
+          <field name="policydept"/>
+          <field name="location"/>
+        </search>
+      </field>
+    </record>
+
+     <record model="ir.ui.view" id="dispatchstatusgraph">
+      <field name="name">dispatchstatus graph</field>
+      <field name="model">dispatchstatus</field>
+      <field name="arch" type="xml">
+        <graph>
+          <field name="name" placeholder="---Select One---"/>
+              <field name="insuername" placeholder="Insurer Name"/>
+              <field name="policydept" placeholder="Policy Dept."/>
+              <field name="regdate" placeholder="Reg. Date - From"/>
+                <field name="location" placeholder="Location"/>
+                <field name="insurer" placeholder="Insurer Branch"/>
+                <field name="policystatus" placeholder="Policy Staus"/>
+                <field name="insurerbranch" placeholder="Date to"/>
+        </graph>
+      </field>
+    </record>
+
+     <record model="ir.ui.view" id="dispatchstatuspivot">
+      <field name="name">dispatchstatus pivot</field>
+      <field name="model">dispatchstatus</field>
+      <field name="arch" type="xml">
+        <pivot>
+         <field name="name" placeholder="---Select One---"/>
+              <field name="insuername" placeholder="Insurer Name"/>
+              <field name="policydept" placeholder="Policy Dept."/>
+              <field name="regdate" placeholder="Reg. Date - From"/>
+                <field name="location" placeholder="Location"/>
+                <field name="insurer" placeholder="Insurer Branch"/>
+                <field name="policystatus" placeholder="Policy Staus"/>
+                <field name="insurerbranch" placeholder="Date to"/>
+        </pivot>
+      </field>
+    </record>
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="dispatchstatus_action_window">
+      <field name="name">Dispatch Status</field>
+      <field name="res_model">dispatchstatus</field>
+      <field name="view_mode">tree,form,graph,search,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="dispatchstatus_action_server">
+      <field name="name">dispatchstatus server</field>
+      <field name="model_id" ref="model_dispatchstatus"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Dispatch Status" id="list_1312" parent="clickbima.menu_5" action="dispatchstatus_action_window" sequence="2"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

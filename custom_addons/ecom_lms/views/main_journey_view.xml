@@ -1,0 +1,203 @@
+<?xml version="1.0" ?>
+<odoo><data>
+
+		<template id='journey_main' name="Journey Main" track="1">
+		    <!-- <t t-set="head">
+		        <t t-call-assets="web.pdf_js_lib" t-css="false"/>
+		        <script type="text/javascript" src="/website_slides/static/lib/pdfslidesviewer/PDFSlidesViewer.js"></script>
+		    </t> -->
+		    <t t-set="body_classname" t-value="'o_wslides_body'"/>
+		    <t t-call="website.layout">
+		        <div id="wrap" t-attf-class="wrap mt-0">
+		            <div t-attf-class="o_wslides_course_header o_wslides_gradient position-relative text-white pb-md-0 pt-2 pt-md-5">
+		                <!-- <t t-call="website_slides.course_nav"/> -->
+		
+		                <div class="container mt-5 mt-md-3 mt-xl-4">
+		                    <div class="row align-items-end align-items-md-stretch">
+		                        <!-- ==== Header Left ==== -->
+		                        <div class="col-12 col-md-4 col-lg-3">
+		                            <div class="d-flex align-items-end justify-content-around h-100">
+		                                <div t-if="journey.journey_image" t-field="journey.journey_image" t-options='{"widget": "image", "class": "o_wslides_course_pict d-inline-block mb-2 mt-3 my-md-0"}' class="h-100"/>
+		                                <!-- <div t-else="" class="o_wslides_gradient card-img-top position-relative" style="padding-top: 50%; opacity: 0.8">
+							                <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-white-75" style="right:0; bottom: 0"/>
+							            </div> -->
+							            
+							            <div t-else="" class="h-100">
+		                                    <img t-att-src="'/website_slides/static/src/img/channel-training-default.jpg'"
+		                                        class="o_wslides_course_pict d-inline-block mb-2 mt-3 my-md-0"/>
+		                                </div>
+		                                <!-- <div t-else="" class="h-100">
+		                                    <img t-att-src="'/website_slides/static/src/img/channel-%s-default.jpg' % ('training' if channel.channel_type == 'training' else 'documentation')"
+		                                        class="o_wslides_course_pict d-inline-block mb-2 mt-3 my-md-0"/>
+		                                </div> --> 
+		                            </div>
+		                        </div>
+		
+		                        <!-- ==== Header Right ==== -->
+		                        <div class="col-12 col-md-8 col-lg-9 d-flex flex-column">
+		                            <div class="d-flex flex-column">
+		                                <h1 t-field="journey.description_short"/>
+<!--		                                <p class="mb-0 mb-xl-3" t-field="journey.description_short"/>-->
+		
+		                            </div>
+		                        </div>
+		                        
+		                         </div>
+		                </div>
+		            </div>
+		                        
+		                         <t t-if="journey.courses_ids">
+				                    <div class="container ">
+				                        <div class="row ">
+				                        	<div class="col-md-12 d-flex">
+				                        	<div class="col-12 col-md-4 col-lg-3 mt-3 mt-md-0">
+				                        	
+					                        		<table class="table table-sm mt-3">
+										                <!-- <tr t-if="channel.user_id">
+										                    <th class="border-top-0">Responsible</th>
+										                    <td class="border-top-0"><span t-field="channel.user_id"/></td>
+										                </tr>
+										      	          <tr>
+										                    <th class="border-top-0">Last Update</th>
+										                    <td class="border-top-0"><t t-esc="channel.slide_last_update" t-options="{'widget': 'date'}"/></td>
+										                </tr>
+										                <tr t-if="channel.total_time">
+										                    <th class="border-top-0">Completion Time</th>
+										                    <td class="border-top-0"><t class="font-weight-bold" t-esc="channel.total_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></td>
+										                </tr> -->
+										                <tr>
+										                    <th class="border-top-0">Create Date</th>
+										                    <td class="border-top-0"><t t-esc="journey.create_date" t-options="{'widget': 'date'}"/></td>
+										                </tr>
+										                <tr t-if="journey.user_id">
+										                    <th class="border-top-0">Responsible</th>
+										                    <td class="border-top-0"><span t-field="journey.user_id"/></td>
+										                </tr>
+										                <tr t-if="journey.members_count">
+										                    <th>Members</th>
+										                    <td><t t-esc="journey.members_count"/></td>
+										                </tr>
+														<t t-if='not journey_subscribed'>
+															<a role="button"
+																class="btn btn-primary btn-block o_wslides_js_course_join_link mt-2"
+																title="Join Journey" aria-label="Subscribed Journey"
+																t-attf-href="/join/journey/#{slug(journey)}" >
+																<span class="cta-title text_small_caps">
+																	<!-- <t t-if="channel.channel_type == 'documentation'">Start Course</t> -->
+																	<t>Subscribe Journey</t>
+																</span>
+															</a>
+														</t>
+									                <t t-if='journey_subscribed'>
+									                	<div class='alert alert-warning mt-2'>You're Subscribed </div>
+									                </t>
+									                <t t-if="journey in request.env.user.my_journey_ids">
+											                <t t-if="journey_completed">
+									                            <span class="badge badge-pill badge-success py-1 px-2 mx-auto mt-2" style="font-size: 1em"><i class="fa fa-check"/> Completed</span>
+									                        </t>
+									                        <t t-else="">
+									                            <div class="progress flex-grow-1 bg-black-50 mt-2" style="height: 6px;">
+									                                <div class="progress-bar" role="progressbar" t-attf-style="width: #{journey_completion}%" t-att-aria-valuenow="journey_completion" aria-valuemin="0" aria-valuemax="100"></div>
+									                            </div>
+									                            <div class="ml-3 small">
+									                                <span class="o_wslides_progress_percentage" t-esc="journey_completion"/> %
+									                            </div>
+									                        </t>
+													</t>
+										            </table>
+
+					                        </div>
+				                        
+				                        
+				                            <div class="col-12 col-md-8 col-lg-9">
+				                            <h1>Courses</h1>
+				                            <!-- <div class="font-weight-light o_wslides_desc_truncate_3" t-field="course.course_id.name"/> -->
+				                            <t t-foreach="journey.courses_ids" t-as="course">
+												<div class="row">
+													<div class="col-3">
+														<a class="font-weight-light o_wslides_desc_truncate_3" t-attf-href="/slides/#{slug(course.course_id)}" t-esc="course.course_id.name"/>
+													</div>
+													<div class="col-3">
+														<t t-if="course.course_id.course_close_date">
+				                                    			<t t-esc="course.course_id.course_close_date" t-options="{'widget': 'date'}"/>
+			                                    			</t>
+													</div>
+													<div class="col-3">
+														<t t-esc="request.env.user.state_get(course.course_id.id)"/>
+													</div>
+													
+													<div class="col-3">
+													<div t-if="course.course_id.channel_partner_ids">
+									            	<div t-foreach="course.course_id.channel_partner_ids" t-as="channel_attendee">
+									                        <div t-if="request.env.user.partner_id == channel_attendee.partner_id">
+									                        	<t t-if="channel_attendee.completion != 0 and channel_attendee.completion != 100">
+																	<t t-if="channel_attendee.time_left">
+									                   					<small class="font-weight-bold" t-esc="channel_attendee.time_left" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"></small><small class="font-weight-bold"> Left</small>
+									               				
+									            					</t>
+								            					</t>
+								            					
+								            					<t t-if="channel_attendee.completion == 0 and channel_attendee.completion != 100">
+																	<t t-if="course.course_id.total_time">
+									                   					<small class="font-weight-bold" t-esc="course.course_id.total_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"></small><small class="font-weight-bold"> Total</small>
+									               				
+									            					</t>
+								            					</t>
+						            						</div>
+					            						</div>
+													</div>
+												</div>
+												</div>
+<!--				                                <ul class="nav nav-tabs o_wslides_nav_tabs o_wslides_doc_nav_tabs flex-nowrap" role="tablist" id="profile_extra_info_tablist">-->
+<!--				                                    -->
+<!--				                                    	<li class="nav-item mr-5">-->
+<!--				                                    		<a class="font-weight-light o_wslides_desc_truncate_3" t-attf-href="/slides/#{slug(course.course_id)}" t-esc="course.course_id.name"/>-->
+<!--				                                    		&lt;!&ndash; <div class="font-weight-light o_wslides_desc_truncate_3" t-field="course.course_id.name"/>  &ndash;&gt;-->
+<!--														</li>-->
+<!--													    <li class="mr-5">-->
+<!--				                                    		<t t-if="course.course_id.course_close_date">-->
+<!--				                                    			<t t-esc="course.course_id.course_close_date"/>-->
+<!--			                                    			</t>-->
+<!--														</li>-->
+<!--													    <li class="mr-5">-->
+<!--			                                    			<t t-esc="request.env.user.state_get(course.course_id.id)"/>-->
+<!--				                                        &lt;!&ndash; <a t-att-class="'nav-link %s' % ('active' if active_tab == 'home' else '')"-->
+<!--				                                            id="home-tab" data-toggle="pill" href="#home" role="tab" aria-controls="home"-->
+<!--				                                            t-att-aria-selected="'true' if active_tab == 'home' else 'false'">-->
+<!--				                                            <i class="fa fa-home"/>-->
+<!--				                                            Course-->
+<!--				                                        </a> &ndash;&gt;-->
+<!--				                                    </li>-->
+<!--			                                    -->
+<!--				                                    &lt;!&ndash; <li t-if="channel.allow_comment" class="nav-item o_wslides_course_header_nav_review_documentation">-->
+<!--				                                        <a t-att-class="'nav-link %s' % ('active' if active_tab == 'review' else '')"-->
+<!--				                                            id="review-tab" data-toggle="pill" href="#review" role="tab" aria-controls="review"-->
+<!--				                                            t-att-aria-selected="'true' if active_tab == 'review' else 'false'">-->
+<!--				                                            Reviews<t t-if="rating_count"> (<t t-esc="rating_count"/>)</t>-->
+<!--				                                        </a>-->
+<!--				                                    </li> &ndash;&gt;-->
+<!--				                                </ul>-->
+				                                </t>
+				                            </div>
+				                            </div>
+				                        </div>
+				                    </div>
+			                    </t>
+		                   
+		
+		            <!-- Share modal : here to avoid having text-white from o_wslides_course_header -->
+		           <!--  <t t-call="website_slides.slide_share_modal" t-if="channel.channel_type == 'documentation'">
+		                <t t-set="record" t-value="channel"/>
+		            </t> -->
+		
+		            <div class="o_wslides_course_main">
+		            </div>
+		        </div>
+		
+		        <!-- <t t-call="website_slides.slide_share_modal">
+		            <t t-set="record" t-value="channel"/>
+		        </t> -->
+		    </t>
+		</template>
+	</data>
+</odoo>

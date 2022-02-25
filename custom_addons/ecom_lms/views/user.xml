@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+    <record id="inherit_res_users_form_view" model="ir.ui.view">
+        <field name="name">inherit.res.users.form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <notebook colspan="4" position="inside">
+                <page name="general" string="General Information">
+                    <group>
+                        <field name="firstname"/>
+                        <field name="middlename"/>
+                        <field name="lastname"/>
+                        <field name="phone_number1"/>
+                        <field name="phone_number2"/>
+                        <field name="street_address"/>
+                        <field name="city"/>
+                        <field name="device_token"/>
+                   <field name="pre_joinee_code" attrs="{'invisible': [('login_type', '!=', 'candidate')]}" readonly="1" force_save="1"/>
+
+                        <field name="pincode"/>
+                        <field name="country_id"/>
+                        <field name="region" required="1"/>
+                        <field name="state_id"/>
+                        <field name="designation"/>
+                        <field name="band"/>
+                        <field name="role_custom"/>
+                        <field name="work_location"/>
+                        
+                        
+                        <!-- <field name="regional_lead"/> -->
+                        <field name="date_of_birth"/>
+
+                        <field name="gender"/>
+                        <field name="login_type" />
+                        <field name="topic_of_interest_ids" widget="many2many_tags"/>
+                        <field name="customer_code" attrs="{'invisible': [('login_type', '!=', 'customer')]}" readonly="1" force_save="1"/>
+                        <field name="is_employee"/>
+                        <field name="emp_code" readonly="1" force_save="1"/>
+                        <!-- <field name="employee_code"/> -->
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+    </data>
+</odoo>

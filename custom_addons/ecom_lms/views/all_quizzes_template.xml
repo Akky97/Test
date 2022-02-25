@@ -1,0 +1,138 @@
+<?xml version="1.0" ?>
+<odoo><data>
+	<!-- Journey all/main template -->
+	    <template id='quizzes_all' name="Odoo All Journey">
+            <t t-set="body_classname" t-value="'o_wslides_body'"/>
+            <t t-call="website.layout">
+                <div id="wrap" class="wrap o_wslides_wrap">
+                    <section class="s_banner bg-900" style="background-image: url(&quot;/website_slides/static/src/img/banner_default_all.svg&quot;); background-size: cover; background-position: 80% 20%" data-snippet="s_banner">
+                        <div class="container py-5">
+                            <h1  class="display-3 mb-0">All Quizzes</h1>
+                        </div>
+                    </section>
+                    <div class="container mt16 o_wslides_home_nav position-relative">
+                        <!-- Navbar dynamically composed using displayed channel tag groups. -->
+                        <nav class="navbar navbar-expand-md navbar-light shadow-sm pl-0" style="background: white!important">
+                            <div class="navbar-nav border-right">
+                                <a class="nav-link nav-item px-3" href="/slides"><i class="fa fa-chevron-left"/></a>
+                            </div>
+                            <!-- Clear filtering (mobile)-->
+                            <!-- <div class="form-inline text-nowrap ml-auto d-md-none" t-if="search_slide_type or search_my or search_tags or search_channel_tag_id">
+                                <a href="/slides/all" class="btn btn-info mr-2" role="button" title="Clear filters">
+                                    <i class="fa fa-eraser"/> Clear filters
+                                </a>
+                            </div> -->
+                            <!-- <form t-else="" method="GET" class="form-inline o_wslides_nav_navbar_right d-md-none">
+                                Search box (mobile)
+                                <div class="input-group">
+                                    <input type="search" name="search" class="form-control"
+                                        placeholder="Search courses" aria-label="Search"
+                                        t-att-value="search_term"/>
+                                    <input t-if="search_tags" type="hidden" name="tags" t-att-value="str(search_tags.ids)"/>
+                                    <input t-if="search_my" type="hidden" name="my" t-att-value="1"/>
+                                    <input t-if="search_slide_type" type="hidden" name="slide_type" t-att-value="search_slide_type" />
+                                    <div class="input-group-append">
+                                        <button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+                                            <i class="fa fa-search"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form> -->
+                            <!-- <button class="navbar-toggler px-1" type="button"
+                                data-toggle="collapse" data-target="#navbarTagGroups"
+                                aria-controls="navbarTagGroups" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon small"/>
+                            </button> -->
+                            <div class="collapse navbar-collapse" id="navbarTagGroups">
+                                <!-- <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>
+                                <ul class="navbar-nav flex-grow-1">
+                                    <t t-foreach="tag_groups" t-as="tag_group">
+                                        <li t-att-class="'nav-item dropdown ml16 %s' % ('active' if tag_group in search_tag_groups else '')">
+                                            <a class="nav-link dropdown-toggle"
+                                                href="/slides/all"
+                                                t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"
+                                                role="button" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false"
+                                                t-esc="tag_group.name"/>
+                                            <div class="dropdown-menu" t-att-id="'navToogleTagGroup%s' % tag_group.id">
+                                                <t t-foreach="tag_group.tag_ids" t-as="tag">
+                                                    <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"
+                                                        t-att-href="'/slides/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"
+                                                        t-esc="tag.name"/>
+                                                </t>
+                                            </div>
+                                        </li>
+                                    </t>
+                                </ul> -->
+                                <!-- Clear filtering (desktop)-->
+                                <!-- <div class="form-inline ml-auto d-none d-md-flex" t-if="search_slide_type or search_my or search_tags or search_channel_tag_id">
+                                    <a href="/slides/all" class="btn btn-info text-nowrap mr-2" role="button" title="Clear filters">
+                                        <i class="fa fa-eraser"/> Clear filters
+                                    </a>
+                                </div> -->
+                                <!-- Search box (desktop) -->
+                                <!-- <form method="GET" class="form-inline o_wslides_nav_navbar_right d-none d-md-flex">
+                                    <div class="input-group">
+                                        <input type="search" name="search" class="form-control"
+                                            placeholder="Search courses" aria-label="Search"
+                                            t-att-value="search_term"/>
+                                        <input t-if="search_tags" type="hidden" name="tags" t-att-value="str(search_tags.ids)"/>
+                                        <input t-if="search_my" type="hidden" name="my" t-att-value="1"/>
+                                        <input t-if="search_slide_type" type="hidden" name="slide_type" t-att-value="search_slide_type" />
+                                        <div class="input-group-append">
+                                            <button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+                                                <i class="fa fa-search"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form> -->
+                            </div>
+                        </nav>
+                        <div class="o_wprofile_email_validation_container mb16 mt16">
+                            <t t-call="website_profile.email_validation_banner">
+                                <t t-set="redirect_url" t-value="'/slides'"/>
+                               <!--  <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate at the eLearning.</t>
+                                <t t-set="additional_validated_email_message"> You may now participate in our eLearning.</t> -->
+                            </t>
+                        </div>
+                        <!-- Display tags -->
+                        <!-- <t t-if="search_my">
+                              <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2">
+                              <i class="fa fa-tag mr-2 text-muted"/>
+                              My Courses
+                              <a t-att-href="'/slides/all?%s' % keep_query('*', my=None)" class="btn border-0 py-1">&#215;</a>
+                            </span>
+                        </t>
+                        <t t-if="search_term">
+                              <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2">
+                              <i class="fa fa-tag mr-2 text-muted"/>
+                              <t t-esc="search_term"/>
+                              <a t-att-href="'/slides/all?%s' % keep_query('*', search=None)" class="btn border-0 py-1">&#215;</a>
+                            </span>
+                        </t> -->
+                        <!-- <t t-foreach="search_tags" t-as="tag">
+                            <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2">
+                                <i class="fa fa-tag mr-2 text-muted"/>
+                                <t t-esc="tag.display_name"/>
+                                <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((search_tags - tag).ids))" class="btn border-0 py-1">&#215;</a>
+                            </span>
+                        </t> -->
+                    </div>
+                    <div class="container o_wslides_home_main pb-5">
+                        <div t-if="not quizzes_all_details" class="alert alert-info mb-5">
+                            No Journey was found matching your search.
+                        </div>
+                        <div class="row mx-n2">
+                            <t t-foreach="quizzes_all_details" t-as="quizzes">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 px-2 d-flex flex-grow-1">
+                                    <t t-call="ecom_lms.quiz_card"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <t t-call="website_slides.courses_footer"></t>
+                </div>
+            </t>
+	    </template>
+	</data>
+</odoo>

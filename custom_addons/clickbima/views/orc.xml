@@ -1,0 +1,131 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="orclist">
+      <field name="name">Reward list</field>
+      <field name="model">orc</field>
+      <field name="arch" type="xml">
+        <tree import="false" default_order="insurername asc">
+           <field name="insurername"/>
+          <field name="category"/>
+          <field name="subcategory"/>
+
+          <field name="fdate"/>
+          <field name="tdate"/>
+          <field name="rate"/>
+        </tree>
+      </field>
+    </record>
+
+
+      <record model="ir.ui.view" id="orcform">
+      <field name="name">Reward form</field>
+      <field name="model">orc</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="insurername" placeholder="---Insurer Name---"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="category"  placeholder="---Category---"   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="subcategory" placeholder="---Sub-Category---"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="check_edit" invisible="1"/>
+              <field name="fdate" placeholder="---From Date---" attrs="{'readonly': [('check_edit', '=', True)]}"/>
+              <field name="tdate" placeholder="---To Date---" attrs="{'readonly': [('check_edit', '=', True)]}"/>
+              <field name="rate" placeholder="Rate"/>
+              <field name="remark" placeholder="Remarks"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="orcform123">
+      <field name="name">Reward search</field>
+      <field name="model">orc</field>
+      <field name="arch" type="xml">
+       <search string="Reward Search">
+					<field name="insurername"/>
+                    <field name="category" />
+                    <field name="subcategory" />
+                    <field name="fdate" />
+                    <field name="tdate" />
+                    <field name="rate" />
+                    <group expand="0" string="Group By">
+                       <filter string="Insurer Name" name="groupby_insyrername" context="{'group_by': 'insurername'}"/>
+                       <filter string="Category" name="groupby_category" context="{'group_by': 'category'}"/>
+                       <filter string="Sub-Category" name="groupby_subcategory" context="{'group_by': 'subcategory'}"/>
+                       <filter string="From Date" name="groupby_fromdate" context="{'group_by': 'fdate'}"/>
+                       <filter string="To Date" name="groupby_todate" context="{'group_by': 'tdate'}"/>
+                       <filter string="Rate" name="groupby_rate" context="{'group_by': 'rate'}"/>
+                    </group>
+       </search>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="orcpivot">
+      <field name="name">Reward pivot</field>
+      <field name="model">orc</field>
+      <field name="arch" type="xml">
+        <pivot>
+<!--           <field name="insurername" />-->
+
+<!--          <field name="fdate"/>-->
+<!--          <field name="tdate"/>-->
+<!--          <field name="rate"/>-->
+        </pivot>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="orcgraph">
+      <field name="name">Reward graph</field>
+      <field name="model">orc</field>
+      <field name="arch" type="xml">
+        <graph>
+           <field name="insurername"/>
+          <field name="category"/>
+          <field name="subcategory"/>
+          <field name="fdate"/>
+          <field name="tdate"/>
+          <field name="rate"/>
+        </graph>
+      </field>
+    </record>
+    <!-- Search op on models -->
+    <record id="reward_search_view" model="ir.ui.view">
+			<field name="name">reward.search.view</field>
+			<field name="model">orc</field>
+			<field name="arch" type="xml">
+				<search string="Reward Search">
+					<field name="insurername"/>
+                    <field name="category" />
+                    <field name="subcategory" />
+				</search>
+			</field>
+		</record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="orc_action_window">
+      <field name="name">Reward Rate</field>
+      <field name="res_model">orc</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban,search</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="orc_action_server">
+      <field name="name">Reward server</field>
+      <field name="model_id" ref="model_orc"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Reward Rate" id="list_1262" parent="clickbima.menu_1" action="orc_action_window" sequence="3"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

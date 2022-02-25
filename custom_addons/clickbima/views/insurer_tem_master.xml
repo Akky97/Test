@@ -1,0 +1,168 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="insurertemplatelist">
+      <field name="name">insurertemplate list</field>
+      <field name="model">insurertemplate</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="claimtype1"/>
+          <field name="category"/>
+          <field name="subcategory"/>
+          <field name="clientname"/>
+          <field name="product"/>
+        </tree>
+      </field>
+    </record>
+
+
+      <record model="ir.ui.view" id="insurertemplategraph">
+      <field name="name">insurertemplate graph</field>
+      <field name="model">insurertemplate</field>
+      <field name="arch" type="xml">
+        <graph>
+          <field name="claimtype1"/>
+          <field name="category"/>
+          <field name="subcategory"/>
+          <field name="clientname"/>
+          <field name="product"/>
+        </graph>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="insurertemplatepivot">
+      <field name="name">insurertemplate pivot</field>
+      <field name="model">insurertemplate</field>
+      <field name="arch" type="xml">
+        <pivot>
+
+<!--            <field name="claimtype1" />-->
+<!--          <field name="category"/>-->
+<!--          <field name="subcategory"/>-->
+<!--          <field name="clientname"/>-->
+<!--          <field name="product"/>-->
+        </pivot>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="insurertemplatesearch">
+      <field name="name">insurertemplate search</field>
+      <field name="model">insurertemplate</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="claimtype1"/>
+          <field name="category"/>
+          <field name="subcategory"/>
+          <field name="clientname"/>
+          <field name="product"/>
+            <group expand="0" string="Group By">
+                       <filter string="Template Type" name="groupby_templatetype" context="{'group_by': 'claimtype1'}"/>
+                       <filter string="Category" name="groupby_category" context="{'group_by': 'category'}"/>
+                       <filter string="Sub-Category" name="groupby_subcategory" context="{'group_by': 'subcategory'}"/>
+            </group>
+        </search>
+      </field>
+    </record>
+
+
+      <record model="ir.ui.view" id="insurertemplateform">
+      <field name="name">insurertemplate form</field>
+      <field name="model">insurertemplate</field>
+      <field name="arch" type="xml">
+        <form>
+             <script>
+                    $( "#showsearch" ).click(function() {
+$(this).toggleClass('fa-minus-circle')
+  $( "#searchdiv" ).toggle('slow');
+});
+            </script>
+          <sheet>
+              <group>
+                  <group>
+                        <field name="company_id" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="claimtype" invisible="1"/>
+                        <field name="claimtype1" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="searchheader" invisible="1"/>
+                        <field name="remarksearch"  invisible="1"/>
+                  </group>
+                  <group>
+                      <field name="category" options="{'no_create': True, 'no_create_edit':True}"/>
+                      <field name="subcategory" widget="many2many_tags" options="{'no_create': True, 'no_create_edit':True}"/>
+                  </group>
+              </group>
+              <group>
+                <div class="row ist_table">
+                    <table style="margin-left: 45%;">
+                        <tr>
+                            <th style="padding-top:5px padding-left:10px;"><a href="javascript:void(0)" id="showsearch" class="pipelinedetails fa fa-plus-circle"><button name="templatesearch" type="object" string="Search"/></a></th>
+                        </tr>
+                    </table>
+                </div>
+              </group>
+              <group>
+                  <div class="col-md-12" style="display: none;" id="searchdiv">
+                     <table style="width:100%;">
+                        <tr>
+                            <th>Insurer Name</th>
+                            <td><field name="clientname"  domain="[('customer','=',True)]" options="{'no_create': True, 'no_create_edit':True}"/></td>
+                        </tr>
+                        <tr>
+                            <th>Scheme Name</th>
+                            <td><field name="product" string="Scheme Name" options="{'no_create': True, 'no_create_edit':True}"/></td>
+                        </tr>
+                     <group>
+                         <field name="headerdescripe" string=" ">
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="name" invisible="1"/>
+                                        <field name="header" string="Available Header" options="{'no_create': True, 'no_create_edit':True}"/>
+                                        <field name="remark" string="Available Remark" options="{'no_create': True, 'no_create_edit':True}"/>
+                                        <field name="detail"/>
+                                        <field name="remark1" string="Remark"/>
+
+                                    </group>
+                                </sheet>
+                            </form>
+                            <tree  editable="bottom">
+                                <field name="name"  invisible="1"/>
+                                <field name="header" string="Available Header"/>
+                                <field name="remark" string="Available Remark"/>
+                                <field name="detail"/>
+                                <field name="remark1" string="Remark"/>
+                            </tree>
+                        </field>
+                     </group>
+                    </table>
+                  </div>
+              </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="insurertemplate_action_window">
+      <field name="name">Insurer Template Master</field>
+      <field name="res_model">insurertemplate</field>
+      <field name="view_mode">tree,form,graph,search,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="insurertemplate_action_server">
+      <field name="name">insurertemplate server</field>
+      <field name="model_id" ref="model_insurertemplate"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Insurer Template Master" id="list_6" parent="clickbima.menu_1" action="insurertemplate_action_window" sequence="6"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

@@ -1,0 +1,106 @@
+<odoo>
+
+<template id='quiz_card' name="Quiz Card">
+    <div t-attf-class="card w-100 o_wslides_course_card mb-4">
+    	<t t-set="q_image" t-value="website.image_url(quizzes, 'quiz_image')"/>
+        <a t-attf-href="/quizzes/#{slug(quizzes)}" t-title="quizzes.name">
+        <div t-if="quizzes.quiz_image" class="card-img-top" t-attf-style="padding-top: 50%; background-image: url(#{q_image}); background-size: cover; background-position:center"/>
+        <div t-else="" class="o_wslides_gradient card-img-top position-relative" style="padding-top: 50%; opacity: 0.8">
+                <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-white-75" style="right:0; bottom: 0"/>
+            </div>
+        </a>
+        <div class="card-body p-3">
+            <a class="card-title h5 mb-2 o_wslides_desc_truncate_2" t-attf-href="/quizzes/#{slug(quizzes)}" t-esc="quizzes.name"/>
+            <div class="card-text mt-1">
+                <div class="font-weight-light o_wslides_desc_truncate_3" t-field="quizzes.description_short"/>
+            </div>
+
+
+<!--            <t t-if="journey in request.env.user.my_journey_ids">-->
+<!--	            <t t-if="journey.journey_completed_mail">-->
+<!--	                 <span class="badge badge-pill badge-success py-1 px-2 mx-auto" style="font-size: 1em"><i class="fa fa-check"/> Completed</span>-->
+<!--	             </t>-->
+<!--	             <t t-else="">-->
+<!--	                 <div class="progress flex-grow-1 bg-black-50" style="height: 6px;">-->
+<!--	                     <div class="progress-bar" role="progressbar" t-attf-style="width: #{journey.journey_completion}%" t-att-aria-valuenow="journey.journey_completion" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--	                 </div>-->
+<!--	                 <div class="ml-3 small">-->
+<!--	                     <span class="o_wslides_progress_percentage" t-esc="journey.journey_completion"/> %-->
+<!--	                 </div>-->
+<!--	             </t>-->
+<!--            </t>-->
+        </div>
+    </div>
+</template>
+
+
+
+        <record id="customer_thanks" model="website.page">
+			<field name="name">Thanks</field>
+			<field name="type">qweb</field>
+			<field name="url">customer-thank-you</field>
+			<field name="website_published">True</field>
+			<field name="key">ecom_lms.customer_thanks</field>
+			<field name="arch" type="xml">
+				<t name="Thanks" t-name="ecom_lms.customer_thanks">
+					<t t-call="website.layout">
+						<div id="wrap">
+							<div class="container">
+                                <br/>
+								<h1>Thanks!!!</h1>
+                                <br/>
+								<div class="row">
+									<div class="col-lg-8">
+										<div class="alert alert-success" role="status">
+											Your Mail Has Been Sent Successfully.
+										</div>
+										<p>
+											from Ecom Express.
+										</p>
+									</div>
+								</div>
+								<div>
+								<t t-if="recommend_user_name_exist_lst">
+									<span><strong>This course is already recommended to the below users</strong>
+										<br/>
+										<br/>
+										<t t-foreach="recommend_user_name_exist_lst" t-as="user">
+											<ul>
+												<li><t t-esc="user"/></li>
+											</ul>
+										</t>
+									</span>
+									</t>
+								</div>
+							</div>
+						</div>
+					</t>
+				</t>
+			</field>
+		</record>
+<!--		<record id="already_recommended" model="website.page">-->
+<!--			<field name="name">Already Recommended</field>-->
+<!--			<field name="type">qweb</field>-->
+<!--			<field name="url">already-recommeded-users</field>-->
+<!--			<field name="website_published">True</field>-->
+<!--			<field name="key">ecom_lms.already_recommended</field>-->
+<!--			<field name="arch" type="xml">-->
+<!--				<t name="already_recommended" t-name="ecom_lms.already_recommended">-->
+<!--					<t t-call="website.layout">-->
+<!--						<div id="wrap">-->
+<!--							<div class="container">-->
+<!--								<div>-->
+<!--									<br/>-->
+<!--									<br/>-->
+<!--									<br/>-->
+<!--									<span><strong>Selected users already recommended</strong>-->
+<!--										<br/>-->
+<!--									</span>-->
+<!--								</div>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</t>-->
+<!--				</t>-->
+<!--			</field>-->
+<!--		</record>-->
+</odoo>

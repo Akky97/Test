@@ -1,0 +1,63 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="policyseglist">
+      <field name="name">policyseg list</field>
+      <field name="model">policyseg</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" placeholder="Policy Segment" options="{'no_create': True, 'no_create_edit':True}"/>
+                <field name="pname" placeholder="Policy Name"/>
+                <field name="isre" widget="radio" options="{'horizontal': true}"/>
+                <field name="isde" widget="radio" options="{'horizontal': true}"/>
+                <field name="declare" placeholder="Declaration Type" attrs="{'invisible':[('isde','=','no')]}"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="policysegform">
+      <field name="name">policyseg form</field>
+      <field name="model">policyseg</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+               <field name="name" placeholder="Policy Segment" options="{'no_create': True, 'no_create_edit':True}"/>
+                <field name="pname" placeholder="Policy Name"/>
+                <field name="isre" widget="radio" options="{'horizontal': true}"/>
+                <field name="isde" widget="radio" options="{'horizontal': true}"/>
+                <field name="declare" placeholder="Declaration Type" attrs="{'invisible':[('isde','=','no')]}"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="policyseg_action_window">
+      <field name="name">Policy</field>
+      <field name="res_model">policyseg</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="policyseg_action_server">
+      <field name="name">policyseg server</field>
+      <field name="model_id" ref="model_policyseg"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+<!--    <menuitem name="Policy" id="list_1221" parent="clickbima.menu_3" action="policy_action_window" sequence="1"/>-->
+
+<!--    <menuitem name="Policy" id="list_1221" parent="clickbima.menu_3" action="policyseg_action_window" sequence="1"/>-->
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template>
+        <t t-name="website.quiz">
+  <t t-call="website.layout">
+    <div id="wrap" class="oe_structure oe_empty">
+      <section class="s_text_image pt32 pb32 o_colored_level" data-snippet="s_image_text" data-name="Image - Text">
+        <div class="container">
+          <div class="shadow bg-white">
+            <p class="p-3">Question 15 of 15</p>
+            <h1 class="ml-3 pt-0">
+              <b>
+                <font style="font-size: 36px;">Power BI : Getting started with data analytics</font>
+              </b>
+            </h1>
+            <hr/>
+            <p class="ml-3"><b>Question No. 1 </b>In which year did Microsoft discharge an extra administration called Power BI Embedded?</p>
+            <p class="bg-200 p-3">
+              <b>Instruction : </b>
+              <span>Select the correct option and submit</span>
+            </p>
+          </div>
+          <div class="container">
+              <div class="col-12 shadow p-3 bg-white rounded">
+              <input type="radio" name="q1"/>
+              <span class="ml-3">2014</span>
+            </div>
+            <div class="col-12 shadow p-3 bg-primary rounded">
+              <input type="radio" name="q1"/>
+              <span class="ml-3">2015</span>
+            </div>
+            <div class="col-12 shadow p-3 bg-white rounded">
+              <input type="radio" name="q1"/>
+              <span class="ml-3">2016</span>
+            </div>
+            <div class="col-12 shadow p-3 bg-white rounded">
+              <input type="radio" name="q1"/>
+              <span class="ml-3">2017</span>
+            </div>
+            <button class="badge badge-primary m-3 p-2">Submit</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </t>
+</t>
+
+    </template>
+</odoo>

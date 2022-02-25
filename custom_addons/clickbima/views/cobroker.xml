@@ -1,0 +1,78 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="cobrokerlist">
+      <field name="name">cobroker list</field>
+      <field name="model">cobroker</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="brokername"/>
+          <field name="address"/>
+          <field name="country"/>
+          <field name="contactperson"/>
+          <field name="panno"/>
+          <field name="licneseno"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="cobrokerform">
+      <field name="name">cobroker form</field>
+      <field name="model">cobroker</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <group>
+                <field name="name" placeholder="Company"/>
+              <field name="brokername" placeholder="Broker Name"/>
+              <field name="shortname" placeholder="Short Name"/>
+              <field name="address" placeholder="Address"/>
+              <field name="city" placeholder="City"/>
+              <field name="state" placeholder="State"/>
+              <field name="country" placeholder="Country"/>
+              <field name="pincode" placeholder="Pin Code"/>
+              </group>
+              <group>
+                <field name="contactperson" placeholder="Contact Person"/>
+              <field name="contactno" placeholder="ST No"/>
+              <field name="stno" placeholder="ST No"/>
+              <field name="panno" placeholder="PAN No"/>
+              <field name="tanno" placeholder="TAN No"/>
+              <field name="licneseno" placeholder="License No."/>
+              <field name="licnesedate" placeholder="License Date"/>
+              </group>
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="cobroker_action_window">
+      <field name="name">Co-Broker</field>
+      <field name="res_model">cobroker</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="cobroker_action_server">
+      <field name="name">cobroker server</field>
+      <field name="model_id" ref="model_cobroker"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Co-Broker" id="list_124" parent="clickbima.menu_3" action="cobroker_action_window" sequence="4"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

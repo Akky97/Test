@@ -1,0 +1,280 @@
+<?xml version="1.0" ?>
+<odoo>
+	<data>
+		<template id="portal_layout_ecom_inherit" inherit_id="portal.portal_layout" name="Portal Layout">
+			<xpath expr="//div[@class='o_portal_my_details']" position="replace">
+				<div class="o_portal_my_details">
+                    <!-- <h4>Details <a role="button" href="/my/account" class="btn btn-sm btn-link"><i class="fa fa-pencil"/> View</a></h4> -->
+                    <h4>Details <a role="button" t-attf-href="/profile/edit?url_param=#{edit_button_url_param}&amp;user_id=#{request.env.user.id}" class="btn btn-sm btn-link"><i class="fa fa-pencil"/> View</a></h4>
+                    <hr class="mt-1 mb-0"/>
+                    <div t-field="user_id.partner_id" t-options='{"widget": "contact", "fields": ["email", "phone", "address", "name"]}'/>
+                </div>
+			</xpath>
+			
+			<xpath expr="//div[@class='o_portal_my_security mt-3']" position="after">
+				<form class="oe_reset_password_form" role="form" method="post" action="/slides/my/languages/change">
+                    
+	                    <div class="row ">
+		                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+		                    <input type="hidden" name="language_change"/>
+		                     <!-- <t t-if ="language_change"> -->
+		                    <label for="language">Switch Language:</label>
+		                    <select class="form-control form-control-sm" name="language" id="language">
+		                    	<option value="select">Select..</option>
+		                        <option value="english">English</option>
+		                        <option value="hindi">Hindi</option>
+		                        <option value="gujarati">Gujarati</option>
+		                        <option value="marathi">Marathi</option>
+		                        <option value="assamese">Assamese</option>
+		                        <option value="tamil">Tamil</option>
+		                        <option value="kannada">Kannada</option>
+		                        <option value="malyalam">Malyalam</option>
+		                        <option value="telugu">Telugu</option>
+		                    </select>
+		                    
+	                    	<div class="clearfix oe_login_buttons"> 
+			                    <button type="submit" class="btn btn-primary btn-block">Confirm</button>
+			                 </div> 
+			                 
+			                 
+			                 
+		                    
+	                </div> 
+                	</form>
+                	<!-- <t t-if="request.env.user.lang_from_website">
+	                 	<div class="row"> 
+		                    Switched Language: <span t-esc="request.env.user.lang_from_website"/>
+		                </div> 
+	                </t> -->
+			</xpath>
+		</template>
+		
+		
+		<!-- Profile Content template inherit -->
+		<template id="user_profile_edit_content_Ecom_inherit" inherit_id="website_profile.user_profile_edit_content" name="Edit Profile">
+		
+			
+		
+		
+		
+			<xpath expr="//h1[@class='o_page_header']" position="replace">
+				<h1 class="o_page_header">View Profile</h1>
+			</xpath>
+			<xpath expr="//div[@class='card o_card_people']" position="replace">
+				<div class="card o_card_people">
+                        <div class="card-body">
+                            <img class="o_forum_avatar_img w-100 mb-3" t-att-src="website.image_url(user, 'image_128')"/>
+                            <div class="text-center">
+                                <a href="#" class="o_forum_profile_pic_edit btn btn-primary" aria-label="Edit">
+                                    <i class="fa fa-pencil fa-1g float-sm-none float-md-left" title="Edit"></i>
+                                </a>
+                                <a href="#" title="Clear" aria-label="Clear" class="btn border-primary o_forum_profile_pic_clear">
+                                    <i class="fa fa-trash-o float-sm-none float-md-right"></i>
+                                </a>
+                            </div> 
+                            <!-- <div class="form-group mt-3 mb-0 pt-2 border-top">
+                                <label class="text-primary" for="user_website_published" t-if="user.id == uid"><span class="font-weight-bold">Public profile</span></label>
+                                <div class=" mb-0 float-right" t-if="user.id == uid">
+                                    <input type="checkbox" class="mt8" name="website_published" id="user_website_published" value="True" t-if="not user.website_published" onclick="return false;"/>
+                                    <input type="checkbox" class="mt8" name="website_published" id="user_website_published" value="True" checked="checked" t-if="user.website_published" onclick="return false;"/>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+			</xpath>
+		<xpath expr="//div[@class='col-9 mb-3']" position="replace">
+        	<div class="col-9 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <input name="user_id" t-att-value="user.id" type="hidden"/>
+                                <div class="form-group col-12">
+                                    <label class="text-primary mb-1 d-block" for="user_first_name"><span class="font-weight-bold">First Name</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" name="first_name" id="user_first_name" readonly="True" t-attf-value="#{user.firstname}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label class="text-primary mb-1 d-block" for="user_middle_name"><span class="font-weight-bold">Middle Name</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" name="middle_name" id="user_middle_name" readonly="True" t-attf-value="#{user.middlename}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-12">
+                                    <label class="text-primary mb-1 d-block" for="user_last_name"><span class="font-weight-bold">Last Name</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" name="last_name" id="user_last_name" readonly="True" t-attf-value="#{user.lastname}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_phone_number1"><span class="font-weight-bold">Phone Number 1</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="phone_number1" id="user_phone_number1" t-attf-value="#{user.phone_number1 or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_phone_number2"><span class="font-weight-bold">Phone Number 2</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="phone_number2" id="user_phone_number2" t-attf-value="#{user.phone_number2 or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_email"><span class="font-weight-bold">Email</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="email" id="user_email" t-attf-value="#{user.email or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_date_of_birth"><span class="font-weight-bold">Date Of Birth</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="date_of_birth" id="user_date_of_birth" t-attf-value="#{user.date_of_birth or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div t-if="user.is_employee and user.emp_code" class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_emp_code"><span class="font-weight-bold">Employee Code</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="emp_code" id="user_emp_code" t-attf-value="#{user.emp_code or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div t-if="user.customer_code" class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_customer_code"><span class="font-weight-bold">Customer Code</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="customer_code" id="user_customer_code" t-attf-value="#{user.customer_code or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div t-if="user.pre_joinee_code" class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_pre_joinee_code"><span class="font-weight-bold">Pree Joinee Code</span></label>
+                                    <div>
+                                        <input type="text" readonly="True" class="form-control" name="pre_joinee_code" id="user_pre_joinee_code" t-attf-value="#{user.pre_joinee_code or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_region"><span class="font-weight-bold">Region</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="region" id="user_region" t-attf-value="#{user.region or ''}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_gender"><span class="font-weight-bold">Gender</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="gender" id="user_gender" t-attf-value="#{user.gender or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_street_address"><span class="font-weight-bold">Street</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="street_address" id="user_street_address" t-attf-value="#{user.street_address or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_city"><span class="font-weight-bold">City</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="city" id="user_city" t-attf-value="#{user.city or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_pincode"><span class="font-weight-bold">Zip / Postal Code</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="pincode" id="user_pincode" t-attf-value="#{user.pincode or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_country_id"><span class="font-weight-bold">Country</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="country_id" id="user_country_id" t-attf-value="#{user.country_id.name or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-6">
+                                    <label class="mb-1 text-primary" for="user_state_id"><span class="font-weight-bold">State</span></label>
+                                    <div>
+                                        <input type="text" class="form-control" readonly="True" name="state_id" id="user_state_id" t-attf-value="#{user.state_id.name or ''}"/>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="form-group col-12" style="display: none;">
+                                    <label class="mb-1 text-primary" for="description"><span class="font-weight-bold">Biography</span></label>
+                                    <textarea name="description" id="description" style="min-height: 120px"
+                                        class="form-control o_wysiwyg_loader"><t t-esc="user.partner_id.website_description"/></textarea>
+                                </div> 
+                                <!-- <script>
+                                   alert("bbbbbbbbbbbb");
+                                   function update_profile_button(){
+                                   if(document.getElementsByClassName('o_forum_file_upload').files.length == 0)
+										{
+										    alert("aaaaaaaaaaaaa");
+										}
+                                   
+                                   };
+					               
+					            </script> -->
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary o_wprofile_submit_btn">Update</button>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               </xpath>
+    </template>
+		
+		<template id="user_profile_header_ecom_inherit" inherit_id="website_profile.user_profile_header" name="Profile Page Header">
+			<xpath expr="//div[@class='d-flex justify-content-between align-items-start']" position="replace">
+				<div class="d-flex justify-content-between align-items-start">
+                     <h1 class="o_card_people_name">
+                         <span t-field="user.name"/><small t-if="user.karma == 0"> (not verified)</small>
+                     </h1>
+                     <!-- <a class="btn btn-primary d-none d-md-inline-block" t-if="request.env.user == user and user.karma != 0 or request.env.user._is_admin()"  href="/my/account">
+                         <i class="fa fa-pencil mr-2"/>View PROFILE
+                     </a> -->
+                     <a class="btn btn-primary d-none d-md-inline-block" t-if="request.env.user == user and user.karma != 0 or request.env.user._is_admin()" t-attf-href="/profile/edit?url_param=#{edit_button_url_param}&amp;user_id=#{user.id}">
+                         <i class="fa fa-pencil mr-2"/>View PROFILE
+                     </a> 
+                 </div>
+			</xpath>
+		</template>
+		
+		<!-- Only Employee can see Leadership Board -->
+		<template id="toggle_leaderboard_inherit_ecom" inherit_id="website_slides.toggle_leaderboard" name='Display Leaderboard'>
+			<xpath expr="//div[@class='row o_wslides_home_aside_title']" position="replace">
+		        <div class="row o_wslides_home_aside_title" t-if="request.env.user.is_employee and request.env.user.emp_code">
+		            <div class="col">
+		                <a href="/profile/users" class="float-right">View all</a>
+		                <h5 class="m-0">Leaderboard</h5>
+		                <hr class="mt-2 pt-2"/>
+		            </div>
+		        </div>
+        	</xpath>
+        	<xpath expr="//div[@class='row']" position="replace">
+		        <div class="row" t-if="request.env.user.is_employee and request.env.user.emp_code">
+		            <t t-if="users">
+		                <div class="col">
+		                    <t t-set="counter" t-value="1"/>
+		                    <t t-foreach="users" t-as="user">
+		                        <t t-call="website_slides.user_quickkarma_card"/>
+		                        <t t-set="counter" t-value="counter + 1"/>
+		                    </t>
+		                </div>
+		            </t>
+		            <t t-else=""><p class="col mt8">No leaderboard currently :(</p></t>
+		        </div>
+        	</xpath>
+		</template>
+	</data>
+</odoo>

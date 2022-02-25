@@ -1,0 +1,105 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="smasterlist">
+      <field name="name">smaster list</field>
+      <field name="model">smaster</field>
+      <field name="arch" type="xml">
+        <tree>
+           <field name="name"/>
+          <field name="name1"/>
+          <field name="emailid"/>
+          <field name="website"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="smasterform">
+      <field name="name">smaster form</field>
+      <field name="model">smaster</field>
+      <field name="arch" type="xml">
+        <form>
+
+
+
+
+            <group>
+              <field name="name"/>
+              <field name="name1"/>
+            </group>
+          <sheet><h1>Address</h1>
+
+                                            <group>
+                        <group>
+                          <field name="address"/>
+                          <field name="emailid"/>
+                          <field name="website"/>
+
+                        </group>
+                        <group>
+                             <field name="city"/>
+                          <field name="state"/>
+                          <field name="country"/>
+                          <field name="faxno"/>
+                        </group>
+                      </group>
+</sheet>
+          <sheet><h1>Toll Free</h1>
+            <group>
+              <group>
+                <field name="no1"/>
+                <field name="no2"/>
+              </group>
+              <group>
+                <field name="text1"/>
+                <field name="text2"/>
+              </group>
+            </group>
+          </sheet>
+<sheet><h3>Contact Details 1</h3>
+  <group>
+    <field name="name2"/>
+    <field name="mobile"/>
+    <field name="email"/>
+    <field name="remark"/>
+  </group>
+</sheet>
+            <sheet><h3>Contacts Details 2</h3>
+              <group>
+                <field name="name3"/>
+                <field name="mobile1"/>
+                <field name="email1"/>
+                <field name="remark1"/>
+
+              </group>
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="smaster_action_window">
+      <field name="name">Surveyver Master</field>
+      <field name="res_model">smaster</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="smaster_action_server">
+      <field name="name">smaster server</field>
+      <field name="model_id" ref="model_smaster"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Surveyver Master" id="list_134" parent="clickbima.menu_4" action="smaster_action_window" sequence="5"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

@@ -1,0 +1,46 @@
+<odoo>
+    <data>
+        <record id="employee_wise_coverage_report_form_view" model="ir.ui.view">
+            <field name="name">employee.wise.coverage.report.form</field>
+            <field name="model">employee.wise.coverage.report</field>
+            <field name="arch" type="xml">
+                <form string="Employee Wise Coverage">
+                <group>
+                	<group >
+                		<field name="course_journey" required="1" widget="radio"/>
+                       <!--  <field name="user_ids" widget="many2many_tags" domain="[('is_employee','=',True)]" /> -->
+                        <field name="region" required="1"/>
+                    </group>
+                </group>
+                     <footer>
+                         <button name="button_print" string="Print" type="object" class="oe_highlight" />
+                         <button string="Cancel" class="oe_link" special="cancel" /> 
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_employee_wise_coverage_report_print" model="ir.actions.act_window">
+            <field name="name">Employee Wise Coverage Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.wise.coverage.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+        
+       <record id="employee_wise_coverage_report_view" model="ir.ui.view">
+			<field name="name">Employee Wise Coverage Report</field>
+			<field name="model">employee.wise.coverage.view.report</field>
+			<field name="arch" type="xml">
+				<form string="Excel Report file" create="false" edit="false" duplicate="false" delete="false">
+                    <group>
+                        <field name="excel_file" readonly="1" filename="file_name" />
+                        <field name="file_name" invisible="1" />
+				    </group>
+				</form>
+			</field>
+		</record> 
+		
+		<menuitem id="action_employee_wise_coverage_report_print_menu" name="Employee Wise Coverage Report" parent="website_slides.website_slides_menu_report" action="action_employee_wise_coverage_report_print" sequence="3"/>
+    </data>
+</odoo>

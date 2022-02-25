@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template>
+        <t t-name="website.contactus-1">
+  <t t-call="website.layout">
+    <div id="wrap" class="oe_structure oe_empty">
+      <div class="container">
+        <div style="height:200px;width:100%;background: #d4fc79;background: -webkit-linear-gradient(to left, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));  background: linear-gradient(to top, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5))">
+          <div class="d-flex justify-content-between">
+            <div class="display-4 ml-2">
+              <font style="font-size: 48px;">
+                </font>
+              <font style="font-size: 36px;">Digital Transformation with ELSA</font>
+              <font style="font-size: 48px;">
+              </font>
+            </div>
+            <div class="mr-2">
+              <i class="fa fa-1x mt-3 fa-ellipsis-v"/>
+            </div>
+          </div>
+          <div class="d-flex">
+            <p class="ml-2">
+              <font style="font-size: 14px;">Started : 05 October 2021</font>
+            </p>
+            <p class="ml-2">
+              <font style="font-size: 18px;">&amp;nbsp; | &amp;nbsp;</font>
+            </p>
+            <p class="ml-2">
+              <font style="font-size: 14px;">Ended : 05 October 2021</font>
+            </p>
+          </div>
+          <button class="btn btn-primary" style="margin-left:990px; margin-top:40px">View Badge</button>
+        </div>
+      </div>
+      <div class="container">
+        <div class="shadow p-3 mb-5 bg-white rounded">
+          <p>Watch all content or score a <strong>minimum 65%</strong> on a test to complete the courses</p>
+          <p class="text-primary">Completion Status</p>
+          <div class="d-flex">
+            <div class="bg-primary rounded mt-2" style="height:10px;width:50%"/>
+            <button class="btn btn-primary ml-3">Take Test</button>
+          </div>
+        </div>
+        <div class="shadow p-3 mb-5 bg-white rounded">
+          <button class="btn btn-primary m-2">Content</button>
+          <button class="btn btn-outline-dark m-2">Overview</button>
+          <button class="btn btn-outline-dark m-2">Resources</button>
+        </div>
+        <div class="shadow p-3 mb-5 bg-white rounded">
+          <h1>A Simple PDF File</h1>
+          <p>This is a small demonstration .pdf file - </p>
+          <p>just for use in the Virtual Mechanics tutorials. More text. And more <br/>
+              text. And more text. And more text. And more text.</p>
+          <p>More text. And more text. And more text. And more text. And more text.<br/>
+              And more text. And more text. And more text. And more text.<br/>
+              And more text. And more text. And more text. And more text.</p>
+          <p>just for use in the Virtual Mechanics tutorials. More text. And more <br/>
+              text. And more text. And more text. And more text.</p>
+        </div>
+        <div style="height:750px;overflow:scroll">
+          <div class="shadow p-3 mb-5 bg-gray rounded">
+            <p>Watched</p>
+            <i class="fa fa-1x rounded-circle bg-primary fa-check padding-small" data-original-title="" title="" aria-describedby="tooltip499046"/>
+            <span>Content 1</span>
+            <p>1 min 25 sec</p>
+            <p class="ml-5">last match 2 days ago</p>
+          </div>
+          <div class="shadow p-3 mb-5 bg-gray rounded">
+            <p>Watched</p>
+            <i class="fa bg-primary fa-check padding-small shadow rounded-circle" data-original-title="" title="" aria-describedby="tooltip499046"/>
+            <span>Content 1</span>
+            <p>1 min 25 sec</p>
+            <p class="ml-5">last match 2 days ago</p>
+          </div>
+          <div class="shadow p-3 mb-5 bg-gray rounded">
+            <p>Watched</p>
+            <i class="fa fa-1x rounded-circle bg-primary fa-check" data-original-title="" title="" aria-describedby="tooltip499046"/>
+            <span>Content 1</span>
+            <p>1 min 25 sec</p>
+            <p class="ml-5">last match 2 days ago</p>
+          </div>
+          <div class="shadow p-3 mb-5 bg-white rounded">
+            <p>Watched</p>
+            <i class="fa fa-1x rounded-circle bg-primary fa-check" data-original-title="" title="" aria-describedby="tooltip499046"/>
+            <span>Content 1</span>
+            <p>1 min 25 sec</p>
+            <p class="ml-5">last match 2 days ago</p>
+          </div>
+          <div class="shadow p-3 mb-5 bg-white rounded">
+            <p>Watched</p>
+            <i class="fa fa-1x rounded-circle bg-primary fa-check" data-original-title="" title="" aria-describedby="tooltip499046"/>
+            <span>Content 1</span>
+            <p>1 min 25 sec</p>
+            <p class="ml-5">last match 2 days ago</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+</t>
+
+    </template>
+</odoo>

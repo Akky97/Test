@@ -1,0 +1,21 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+         <record id="salecountry_inherit" model="ir.ui.view">
+            <field name="name">code.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_create_opportunity_simplified"/>
+            <field name="arch" type="xml">
+<!--               <xpath expr="//form/sheet/notebook/page[1]" position="inside">-->
+                    <xpath expr="mobile" position="before">
+                        <field name="name"/>
+
+		        </xpath>
+            </field>
+        </record>
+
+
+
+  </data>
+</odoo>

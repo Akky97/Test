@@ -1,0 +1,34 @@
+<odoo>
+    <data>
+        <record id="import_user_form_view12" model="ir.ui.view">
+            <field name="name">import.user.form</field>
+            <field name="model">import.user</field>
+            <field name="arch" type="xml">
+                <form string="Import Users">
+                    <sheet>
+                <group>
+                	<group >
+                		<field name="excel_file" required="1"/>
+                        <field name="file_name"/>
+
+                    </group>
+                    <group>
+                        <button name="button_print" string="Import" type="object" class="oe_highlight" />
+                    </group>
+                </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="import_users_report_print" model="ir.actions.act_window">
+            <field name="name">Import Users</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">import.user</field>
+            <field name="view_mode">form</field>
+<!--            <field name="target">new</field>-->
+        </record>
+         <menuitem id="import_users_report_print_view_menu" name="Import Users" parent="base.menu_users"
+                 action="ecom_lms.import_users_report_print" sequence="5"/>
+
+    </data>
+</odoo>

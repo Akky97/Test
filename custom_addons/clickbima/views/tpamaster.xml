@@ -1,0 +1,106 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="tpamasterlist">
+      <field name="name">tpamaster list</field>
+      <field name="model">tpamaster</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="name1"/>
+          <field name="emailid"/>
+          <field name="website"/>
+
+         
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="tpamasterform">
+      <field name="name">tpamaster form</field>
+      <field name="model">tpamaster</field>
+      <field name="arch" type="xml">
+        <form>
+
+
+
+
+            <group>
+              <field name="name" placeholder="Type"/>
+              <field name="name1" placeholder="Name"/>
+            </group>
+          <sheet><h1>Address</h1>
+
+                                            <group>
+                        <group>
+                          <field name="address" placeholder="Address"/>
+                          <field name="emailid" placeholder="Email ID"/>
+                          <field name="website" placeholder="Website"/>
+
+                        </group>
+                        <group>
+                             <field name="city" placeholder="---Select One---"/>
+                          <field name="state" placeholder="---Select One---"/>
+                          <field name="country" placeholder="---Select One---"/>
+                          <field name="faxno" placeholder="Fax No."/>
+                        </group>
+                      </group>
+</sheet>
+          <sheet><h1>Toll Free</h1>
+            <group>
+              <group>
+                <field name="no1" placeholder="No 1"/>
+                <field name="no2" placeholder="No 2"/>
+              </group>
+              <group>
+                <field name="text1" placeholder="Text1"/>
+                <field name="text2" placeholder="Text2"/>
+              </group>
+            </group>
+          </sheet>
+<sheet><h3>Contact Details 1</h3>
+  <group>
+    <field name="name2" placeholder="Name"/>
+    <field name="mobile" placeholder="Mobile"/>
+    <field name="email" placeholder="Email"/>
+    <field name="remark" placeholder="Remarks"/>
+  </group>
+</sheet>
+            <sheet><h3>Contacts Details 2</h3>
+              <group>
+                <field name="name3" placeholder="Name"/>
+                <field name="mobile1" placeholder="Mobile"/>
+                <field name="email1" placeholder="Email"/>
+                <field name="remark1" placeholder="Remarks"/>
+
+              </group>
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="tpamaster_action_window">
+      <field name="name">TPA Master</field>
+      <field name="res_model">tpamaster</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="tpamaster_action_server">
+      <field name="name">tpamaster server</field>
+      <field name="model_id" ref="model_tpamaster"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="TPA Master" id="list_133" parent="clickbima.menu_4" action="tpamaster_action_window" sequence="3"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

@@ -1,0 +1,100 @@
+<odoo>
+    <record id="inherited_view_slide_slide_form" model="ir.ui.view">
+        <field name="name">inherited.slide.slide.form.view</field>
+        <field name="model">slide.slide</field>
+        <field name="inherit_id" ref="website_slides.view_slide_slide_form"/>
+        <field name="arch" type="xml">
+            <!-- Customizable Description Field -->
+            <xpath expr="//field[@name='slide_type']" position="after">
+                <field name="doc_type" attrs="{'invisible': [('slide_type', '!=', 'document')]}" invisible="1"/>
+                <field name="ppt_type" attrs="{'invisible': [('slide_type', '!=', 'presentation')]}" invisible="1"/>
+
+            </xpath>
+            <xpath expr="//field[@name='mime_type']" position="before">
+                <field name="file_name" attrs="{'invisible': [('slide_type', 'in', ('infographic'))]}" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='datas']" position="replace">
+                <field name="datas" string="Attachment" filename="file_name" attrs="{'invisible': [('slide_type', 'not in', ('document', 'presentation'))]}"/>
+            </xpath>
+            <xpath expr="//label[hasclass('oe_edit_only')] " position="replace">
+                <label for="name" string="Lesson Title" class="oe_edit_only"/>
+            </xpath>
+            <field name ="name" position="before">
+            	<button name="translate_lesson_title_data" string="Translate" type="object" class="oe_edit_only" />
+            </field>
+            
+            <field name ="image_1920" position="replace">
+            	<field name="image_1920" widget="image" class="oe_avatar" options='{"preview_image": "image_256"}'
+                            attrs="{'invisible': [('is_category', '=', True)],'required':[('slide_type','=','infographic')]}"/>
+            </field>
+            <xpath expr="//field[@name='url'] " position="after">
+                <field name="custom_url" widget="url" attrs="{
+                    'required': [('slide_type', 'in', ('webpage'))],
+                    'invisible': [('slide_type', 'not in', ('webpage'))]}"/>
+            </xpath>
+            <xpath expr="//field[@name='datas'] " position="after">
+                <field name="live_session" widget="radio" options="{'horizontal': true}"/>
+                <field name="live_url" widget="url" attrs="{'invisible': [('live_session', '=', 'no')],'required': [('live_session', '=', 'yes')]}"/>
+                <field name="lesson_open_date" attrs="{'required': [('live_session', '=', 'yes')]}"/>
+                <field name="lesson_close_date" attrs="{'required': [('live_session', '=', 'yes')]}"/>
+
+            </xpath>
+            <xpath expr="//field[@name='slide_resource_downloadable'] " position="after">
+                <field name="is_revision"/>
+                <field name="revision_message" attrs="{'invisible': [('is_revision', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//page[@name='description'] " position="replace">
+                <page name="description" string="Description">
+                    <group>
+                        <field name="custom_description" widget="html" colspan="4"/>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='document'] " position="after">
+                <page name="configure" string="Configure Lesson">
+                    <group>
+                        <field name="course_category_id"/>
+                        <field name="random_question" attrs="{'invisible': [('slide_type', '!=', 'quiz'),('slide_type', '!=', 'video')]}"/>
+
+                        <field name="feedback_time" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="result_stored" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="pass_fail" string="Pass/Fail"/>
+                        <field name="custom_pass_percent" attrs="{'invisible': [('pass_fail', '=', 'all_pass')]}"/>
+
+                        <field name="is_resume" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="is_skipping" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="is_jumping" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="is_repeat_until_correct" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="is_mark_doubtful" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="is_backward_navigation" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="is_passed_status" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="display_solution" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="multiple_take" attrs="{'invisible': [('slide_type', '!=', 'quiz')]}"/>
+                        <field name="num_of_takes" attrs="{'invisible': [('multiple_take', '=', False)]}"/>
+                    </group>
+                </page>
+            </xpath>
+
+
+            <xpath expr="//page[@name='statistics']//field[@name='slide_views']" position="replace">
+                <field string="Enrolled User" name="slide_views"/>
+            </xpath>
+            <xpath expr="//page[@name='statistics']//field[@name='public_views']" position="replace">
+                <field string="Not Enrolled User" name="public_views" readonly="1"/>
+            </xpath>
+            <xpath expr="//group[@name='related_details']" position="replace">
+                <group name="related_details">
+                    <field name="user_id"/>
+                    <label for="completion_time"/>
+                    <div>
+                        <field name="completion_time" widget="float_time" class="oe_inline" required="1"/>
+                        <span> HH:MM</span>
+                    </div>
+                    <field name="is_preview"/>
+                    <field name="slide_resource_downloadable" attrs="{'invisible': [('slide_type', 'not in', ['presentation', 'document'])]}"/>
+                    <field name="date_published" string="Published Date" attrs="{'invisible': [('date_published', '=', False)]}" groups="base.group_no_one"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

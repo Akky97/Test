@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- QWeb Reports -->
+        <record id="certification_report_custom_one_main" model="ir.actions.report">
+            <field name="name">Certifications 1</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_one</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_one</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_two_main" model="ir.actions.report">
+            <field name="name">Certifications 2</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_two</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_two</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_three_main" model="ir.actions.report">
+            <field name="name">Certifications 3</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_three</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_three</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_four_main" model="ir.actions.report">
+            <field name="name">Certifications 4</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_four</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_four</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_five_main" model="ir.actions.report">
+            <field name="name">Certifications 5</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_five</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_five</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_six_main" model="ir.actions.report">
+            <field name="name">Certifications 6</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_six</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_six</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_seven_main" model="ir.actions.report">
+            <field name="name">Certifications 7</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_seven</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_seven</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_eight_main" model="ir.actions.report">
+            <field name="name">Certifications 8</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_eight</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_eight</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_nine_main" model="ir.actions.report">
+            <field name="name">Certifications 9</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_nine</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_nine</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_ten_main" model="ir.actions.report">
+            <field name="name">Certifications 10</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_ten</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_ten</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_eleven_main" model="ir.actions.report">
+            <field name="name">Certifications 11</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_eleven</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_eleven</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_twelve_main" model="ir.actions.report">
+            <field name="name">Certifications 12</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_twelve</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_twelve</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_thirteen_main" model="ir.actions.report">
+            <field name="name">Certifications 13</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_thirteen</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_thirteen</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_fourteen_main" model="ir.actions.report">
+            <field name="name">Certifications 14</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_fourteen</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_fourteen</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="certification_report_custom_fifteen_main" model="ir.actions.report">
+            <field name="name">Certifications 15</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ecom_lms.certification_report_view_custom_fifteen</field>
+            <field name="report_file">ecom_lms.certification_report_view_custom_fifteen</field>
+            <field name="print_report_name">'Certification - %s' % (object.survey_id.display_name)</field>
+            <field name="attachment">'certification.pdf'</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+        <record id="assessment_score_form_view12" model="ir.ui.view">
+            <field name="name">assessment.score.form</field>
+            <field name="model">assessment.score</field>
+            <field name="arch" type="xml">
+                <form string="Assessment Score Report">
+                <group>
+                	<group >
+                		<field name="region" required="1"/>
+                        <!-- <field name="user_ids" widget="many2many_tags"/> -->
+                    </group>
+                </group>
+                     <footer>
+                         <button name="button_print" string="Print" type="object" class="oe_highlight" />
+                         <button string="Cancel" class="oe_link" special="cancel" /> 
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="assessment_score_report_print" model="ir.actions.act_window">
+            <field name="name">Assessment Score Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">assessment.score</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+       <record id="assessment_score_report_view" model="ir.ui.view">
+			<field name="name">Assessment Score Report</field>
+			<field name="model">assessment.score.report</field>
+			<field name="arch" type="xml">
+				<form string="Excel Report file" create="false" edit="false" duplicate="false" delete="false">
+                    <group>
+                        <field name="excel_file" readonly="1" filename="file_name" />
+                        <field name="file_name" invisible="1" />
+				    </group>
+				</form>
+			</field>
+		</record> 
+		
+		<menuitem id="assessment_score_report_view_menu" name="Assessment Score Report" parent="website_slides.website_slides_menu_report" action="assessment_score_report_print" sequence="2"/>
+    </data>
+</odoo>

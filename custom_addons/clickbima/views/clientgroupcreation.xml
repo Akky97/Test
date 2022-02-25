@@ -1,0 +1,64 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="clientgroupcreationlist">
+      <field name="name">clientgroupcreation list</field>
+      <field name="model">clientgroupcreation</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="clienttype"/>
+          <field name="customertype"/>
+          <field name="clientgroupname"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="clientgroupcreationform">
+      <field name="name">clientgroupcreation form</field>
+      <field name="model">clientgroupcreation</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="name" options="{'no_create': True, 'no_create_edit':True}" placeholder="---Select One---"/>
+              <field name="clienttype" placeholder="Client Type" widget="radio" options="{'horizontal': true}"/>
+              <field name="rm" placeholder="RM"/>
+              <field name="sm" placeholder="SM"/>
+              <field name="customertype" placeholder="Customer Type"/>
+              <field name="clientgroupname" placeholder="Client Group Name"/>
+
+
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="clientgroupcreation_action_window">
+      <field name="name">Client Group Creation</field>
+      <field name="res_model">clientgroupcreation</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="clientgroupcreation_action_server">
+      <field name="name">clientgroupcreation server</field>
+      <field name="model_id" ref="model_clientgroupcreation"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Client Group Creation" id="list_17" parent="clickbima.menu_2" action="clientgroupcreation_action_window" sequence="17"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

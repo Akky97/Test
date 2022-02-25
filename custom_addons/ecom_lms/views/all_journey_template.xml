@@ -1,0 +1,595 @@
+<?xml version="1.0" ?>
+<odoo><data>
+
+	<!-- Journey all/main template -->
+	<template id='journey_all' name="Odoo All Journey">
+	    <t t-set="body_classname" t-value="'o_wslides_body'"/>
+	    <t t-call="website.layout">
+	        <div id="wrap" class="wrap o_wslides_wrap">
+	            <section class="s_banner bg-900" style="background-image: url(&quot;/website_slides/static/src/img/banner_default_all.svg&quot;); background-size: cover; background-position: 80% 20%" data-snippet="s_banner">
+	                <div class="container py-5">
+	                    <h1  class="display-3 mb-0">All Journey</h1>
+	                </div>
+	            </section>
+	            <div class="container mt16 o_wslides_home_nav position-relative">
+	                <!-- Navbar dynamically composed using displayed channel tag groups. -->
+	                <nav class="navbar navbar-expand-md navbar-light shadow-sm pl-0" style="background: white!important">
+	                    <div class="navbar-nav border-right">
+	                        <a class="nav-link nav-item px-3" href="/slides"><i class="fa fa-chevron-left"/></a>
+	                    </div>
+	                    <!-- Clear filtering (mobile)-->
+	                    <!-- <div class="form-inline text-nowrap ml-auto d-md-none" t-if="search_slide_type or search_my or search_tags or search_channel_tag_id">
+	                        <a href="/slides/all" class="btn btn-info mr-2" role="button" title="Clear filters">
+	                            <i class="fa fa-eraser"/> Clear filters
+	                        </a>
+	                    </div> -->
+	                    <!-- <form t-else="" method="GET" class="form-inline o_wslides_nav_navbar_right d-md-none">
+	                        Search box (mobile)
+	                        <div class="input-group">
+	                            <input type="search" name="search" class="form-control"
+	                                placeholder="Search courses" aria-label="Search"
+	                                t-att-value="search_term"/>
+	                            <input t-if="search_tags" type="hidden" name="tags" t-att-value="str(search_tags.ids)"/>
+	                            <input t-if="search_my" type="hidden" name="my" t-att-value="1"/>
+	                            <input t-if="search_slide_type" type="hidden" name="slide_type" t-att-value="search_slide_type" />
+	                            <div class="input-group-append">
+	                                <button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+	                                    <i class="fa fa-search"/>
+	                                </button>
+	                            </div>
+	                        </div>
+	                    </form> -->
+	                    <!-- <button class="navbar-toggler px-1" type="button"
+	                        data-toggle="collapse" data-target="#navbarTagGroups"
+	                        aria-controls="navbarTagGroups" aria-expanded="false" aria-label="Toggle navigation">
+	                        <span class="navbar-toggler-icon small"/>
+	                    </button> -->
+	                    <div class="collapse navbar-collapse" id="navbarTagGroups">
+	                        <!-- <t t-set="search_tag_groups" t-value="search_tags.mapped('group_id')"/>
+	                        <ul class="navbar-nav flex-grow-1">
+	                            <t t-foreach="tag_groups" t-as="tag_group">
+	                                <li t-att-class="'nav-item dropdown ml16 %s' % ('active' if tag_group in search_tag_groups else '')">
+	                                    <a class="nav-link dropdown-toggle"
+	                                        href="/slides/all"
+	                                        t-att-data-target="'#navToogleTagGroup%s' % tag_group.id"
+	                                        role="button" data-toggle="dropdown"
+	                                        aria-haspopup="true" aria-expanded="false"
+	                                        t-esc="tag_group.name"/>
+	                                    <div class="dropdown-menu" t-att-id="'navToogleTagGroup%s' % tag_group.id">
+	                                        <t t-foreach="tag_group.tag_ids" t-as="tag">
+	                                            <a rel="nofollow" t-att-class="'dropdown-item %s' % ('active' if tag in search_tags else '')"
+	                                                t-att-href="'/slides/all?%s' % keep_query('*', tags=str((search_tags - tag).ids if tag in search_tags else (tag | search_tags).ids))"
+	                                                t-esc="tag.name"/>
+	                                        </t>
+	                                    </div>
+	                                </li>
+	                            </t>
+	                        </ul> -->
+	                        <!-- Clear filtering (desktop)-->
+	                        <!-- <div class="form-inline ml-auto d-none d-md-flex" t-if="search_slide_type or search_my or search_tags or search_channel_tag_id">
+	                            <a href="/slides/all" class="btn btn-info text-nowrap mr-2" role="button" title="Clear filters">
+	                                <i class="fa fa-eraser"/> Clear filters
+	                            </a>
+	                        </div> -->
+	                        <!-- Search box (desktop) -->
+	                        <!-- <form method="GET" class="form-inline o_wslides_nav_navbar_right d-none d-md-flex">
+	                            <div class="input-group">
+	                                <input type="search" name="search" class="form-control"
+	                                    placeholder="Search courses" aria-label="Search"
+	                                    t-att-value="search_term"/>
+	                                <input t-if="search_tags" type="hidden" name="tags" t-att-value="str(search_tags.ids)"/>
+	                                <input t-if="search_my" type="hidden" name="my" t-att-value="1"/>
+	                                <input t-if="search_slide_type" type="hidden" name="slide_type" t-att-value="search_slide_type" />
+	                                <div class="input-group-append">
+	                                    <button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+	                                        <i class="fa fa-search"/>
+	                                    </button>
+	                                </div>
+	                            </div>
+	                        </form> -->
+	                    </div>
+	                </nav>
+	                <div class="o_wprofile_email_validation_container mb16 mt16">
+	                    <t t-call="website_profile.email_validation_banner">
+	                        <t t-set="redirect_url" t-value="'/slides'"/>
+	                       <!--  <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate at the eLearning.</t>
+	                        <t t-set="additional_validated_email_message"> You may now participate in our eLearning.</t> -->
+	                    </t>
+	                </div>
+	                <!-- Display tags -->
+	                <!-- <t t-if="search_my">
+	                      <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2">
+	                      <i class="fa fa-tag mr-2 text-muted"/>
+	                      My Courses
+	                      <a t-att-href="'/slides/all?%s' % keep_query('*', my=None)" class="btn border-0 py-1">&#215;</a>
+	                    </span>
+	                </t>
+	                <t t-if="search_term">
+	                      <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2">
+	                      <i class="fa fa-tag mr-2 text-muted"/>
+	                      <t t-esc="search_term"/>
+	                      <a t-att-href="'/slides/all?%s' % keep_query('*', search=None)" class="btn border-0 py-1">&#215;</a>
+	                    </span>
+	                </t> -->
+	                <!-- <t t-foreach="search_tags" t-as="tag">
+	                    <span class="align-items-baseline border d-inline-flex pl-2 rounded mb-2">
+	                        <i class="fa fa-tag mr-2 text-muted"/>
+	                        <t t-esc="tag.display_name"/>
+	                        <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((search_tags - tag).ids))" class="btn border-0 py-1">&#215;</a>
+	                    </span>
+	                </t> -->
+	            </div>
+	            <div class="container o_wslides_home_main pb-5">
+	                <div t-if="not journey_all_details" class="alert alert-info mb-5">
+	                    No Journey was found matching your search.
+	                </div> 
+	                <div class="row mx-n2">
+	                    <t t-foreach="journey_all_details" t-as="journey">
+	                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 px-2 d-flex flex-grow-1">
+	                            <t t-call="ecom_lms.journey_card"/>
+	                        </div>
+	                    </t>
+	                </div>
+	            </div>
+	
+	            <t t-call="website_slides.courses_footer"></t>
+	        </div>
+	    </t>
+	</template>
+
+   <template id="pwa_journey_all_courses_template" name="pwa_journey_all_courses_template_page">
+        <t t-name="website.content-view">
+			  <t t-call="website.layout">
+					 <style>
+						 .view_all_banner {
+								height: auto;
+								width: 100%;
+								background: #FFFFFF;
+								background: -webkit-linear-gradient(to left, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));
+								background: linear-gradient(to top, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));
+								border-radius: 10px;
+							}
+							.card-title {
+									margin-bottom: 0.75rem;
+									white-space: nowrap;
+									width: 133px;
+									overflow: hidden;
+									text-overflow: ellipsis;
+									height: 22px;
+								}
+							.pwa_view_content_view_badge_btn{
+								text-align: end !important;
+								padding: 17px 21px;
+						 }
+							   .view_all_view_head {
+								font-size: 40px;
+							}
+							 .view_all_banner_sub {
+									font-size: 20px;
+								}
+
+							 .card-img-top{
+									padding-top: 50%;
+									background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+									background-size: cover;
+									background-position: center;
+							}
+							@media(max-width: 765px){
+						 .pwa_content_view_play_btn{
+							 margin: -9px 9px;
+						 }
+						 .card-title{
+							white-space: nowrap;
+							width: 88px;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							height: 27px;
+							 margin-left: -15px;
+						 }
+						 .card-text{
+							white-space: nowrap;
+							width: 88px;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							height: 27px;
+							 margin-left: -15px;
+						 }
+								.pwa_content_view_btn_section{
+								padding: 4px 11px;
+								font-size: 14px;
+							}
+						 .pwa_content_view_btn_section_icon{
+								display:none;
+						 }
+								 .view_all_banner{
+									height:auto;
+									width:100%;
+									background: #FFFFFF;
+									background: -webkit-linear-gradient(to left, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));  background: linear-gradient(to top, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5))
+									}
+								.card-img-top{
+										padding-top: 80%;
+										background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+										background-size: cover;
+										background-position: center;
+								}
+								.view_all_view_head{
+								 font-size: 27px;
+								}
+							}
+							@media (max-width: 525px){
+						 .pwa_view_content_view_badge_btn1{
+							padding: 4px 9px;
+							font-size: 13px;
+						 }
+							 .view_all_banner_sub {
+									font-size: 17px;
+								}
+
+							 }
+							@media (max-width: 360px){
+									.pwa_content_view_play_btn {
+										margin: -10px -15px;
+									}
+									.view_all_view_head {
+										font-size: 24px;
+									}
+									.view_all_banner_sub{
+									font-size: 12px;
+									}
+									.card-img-top {
+										padding-top: 93%;
+										background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+										background-size: cover;
+										background-position: center;
+									}
+									.view_all_card_text_section_head{
+									white-space: nowrap;
+									width: 138px;
+									overflow: hidden;
+									text-overflow: ellipsis;
+									height: 22px;
+									}
+
+							.pwa_all_course_view_sub_head{
+									white-space: nowrap;
+									width: 109px;
+									overflow: hidden;
+									text-overflow: ellipsis;
+									height: 17px;
+								}
+
+
+							}
+						  @media (max-width: 330px){
+						 .pwa_content_view_Completion_status_msg{
+						 font-size: 13px;
+						 }
+						 .pwa_view_content_view_badge_btn1 {
+							padding: 4px 9px;
+							font-size: 10px;
+						}
+								.pwa_content_view_btn_section {
+								padding: 4px 8px;
+								font-size: 10px;
+							}
+								.card-title {
+								white-space: nowrap;
+								width: 74px;
+								overflow: hidden;
+								text-overflow: ellipsis;
+								height: 27px;
+								margin-left: -15px;
+							}
+						 }
+
+							@media (max-width: 320px){
+							.view_all_view_head {
+								font-size: 17px;
+							}
+							 .view_all_banner_sub{
+							font-size: 9px;
+							}
+						 .pwa_content_view_play_btn {
+							margin: -10px -21px;
+						}
+							}
+						 @media (max-width: 301px)
+								.card-title {
+									white-space: nowrap;
+									width: 73px;
+									overflow: hidden;
+									text-overflow: ellipsis;
+									height: 27px;
+									margin-left: -15px;
+								}
+						 }
+
+				  </style>
+				<div id="wrap" class="oe_structure oe_empty">
+				  <div class="container">
+					<div class="view_all_banner">
+								<div class="d-flex justify-content-between">
+									<div class="display-4 ml-2">
+									  <h1 class="view_all_view_head mt-4" style=""><span t-esc="journey.description_short"></span></h1>
+									</div>
+									<div class="mr-2">
+									  <i class="fa fa-1x mt-3 fa-ellipsis-v"/>
+									</div>
+								</div>
+								  <div class="d-flex">
+								   <p class="ml-2">
+										<font class="view_all_banner_sub">Created :<t t-esc="journey.create_date" t-options="{'widget': 'date'}"/></font>
+									  </p>
+									  <p class="ml-2">
+										<font style="font-size: 18px;">&amp;nbsp; | &amp;nbsp;</font>
+									  </p>
+									  <!-- <p class="ml-2">
+										<font class="view_all_banner_sub">Ended : 05 October 2021</font>
+									  </p> -->
+									  <p class="ml-2">
+										<font class="view_all_banner_sub">Responsible : <span t-field="journey.user_id"/></font>
+									  </p>
+
+<!--									  <t t-if="journey.members_count">-->
+<!--										  <p class="ml-2">-->
+<!--											<font class="view_all_banner_sub">Members : <t t-esc="journey.members_count"/></font>-->
+<!--										  </p>-->
+<!--									  </t>-->
+								  </div>
+									<div>
+										<t t-if="journey.members_count">
+										  <p class="ml-2">
+											<font class="view_all_banner_sub">Members : <t t-esc="journey.members_count"/></font>
+										  </p>
+									  </t>
+									</div>
+
+								<div class="pwa_view_content_view_badge_btn">
+									<button class="btn btn-primary pwa_view_content_view_badge_btn1" style="">View Badge</button>
+								</div>
+					</div>
+				  </div>
+				  <div class="container">
+					<div class="shadow p-3 mb-5 bg-white rounded">
+
+
+
+
+			<!--        <a t-if="not channel.is_member and channel.enroll == 'public'" role="button"-->
+			<!--                    class="btn btn-primary btn-block o_wslides_js_course_join_link"-->
+			<!--                    title="Start Course" aria-label="Start Course Channel"-->
+			<!--                    t-att-href="'#'"-->
+			<!--                    t-att-data-channel-id="channel.id"-->
+			<!--                    t-att-data-channel-enroll="channel.enroll">-->
+			<!--                    <span class="cta-title text_small_caps">-->
+			<!--                        <t t-if="channel.channel_type == 'documentation'">Start Course</t>-->
+			<!--                        <t t-else="">Join Course</t>-->
+			<!--                    </span>-->
+			<!--                </a>-->
+			<!--                -->
+			<!--                <div t-if="not channel.is_member and channel.enroll == 'invite'" class="text-center">-->
+			<!--                    <div t-attf-class="alert my-0 bg-100 p-2 #{'o_wslides_js_channel_enroll' if not is_public_user else ''}"-->
+			<!--                         t-att-data-channel-id="channel.id">-->
+			<!--                        Private Course-->
+			<!--                        <div t-if="is_public_user">-->
+			<!--                            <small>-->
+			<!--                                Please <a t-att-href="'/web/login?redirect=/slides/%s' % (slug(channel))">sign in</a> to contact responsible.-->
+			<!--                            </small>-->
+			<!--                        </div>-->
+			<!--                        <div t-elif="channel.has_requested_access">-->
+			<!--                            <small class="text-success">-->
+			<!--                                Request already sent-->
+			<!--                            </small>-->
+			<!--                        </div>-->
+			<!--                        <div t-else="" class="o_wslides_enroll_msg">-->
+			<!--                            <small>-->
+			<!--                                <div t-field="channel.enroll_msg"/>-->
+			<!--                            </small>-->
+			<!--                        </div>-->
+			<!--                    </div>-->
+			<!--                </div>-->
+			<!--                <t t-if="channel.is_member">-->
+			<!--                    <button class="d-flex align-items-center alert my-0 px-2 px-xl-3 bg-100 w-100 o_wslides_js_channel_unsubscribe"-->
+			<!--                            t-att-data-channel-id="channel.id"-->
+			<!--                            t-att-data-is-follower="channel.message_is_follower"-->
+			<!--                            t-att-data-enroll="channel.enroll">-->
+			<!--                        <t t-call="website_slides.slides_misc_user_image">-->
+			<!--                            <t t-set="img_class" t-value="'rounded-circle mr-1'"/>-->
+			<!--                            <t t-set="img_style" t-value="'width: 1.4em; height: 1.4em; object-fit: cover;'"/>-->
+			<!--                        </t>-->
+			<!--                        <h6 class="d-flex flex-grow-1 my-0">You're enrolled</h6>-->
+			<!--                        <i class="fa fa-check"/>-->
+			<!--                        <i class="fa fa-times"/>-->
+			<!--                    </button>-->
+			<!--                    <div class="d-flex align-items-center pt-3">-->
+			<!--                        <t t-if="channel.completed">-->
+			<!--                            <span class="badge badge-pill badge-success py-1 px-2 mx-auto" style="font-size: 1em"><i class="fa fa-check"/> Completed</span>-->
+			<!--                        </t>-->
+			<!--                        <t t-else="">-->
+			<!--                            <div class="progress flex-grow-1 bg-black-50" style="height: 6px;">-->
+			<!--                                <div class="progress-bar" role="progressbar" t-attf-style="width: #{channel.completion}%" t-att-aria-valuenow="channel.completion" aria-valuemin="0" aria-valuemax="100"></div>-->
+			<!--                            </div>-->
+			<!--                            <div class="ml-3 small">-->
+			<!--                                <span class="o_wslides_progress_percentage" t-esc="channel.completion"/> %-->
+			<!--                            </div>-->
+			<!--                        </t>-->
+			<!--                    </div>-->
+			<!--                </t>-->
+			<!--                <button t-attf-class="btn d-md-none bg-white ml-1 border #{'alert' if channel.is_member else ''} #{'align-self-start' if channel.is_member or channel.enroll == 'invite' else 'align-self-end'}" type="button" data-toggle="collapse" data-target="#o_wslides_sidebar_collapse" aria-expanded="false" aria-controls="o_wslides_sidebar_collapse">More info</button>-->
+			<!--        -->
+			<!--        -->
+			<!--        	<tr t-if="channel.user_id">-->
+			<!--                 <th class="border-top-0">Responsible</th>-->
+			<!--                 <td class="border-top-0"><span t-field="channel.user_id"/></td>-->
+			<!--             </tr>-->
+			<!--             <tr>-->
+			<!--                 <th class="border-top-0">Last Update</th>-->
+			<!--                 <td class="border-top-0"><t t-esc="channel.slide_last_update" t-options="{'widget': 'date'}"/></td>-->
+			<!--             </tr>-->
+			<!--             <tr t-if="channel.total_time">-->
+			<!--                 <th class="border-top-0">Completion Time</th>-->
+			<!--                 <td class="border-top-0"><t class="font-weight-bold" t-esc="channel.total_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></td>-->
+			<!--             </tr>-->
+			<!--             <tr>-->
+			<!--                 <th>Members</th>-->
+			<!--                 <td><t t-esc="channel.members_count"/></td>-->
+			<!--             </tr>-->
+			<!--             -->
+			<!--             <button role="button" class="btn btn-link btn-block" title="Share Channel"-->
+			<!--                    aria-label="Share Channel"-->
+			<!--                    data-toggle="modal" t-att-data-target="'#slideChannelShareModal_%s' % channel.id">-->
+			<!--                    <i class="fa fa-share-square fa-fw"/> Share-->
+			<!--                </button>-->
+
+					  <p class="pwa_content_view_Completion_status_msg">Watch all content or score a <strong>minimum 65%</strong> on a test to complete the courses</p>
+					  <p class="text-primary">Completion Status</p>
+						  <div class="d-flex">
+            <!-- <div class="bg-primary rounded mt-2" style="height:10px;width:50%"/> -->
+            
+            <t t-if="journey in request.env.user.my_journey_ids">
+              <t t-if="journey_completed">
+                        <span class="badge badge-pill badge-success py-1 px-2 mx-auto mt-2" style="font-size: 1em"><i class="fa fa-check"/> Completed</span>
+               </t>
+               <t t-else="">
+                   <div class="progress flex-grow-1 bg-black-50 mt-2" style="height: 6px;">
+                       <div class="progress-bar" role="progressbar" t-attf-style="width: #{journey_completion}%" t-att-aria-valuenow="journey_completion" aria-valuemin="0" aria-valuemax="100"></div>
+                   </div>
+                   <div class="ml-3 small">
+                       <span class="o_wslides_progress_percentage" t-esc="journey_completion"/> %
+                   </div>
+               </t>
+			</t>
+            
+            <t t-if='not journey_subscribed'>
+				<a role="button"
+					class="btn btn-primary ml-3"
+					title="Join Journey" aria-label="Subscribed Journey"
+					t-attf-href="/pwa/join/journey/#{slug(journey)}" >
+					<span class="cta-title text_small_caps">
+						<!-- <t t-if="channel.channel_type == 'documentation'">Start Course</t> -->
+						<t>Subscribe Journey</t>
+					</span>
+				</a>
+			</t>
+			<t t-if='journey_subscribed'>
+             	<div class='btn btn-primary ml-3'>You're Subscribed </div>
+             </t>
+            <!-- <button class="btn btn-primary ml-3">Take Test</button> -->
+          </div>
+							<!-- <t t-if="channel.is_member">
+								<button class="d-flex align-items-center alert my-0 px-2 px-xl-3 bg-100 w-100 o_wslides_js_channel_unsubscribe"
+										t-att-data-channel-id="channel.id"
+										t-att-data-is-follower="channel.message_is_follower"
+										t-att-data-enroll="channel.enroll">
+									<t t-call="website_slides.slides_misc_user_image">
+										<t t-set="img_class" t-value="'rounded-circle mr-1'"/>
+										<t t-set="img_style" t-value="'width: 1.4em; height: 1.4em; object-fit: cover;'"/>
+									</t>
+									<h6 class="d-flex flex-grow-1 my-0">You're enrolled</h6>
+									<i class="fa fa-check"/>
+									<i class="fa fa-times"/>
+								</button>
+								<div class="d-flex align-items-center pt-4 mb-5" >
+									<t t-if="channel.completed">
+										<span class="badge badge-pill badge-success py-1 px-2 mx-auto" style="font-size: 1em"><i class="fa fa-check"/> Completed</span>
+									</t>
+									<t t-else="">
+										<div class="progress flex-grow-1 bg-black-50 rounded" style="height:10px;">
+											<div class="progress-bar" role="progressbar" t-attf-style="width: #{channel.completion}%" t-att-aria-valuenow="channel.completion" aria-valuemin="0" aria-valuemax="100"></div>
+										</div>
+										<div class="ml-3 small" >
+											<span class="o_wslides_progress_percentage" t-esc="channel.completion"/> %
+										</div>
+										<span class="btn btn-primary" style="margin-left: 28px;">Take test</span>
+
+									</t>
+								</div>
+							</t> -->
+					</div>
+					<!-- <div class="shadow p-3 mb-5 bg-white rounded">
+					  <div class="d-flex justify-content-between">
+						<div>
+						  <button class="btn btn-primary m-2 pwa_content_view_btn_section">Content</button>
+						  <button class="btn btn-outline-dark m-2 pwa_content_view_btn_section">Overview</button>
+						  <button class="btn btn-outline-dark m-2 pwa_content_view_btn_section">Resources</button>
+						</div>
+						<div class="pwa_content_view_btn_section_icon">
+						  <i class="fa fa-1x rounded fa-align-justify" data-original-title="" title="" aria-describedby="tooltip662934"/>
+						  <i class="fa fa-1x rounded bg-primary fa-th-large" data-original-title="" title="" aria-describedby="tooltip230074"/>
+						</div>
+					  </div>
+					</div> -->
+				  </div>
+				  <section class="s_three_columns bg-200 pt32 pb32 o_colored_level" data-vcss="001" data-snippet="s_three_columns" data-name="Columns">
+					<div class="container">
+			<!--        	<div>-->
+			<!--        		<t t-foreach="channel.slide_ids" t-as="slide">-->
+			<!--                     <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">-->
+			<!--                     	<t t-if="slide.slide_type and not slide.is_category">-->
+			<!--                     	-->
+			<!--                     		<a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/pwa/slides/slide/#{slug(slide)}">-->
+			<!--				                <span t-field="slide.name"/>-->
+			<!--				            </a>-->
+			<!--	                         &lt;!&ndash; <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/slides/slide/#{slug(slide)}">-->
+			<!--				                <span t-field="slide.name"/>-->
+			<!--				            </a> &ndash;&gt;-->
+			<!--				            <span t-else="">-->
+			<!--				                <span t-esc="slide.name"/>-->
+			<!--				            </span>-->
+			<!--			            </t>-->
+			<!--			            <t t-else="">-->
+			<!--			                <span t-esc="slide.name"/>-->
+			<!--			            </t>-->
+			<!--                     </div>-->
+			<!--                 </t>-->
+			<!--        	</div>-->
+
+					  <div class="row d-flex align-items-stretch">
+						  <t t-foreach="journey.courses_ids" t-as="course">
+						<div class="col-lg-3 col-6 s_col_no_bgcolor pt16 pb16">
+							  <div class=" bg-white h-100" style="box-shadow: 0px 6px 12px #0000002b;width: 104% !important;">
+								<img class="card-img-top" alt="" loading="lazy" data-original-id="312" data-original-src="/web/image/website.library_image_11" data-mimetype="image/jpeg"/>
+										<div class="card-body">
+												<div class="row">
+													<div class="col-8">
+														 <div>
+													<p class="card-title">
+														<a class="o_wslides_js_slides_list_slide_link" t-attf-href="/pwa/slides/#{slug(course.course_id)}" t-esc="course.course_id.name"/>
+													</p>
+													<p class="card-text"><small t-if="course.course_id.total_time" class="font-weight-bold" t-esc="course.course_id.total_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></p>
+												  	<p class="card-text"><t t-esc="request.env.user.state_get(course.course_id.id)"/></p>
+
+												  </div>
+													</div>
+													  <div class="col-2">
+														  <div class="pwa_content_view_play_btn">
+												   			<a  t-attf-href="/pwa/slides/#{slug(course.course_id)}">
+															<img style="" src="/ecom_lms/static/src/img/ecom_lms_play_img.png" alt="" loading="lazy"/>
+															</a>
+														  </div>
+													  </div>
+
+
+												</div>
+												<div>
+														<t t-if="course.course_id.course_close_date">
+		                                    			<p class="card-text">Close Date: <t t-esc="course.course_id.course_close_date" t-options="{'widget': 'date'}"/></p>
+	                                    				</t>
+													</div>
+										</div>
+							  </div>
+						</div>
+						   </t>
+
+					  </div>
+					</div>
+				  </section>
+
+				</div>
+			  </t>
+			</t>
+
+    </template>
+	</data>
+</odoo>

@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+        <record id="export_review_form_view12" model="ir.ui.view">
+            <field name="name">export.review.form</field>
+            <field name="model">export.review</field>
+            <field name="arch" type="xml">
+                <form string="Review Report">
+                <group>
+                	<group >
+                		<field name="region" required="1"/>
+                        <!-- <field name="user_ids" widget="many2many_tags"/> -->
+                    </group>
+                </group>
+                     <footer>
+                         <button name="button_print" string="Print" type="object" class="oe_highlight" />
+                         <button string="Cancel" class="oe_link" special="cancel" /> 
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="export_review_report_print" model="ir.actions.act_window">
+            <field name="name">Review Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">export.review</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+       <record id="export_review_report_view" model="ir.ui.view">
+			<field name="name">Review Report</field>
+			<field name="model">export.review.report</field>
+			<field name="arch" type="xml">
+				<form string="Excel Report file" create="false" edit="false" duplicate="false" delete="false">
+                    <group>
+                        <field name="excel_file" readonly="1" filename="file_name" />
+                        <field name="file_name" invisible="1" />
+				    </group>
+				</form>
+			</field>
+		</record> 
+		
+		<menuitem id="export_review_report_view_menu" name="Review Report" parent="website_slides.website_slides_menu_report" action="export_review_report_print" sequence="2"/>
+    </data>
+</odoo>

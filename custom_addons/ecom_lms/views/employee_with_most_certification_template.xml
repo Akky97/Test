@@ -1,0 +1,180 @@
+<?xml version="1.0" ?>
+<odoo><data>
+
+	<template id='emp_certificate_course_completed_multi_card' name="Employee Card">
+	    <div t-attf-class="card w-100 o_wslides_course_card mb-4">
+	        <div class="card-body p-3">
+	            <div class="card-text mt-1">
+	                <div class="font-weight-light o_wslides_desc_truncate_3" t-field="certification_course.name"/> 
+	            </div>
+	        </div> 
+	    </div>
+	</template>
+
+	<template id='employee_certification_course_card_temp_id' name="Odoo Employees Course Certification Card">
+	    <t t-set="body_classname" t-value="'o_wslides_body'"/>
+	    <t t-call="website.layout">
+	        <div id="wrap" class="wrap o_wslides_wrap">
+	            <section class="s_banner bg-900" style="background-image: url(&quot;/website_slides/static/src/img/banner_default_all.svg&quot;); background-size: cover; background-position: 80% 20%" data-snippet="s_banner">
+	                <div class="container py-5">
+	                    <h1  class="display-3 mb-0">Courses</h1>
+	                </div>
+	            </section>
+	            <div class="container mt16 o_wslides_home_nav position-relative">
+	                <nav class="navbar navbar-expand-md navbar-light shadow-sm pl-0" style="background: white!important">
+	                    <div class="navbar-nav border-right">
+	                        <a class="nav-link nav-item px-3" href="/slides"><i class="fa fa-chevron-left"/></a>
+	                    </div>
+	                    <div class="collapse navbar-collapse" id="navbarTagGroups">
+	                    </div>
+	                </nav>
+	                <div class="o_wprofile_email_validation_container mb16 mt16">
+	                    <t t-call="website_profile.email_validation_banner">
+	                        <t t-set="redirect_url" t-value="'/slides'"/>
+	                    </t>
+	                </div>
+	            </div>
+	            <div class="container o_wslides_home_main pb-5">
+	                <div t-if="not certification_course_details" class="alert alert-info mb-5">
+	                    No Courses was found matching your search.
+	                </div> 
+	                <div class="row mx-n2">
+	                    <t t-foreach="certification_course_details" t-as="certification_course">
+	                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 px-2 d-flex flex-grow-1">
+	                        	<!-- <span t-field="certification_course.name"/>  -->
+	                            <t t-call="ecom_lms.emp_certificate_course_completed_multi_card"/>  
+	                        </div>
+	                    </t>
+	                </div> 
+	            </div>
+	
+	            <t t-call="website_slides.courses_footer"></t>
+	        </div>
+	    </t>
+	</template>
+	
+	
+
+	<template id='emp_certificate_card' name="Employee Card">
+	    <div t-attf-class="card w-100 o_wslides_course_card mb-4">
+	          
+	        <div class="card-body p-3">
+	            <div class="card-text mt-1">
+	            	<a t-attf-href="/certificate/courses/#{slug(certification)}/#{slug(employee)}" t-esc="certification.title">
+	       			 </a>
+	               <!--  <div class="font-weight-light o_wslides_desc_truncate_3" t-field="certification.title"/>  -->
+	            </div>
+	        </div> 
+	    </div>
+	</template>
+
+	<template id='employee_certification_card_details' name="Odoo Employees Certification Card">
+	    <t t-set="body_classname" t-value="'o_wslides_body'"/>
+	    <t t-call="website.layout">
+	        <div id="wrap" class="wrap o_wslides_wrap">
+	            <section class="s_banner bg-900" style="background-image: url(&quot;/website_slides/static/src/img/banner_default_all.svg&quot;); background-size: cover; background-position: 80% 20%" data-snippet="s_banner">
+	                <div class="container py-5">
+	                    <h1  class="display-3 mb-0">Certification</h1>
+	                </div>
+	            </section>
+	            <div class="container mt16 o_wslides_home_nav position-relative">
+	                <nav class="navbar navbar-expand-md navbar-light shadow-sm pl-0" style="background: white!important">
+	                    <div class="navbar-nav border-right">
+	                        <a class="nav-link nav-item px-3" href="/slides"><i class="fa fa-chevron-left"/></a>
+	                    </div>
+	                    <div class="navbar-nav border-right">
+	                    	<!-- <span t-field="employee.name"/> -->
+	                        <a class="nav-link nav-item px-3" href="/home/employee-with-most-certification">Employees</a>
+	                   
+                   		 </div>
+                   		 <div class="navbar-nav border-right">
+	                    	<span t-field="employee.name"/> 
+	                   
+                   		 </div>
+	                    <div class="collapse navbar-collapse" id="navbarTagGroups">
+	                    </div>
+	                </nav>
+	                <div class="o_wprofile_email_validation_container mb16 mt16">
+	                    <t t-call="website_profile.email_validation_banner">
+	                        <t t-set="redirect_url" t-value="'/slides'"/>
+	                    </t>
+	                </div>
+	            </div>
+	            <div class="container o_wslides_home_main pb-5">
+	                <div t-if="not certification_details" class="alert alert-info mb-5">
+	                    No Certification was found matching your search.
+	                </div> 
+	                <div class="row mx-n2">
+	                    <t t-foreach="certification_details" t-as="certification">
+	                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 px-2 d-flex flex-grow-1">
+	                        	<!-- <span t-field="certification.title"/> -->
+	                            <t t-call="ecom_lms.emp_certificate_card"/> 
+	                        </div>
+	                    </t>
+	                </div> 
+	            </div>
+	
+	            <t t-call="website_slides.courses_footer"></t>
+	        </div>
+	    </t>
+	</template>
+
+
+	<template id='emp_card' name="Employee Card">
+	    <div t-attf-class="card w-100 o_wslides_course_card mb-4">
+	        <!-- <a t-attf-href="/certificate/employee/#{slug(employee)}" t-esc="employee.name">
+	        </a> --> 
+	        <div class="card-body p-3">
+	            <div class="card-text mt-1">
+	            	<a t-attf-href="/certificate/employee/#{slug(employee)}" t-esc="employee.name">
+	        		</a>
+	                <!-- <div class="font-weight-light o_wslides_desc_truncate_3" t-field="employee.name"/>  -->
+	            </div>
+	        </div> 
+	    </div>
+	</template>
+
+	<!-- Employees with most certifications Template -->
+	<template id='emp_with_most_certificate_template' name="Odoo All Employees">
+	    <t t-set="body_classname" t-value="'o_wslides_body'"/>
+	    <t t-call="website.layout">
+	        <div id="wrap" class="wrap o_wslides_wrap">
+	            <section class="s_banner bg-900" style="background-image: url(&quot;/website_slides/static/src/img/banner_default_all.svg&quot;); background-size: cover; background-position: 80% 20%" data-snippet="s_banner">
+	                <div class="container py-5">
+	                    <h1  class="display-3 mb-0">All Employees</h1>
+	                </div>
+	            </section>
+	            <div class="container mt16 o_wslides_home_nav position-relative">
+	                <nav class="navbar navbar-expand-md navbar-light shadow-sm pl-0" style="background: white!important">
+	                    <div class="navbar-nav border-right">
+	                        <a class="nav-link nav-item px-3" href="/slides"><i class="fa fa-chevron-left"/></a>
+	                    </div>
+	                    
+	                    <div class="collapse navbar-collapse" id="navbarTagGroups">
+	                    </div>
+	                </nav>
+	                <div class="o_wprofile_email_validation_container mb16 mt16">
+	                    <t t-call="website_profile.email_validation_banner">
+	                        <t t-set="redirect_url" t-value="'/slides'"/>
+	                    </t>
+	                </div>
+	            </div>
+	            <div class="container o_wslides_home_main pb-5">
+	                <div t-if="not employees_details" class="alert alert-info mb-5">
+	                    No Employee was found matching your search.
+	                </div> 
+	                <div class="row mx-n2">
+	                    <t t-foreach="employees_details" t-as="employee">
+	                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 px-2 d-flex flex-grow-1">
+	                            <t t-call="ecom_lms.emp_card"/>
+	                        </div>
+	                    </t>
+	                </div> 
+	            </div>
+	
+	            <t t-call="website_slides.courses_footer"></t>
+	        </div>
+	    </t>
+	</template>
+	</data>
+</odoo>

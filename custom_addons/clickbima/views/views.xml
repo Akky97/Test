@@ -1,0 +1,181 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="clickbima.list">
+      <field name="name">clickbima list</field>
+      <field name="model">clickbima.clickbima</field>
+      <field name="arch" type="xml">
+        <tree import="false">
+<!--          <field name="name"/>-->
+          <field name="companyname"/>
+
+          <field name="shortname" invisible="1"/>
+             <field name="contactperson" placeholder="Contact Person"/>
+             <field name="name"/>
+              <field name="contactno" placeholder="Contact No"/>
+              <field name="email" placeholder="Email"/>
+            <field name="address" placeholder="Address"  invisible="1"/>
+              <field name="city" placeholder="City"  invisible="1"/>
+              <field name="state" placeholder="State"  invisible="1"/>
+              <field name="country" placeholder="Country"  invisible="1"/>
+              <field name="pincode" placeholder="PinCode"  invisible="1"/>
+              <field name="zone" placeholder="Zone"  invisible="1"/>
+            <field name="start_active"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="clickbima.form">
+      <field name="name">Location master</field>
+      <field name="model">clickbima.clickbima</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+            <group>
+
+<!--              <field name="name" placeholder="Code"/>-->
+              <field name="companyname" placeholder="Company Name" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="name" placeholder="Location Name"/>
+              <field name="shortname" placeholder="Short Name"/>
+              <field name="contactperson" placeholder="Contact Person" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="contactno" placeholder="Contact No"/>
+              <field name="email" placeholder="Email"/>
+</group>
+              <group>
+                <field name="address" placeholder="Address"/>
+              <field name="city" placeholder="City"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}" />
+              <field name="state" placeholder="State"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="country" placeholder="Country"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+              <field name="pincode" placeholder="PinCode"/>
+              <field name="zone" placeholder="Zone"/>
+              <field name="start_active"/>
+              </group>
+
+            </group>
+          </sheet>
+
+
+        </form>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="clickbima.form12">
+      <field name="name">Location search</field>
+      <field name="model">clickbima.clickbima</field>
+      <field name="arch" type="xml">
+          <search string="Location Master">
+              <field name="companyname"/>
+
+          <field name="shortname"/>
+             <field name="contactperson"/>
+             <field name="name"/>
+              <field name="contactno"/>
+              <field name="email"/>
+              <field name="address"/>
+              <field name="city"/>
+              <field name="state"/>
+              <field name="country"/>
+              <field name="pincode"/>
+              <field name="zone"/>
+              <filter string="Is True" domain="[('start_active', '!=', False)]" name="is_true"/>
+              <filter string="Is False" domain="[('start_active', '!=', True)]" name="is_false"/>
+               <group expand="0" string="Group By">
+                  <filter string="Company Name" name="groupby_infotypename" context="{'group_by': 'companyname'}"/>
+                  <filter string="Contact Person" name="groupby_infotypename" context="{'group_by': 'contactperson'}"/>
+                  <filter string="State" name="groupby_infotypename" context="{'group_by': 'state'}"/>
+                  <filter string="Country" name="groupby_infotypename" context="{'group_by': 'country'}"/>
+              </group>
+          </search>
+      </field>
+      </record>
+
+      <record model="ir.ui.view" id="clickbima.graph">
+      <field name="name">clickbima graph</field>
+      <field name="model">clickbima.clickbima</field>
+      <field name="arch" type="xml">
+        <graph>
+<!--          <field name="name"/>-->
+          <field name="companyname"/>
+             <field name="contactperson" placeholder="Contact Person"/>
+             <field name="name"/>
+              <field name="contactno" placeholder="Contact No"/>
+              <field name="email" placeholder="Email"/>
+
+        </graph>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="clickbima.pivot">
+      <field name="name">clickbima pivot</field>
+      <field name="model">clickbima.clickbima</field>
+      <field name="arch" type="xml">
+        <pivot>
+<!--          <field name="name"/>-->
+<!--          <field name="companyname"/>-->
+
+<!--          <field name="shortname" invisible="1"/>-->
+<!--             <field name="contactperson" placeholder="Contact Person"/>-->
+<!--             <field name="name"/>-->
+<!--              <field name="contactno" placeholder="Contact No"/>-->
+<!--              <field name="email" placeholder="Email"/>-->
+<!--            <field name="address" placeholder="Address"  invisible="1"/>-->
+<!--              <field name="city" placeholder="City"  invisible="1"/>-->
+<!--              <field name="state" placeholder="State"  invisible="1"/>-->
+<!--              <field name="country" placeholder="Country"  invisible="1"/>-->
+<!--              <field name="pincode" placeholder="PinCode"  invisible="1"/>-->
+<!--              <field name="zone" placeholder="Zone"   invisible="1"/>-->
+<!--            <field name="start_active"/>-->
+
+        </pivot>
+      </field>
+    </record>
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="clickbima.action_window">
+      <field name="name">Location Master</field>
+      <field name="res_model">clickbima.clickbima</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban,search</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="clickbima.action_server">
+      <field name="name">Bima Bachat server</field>
+      <field name="model_id" ref="model_clickbima_clickbima"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <!-- Top menu item -->
+    <menuitem name="Bima Bachat" id="clickbima.menu_root"/>
+    <!-- menu categories -->
+      <menuitem name="Super Admin" id="clickbima.menu_0" parent="clickbima.menu_root"/>
+    <menuitem name="Admin Master" id="clickbima.menu_1" parent="clickbima.menu_root"/>
+<!--    <menuitem name="Common Master" id="clickbima.menu_2" parent="clickbima.menu_root"/>-->
+    <menuitem name="Brokerage Reco." id="clickbima.menu_3" parent="clickbima.menu_root"/>
+<!--    <menuitem name="Claims Management" id="clickbima.menu_4" parent="clickbima.menu_root"/>-->
+<!--    <menuitem name="Dispatch Transaction" id="clickbima.menu_5" parent="clickbima.menu_root"/>-->
+    <menuitem name="Non-Life Reports" id="clickbima.menu_6" parent="clickbima.menu_root"/>
+    <menuitem name="Non-Life Transactions" id="clickbima.menu_7" parent="clickbima.menu_root"/>
+    <menuitem name="Customer Relation Management" id="clickbima.menu_8" parent="clickbima.menu_root"/>
+    <menuitem name="Brokerage Management" id="clickbima.menu_9" parent="clickbima.menu_root"/>
+    <menuitem name="Report" id="clickbima.menu_19" parent="clickbima.menu_root"/>
+    <!-- actions -->
+    <menuitem name="Location Master" id="list_1" parent="clickbima.menu_1"
+              action="clickbima.action_window" sequence="1"/>
+<!--    <menuitem name="Server to list" id="clickbima" parent="clickbima.menu_2"-->
+<!--              action="clickbima.action_server"/>-->
+  </data>
+</odoo>
+
+
+
+
+
+
+

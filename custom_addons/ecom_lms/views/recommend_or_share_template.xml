@@ -1,0 +1,66 @@
+<odoo>
+    <data>
+		<template id="recommend_form" name="Recommend Form">
+			<t t-call="website.layout">
+				<div id="wrap">
+					<div class="oe_structure">
+						<div class="container">
+							<div class="container mt16 o_wslides_home_nav position-relative">
+								<!-- <nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background: white!important"> -->
+									<form method="GET" class="form-inline o_wslides_nav_navbar_right order-lg-3" t-attf-action="/search/recommendation/#{channel.id}" role="search">
+										<div class="input-group">
+											<input type="search" name="search" class="form-control" placeholder="Search" aria-label="Search" t-att-value="search_term"/>
+											<div class="input-group-append">
+												<button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+													<i class="fa fa-search"/>
+												</button>
+											</div>
+										</div>
+									</form>
+								<!-- </nav> -->
+							</div>
+						
+							<form role="form" action='/send/recommendation_mail' method="post">
+								<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+								<div class="body">
+									<input type="hidden" name="course_id" t-att-value="channel.id" id="course_id"
+									class="form-control" invisibe="1"/>
+									  <br/>
+									  <br/>
+									<label for="user_id1">Select Users:</label>
+									<select multiple="multiple" name="user_id1" id="user_id1" class="form-control"  style="width:100%" required="True">
+										<option value="">Select</option>
+											<t t-foreach="user_details" t-as="user">
+												<option t-att-value="user.id" id="option_user_id1">
+														<t t-esc="user.name"/>
+												</option>
+											</t>
+									</select>
+	<!--							<label for="user_id1">Select Users:</label>-->
+	<!--	                    	<select  multiple="multiple" class="form-control form-control-sm" name="user_id1" id="user_id1">-->
+	<!--			                   <option value="">Users...</option>-->
+	<!--			                        <t t-foreach="user_details" t-as="user">-->
+	<!--			                            <option t-att-value="user" id="option_user_id1">-->
+	<!--			                                <t t-esc="user.name"/>-->
+	<!--			                                &lt;!&ndash;<t t-set="multi_upload" t-value="course_id"/>&ndash;&gt;-->
+	<!--			                            </option>-->
+	<!--			                        </t>-->
+	<!--							</select>-->
+								</div>
+								<div class="modal-footer">
+									<div class="clearfix oe_login_buttons">
+										<button type="send" class="btn btn-primary pull-left">Recommend</button>
+									</div>
+<!--									<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>-->
+								</div>
+							</form>
+						</div>
+
+					</div>
+				</div>
+			</t>
+    	</template>
+
+
+    </data>
+</odoo>

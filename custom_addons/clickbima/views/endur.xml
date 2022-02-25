@@ -1,0 +1,260 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!--<record model="ir.ui.view" id="endorsementlist">-->
+      <!--<field name="name">endorsement list</field>-->
+      <!--<field name="model">endorsement</field>-->
+      <!--<field name="arch" type="xml">-->
+        <!--<tree>-->
+          <!--<field name="name"/>-->
+
+        <!--</tree>-->
+      <!--</field>-->
+    <!--</record>-->
+
+      <!--<record model="ir.ui.view" id="endorsementform">-->
+      <!--<field name="name">endorsement form</field>-->
+      <!--<field name="model">endorsement</field>-->
+      <!--<field name="arch" type="xml">-->
+        <!--<form>-->
+          <!--<sheet>-->
+            <!--<group>-->
+             <!--<field name="name" options="{'no_create': True, 'no_create_edit':True}"/>-->
+             <!--&lt;!&ndash;<field name="endo_insurer_id" options="{'no_create': True, 'no_create_edit':True}"/>&ndash;&gt;-->
+             <!--<field name="endo_client" options="{'no_create': True, 'no_create_edit':True}"/>-->
+             <!--<field name="endo_insurer_branch" options="{'no_create': True, 'no_create_edit':True}"/>-->
+
+
+            <!--<field name="endo_insurer_id" string="Endorsement">-->
+
+                                                        <!--<form string="Endorsement">-->
+                                                            <!--<sheet>-->
+                                                                <!--<group>-->
+                                                                    <!--<field name="endo_id"  invisible="1"/>-->
+                                                                    <!--<field name="name" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                                    <!--<field name="endos_manual"  options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                                    <!--<field name="endos_type" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                                    <!--<field name="endos_suminsured" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                                    <!--<field name="endos_reason" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                                    <!--<field name="endos_date"/>-->
+                                                                    <!--<field name="endos_brokerage_premium" sum="endos_brokerage_premium"/>-->
+                                                                    <!--<field name="endo_tp" sum="co_sum_insured"/>-->
+                                                                    <!--<field name="endo_terr" sum="co_commission"/>-->
+                                                                    <!--<field name="endo_stamp"/>-->
+                                                                    <!--<field name="endo_net" sum="endo_net"/>-->
+                                                                    <!--<field name="endo_gst" string="GST" sum="endo_gst" options="{'no_create': True, 'no_create_edit':True}"/>-->
+                                                                    <!--<field name="endo_gst_amount" sum="endo_gst_amount"/>-->
+                                                                    <!--<field name="endo_gst_gross" sum="endo_gst_gross"/>-->
+                                                                    <!--<field name="endo_round_off"/>-->
+                                                                    <!--<field name="endo_difference" sum="endo_difference"/>-->
+                                                                    <!--<field name="endo_payment"/>-->
+                                                                <!--</group>-->
+                                                            <!--</sheet>-->
+                                                        <!--</form>-->
+                                                        <!--<tree string="Endorsement">-->
+                                                             <!--<field name="endo_id"  invisible="1"/>-->
+                                                                    <!--<field name="name"/>-->
+                                                                    <!--<field name="endos_manual"/>-->
+                                                                    <!--<field name="endos_type"/>-->
+                                                                    <!--<field name="endos_suminsured"/>-->
+                                                                    <!--<field name="endos_reason"/>-->
+                                                                    <!--<field name="endos_date"/>-->
+                                                                    <!--<field name="endos_brokerage_premium" sum="endos_brokerage_premium"/>-->
+                                                                    <!--<field name="endo_tp" sum="co_sum_insured"/>-->
+                                                                    <!--<field name="endo_terr" sum="co_commission"/>-->
+                                                                    <!--<field name="endo_stamp"/>-->
+                                                                    <!--<field name="endo_net" sum="endo_net"/>-->
+                                                                    <!--<field name="endo_gst" string="GST" sum="endo_gst"/>-->
+                                                                    <!--<field name="endo_gst_amount" sum="endo_gst_amount"/>-->
+                                                                    <!--<field name="endo_gst_gross" sum="endo_gst_gross"/>-->
+                                                                    <!--<field name="endo_round_off"/>-->
+                                                                    <!--<field name="endo_difference" sum="endo_difference"/>-->
+                                                                    <!--<field name="endo_payment"/>-->
+
+                                                        <!--</tree>-->
+                                                    <!--</field>-->
+            <!--</group>-->
+          <!--</sheet>-->
+        <!--</form>-->
+      <!--</field>-->
+    <!--</record>-->
+
+    <!--&lt;!&ndash; actions opening views on models &ndash;&gt;-->
+    <!--<record model="ir.actions.act_window" id="endorsement_action_window">-->
+      <!--<field name="name">Endorsement</field>-->
+      <!--<field name="res_model">endorsement</field>-->
+      <!--<field name="view_mode">tree,form,graph,pivot,kanban</field>-->
+    <!--</record>-->
+
+    <!--&lt;!&ndash; server action to the one above &ndash;&gt;-->
+    <!--<record model="ir.actions.server" id="endorsement_action_server">-->
+      <!--<field name="name">endorsement server</field>-->
+      <!--<field name="model_id" ref="model_endorsement"/>-->
+      <!--<field name="code">-->
+        <!--action = {-->
+          <!--"type": "ir.actions.act_window",-->
+          <!--"view_mode": "tree,form",-->
+          <!--"res_model": self._name,-->
+        <!--}-->
+      <!--</field>-->
+    <!--</record>-->
+
+      <record model="ir.ui.view" id="endosermenttreeview12">
+            <field name="name">policytransaction list</field>
+            <field name="model">policytransaction</field>
+            <field name="arch" type="xml">
+               <tree>
+                    <field name="fy" string="Financial Year"/>
+                    <field name="name" string="Docket Details"/>
+                    <field name="date2"/>
+                    <field name="type" string="Tran. Type"/>
+                    <field name="coins" string="Co-Ins"/>
+                    <field name="endo_ins" string="Endo_Ins"/>
+                    <field name="clientname" string="Client Name"/>
+                    <field name="insurername123" string="Insurer Name"/>
+                    <field name="insurerbranch" string="Insurer Branch" invisible="1"/>
+                    <field name="product_id" string="Scheme "/>
+                    <field name="segment" string="Category" invisible="1"/>
+                    <field name="name1" string="Subcategory" invisible="1"/>
+                    <field name="policyno" string="Policy No"/>
+                    <field name="startfrom" string="Start Date"/>
+                    <field name="expiry" string="Expiry Date"/>
+                    <field name="suminsured" string="Sum Insured"/>
+                    <field name="brokerageprem" placeholder="Brokerage Prem."/>
+                    <field name="netprem" sum="Net Prem" string="Net Prem" invisible="1"/>
+                    <field name="grossprem" sum="Gross Prem" string="Gross Prem"/>
+                    <field name="netcomm" string="IRDA Comm" invisible="1"/>
+                    <field name="netcommission" string="Reward Comm" invisible="1"/>
+                    <field name="rm" string="Sales Person"/>
+                    <field name="pipeline_id" invisible="1"/>
+                    <field name="sale_order_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+      <record model="ir.ui.view" id="endosermentformview12">
+            <field name="name">policytransaction form</field>
+            <field name="model">policytransaction</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="clientname" string="Client Name"/>
+                            <field name="insurername123" string="Insurer Name"/>
+                            <field name="insurerbranch" string="Insurer Branch"/>
+                        </group>
+
+                         <field name="endorsement_id" string="Endorsement">
+                                                                        <form string="Endorsement">
+                                                                            <sheet>
+                                                                                <group>
+                                                                                    <group>
+                                                                                        <field name="endo_id"
+                                                                                               invisible="1"/>
+                                                                                         <field name="line_no" string="Endorsement Auto-gen"/>
+                                                                                        <field name="name" invisible="1"
+                                                                                               options="{'no_create': True, 'no_create_edit':True}"/>
+                                                                                        <field name="endos_manual"
+                                                                                               options="{'no_create': True, 'no_create_edit':True}"/>
+                                                                                        <field name="endos_type"
+                                                                                               options="{'no_create': True, 'no_create_edit':True}"/>
+                                                                                        <field name="endos_reason"
+                                                                                               options="{'no_create': True, 'no_create_edit':True}"/>
+                                                                                        <field name="endos_suminsured"
+                                                                                               options="{'no_create': True, 'no_create_edit':True}"/>
+                                                                                        <field name="endos_date"/>
+                                                                                        <field name="endos_brokerage_premium"
+                                                                                               sum="endos_brokerage_premium"/>
+                                                                                     <field name="endo_tp"
+                                                                                               sum="co_sum_insured"/>
+                                                                                        <field name="endo_terr"
+                                                                                               sum="co_commission"/>
+                                                                                    </group>
+                                                                                    <group>
+
+                                                                                        <field name="endo_stamp"/>
+                                                                                        <field name="endo_net"
+                                                                                               sum="endo_net"/>
+                                                                                        <field name="endo_gst"
+                                                                                               string="GST"
+                                                                                               sum="endo_gst"
+                                                                                               options="{'no_create': True, 'no_create_edit':True}"/>
+                                                                                        <field name="endo_gst_amount"
+                                                                                               sum="endo_gst_amount"/>
+                                                                                        <field name="endo_gst_gross"
+                                                                                               sum="endo_gst_gross"/>
+                                                                                        <field name="endo_round_off"/>
+                                                                                        <field name="endo_difference"
+                                                                                               sum="endo_difference"/>
+                                                                                        <field name="endo_payment"/>
+                                                                                        <field name="endo_remark"/>
+
+                                                                                    </group>
+                                                                                </group>
+                                                                            </sheet>
+                                                                        </form>
+                                                                        <tree string="Endorsement">
+                                                                            <field name="endo_id" invisible="1"/>
+                                                                             <field name="line_no" string="Endorsement Auto-gen"/>
+                                                                            <field name="name" invisible="1"/>
+                                                                            <field name="endos_manual"/>
+                                                                            <field name="endos_type"/>
+                                                                            <field name="endos_reason"/>
+                                                                            <field name="endos_suminsured"/>
+                                                                            <field name="endos_date"/>
+                                                                            <field name="endos_brokerage_premium"
+                                                                                   sum="endos_brokerage_premium"/>
+                                                                            <field name="endo_tp" sum="co_sum_insured"/>
+                                                                            <field name="endo_terr"
+                                                                                   sum="co_commission"/>
+                                                                            <field name="endo_stamp"/>
+                                                                            <field name="endo_net" sum="endo_net"/>
+                                                                            <field name="endo_gst" string="GST"
+                                                                                   sum="endo_gst"/>
+                                                                            <field name="endo_gst_amount"
+                                                                                   sum="endo_gst_amount"/>
+                                                                            <field name="endo_gst_gross"
+                                                                                   sum="endo_gst_gross"/>
+                                                                             <field name="endo_round_off"/>
+                                                                            <field name="endo_difference"
+                                                                                   sum="endo_difference"/>
+
+                                                                             <field name="endo_payment"/>
+                                                                             <field name="endo_remark"/>
+                                                                        </tree>
+                                                                    </field>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+      <record id="endos_hotel_invoice_tree1" model="ir.actions.act_window">
+
+            <field name="name">Endo's</field>
+            <field name="res_model">policytransaction</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field eval="False" name="view_id"/>
+            <field name="domain">[('endo_ins','=','Yes')]</field>
+      </record>
+
+      <record id="endo_hotel_invoice_tree1_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="clickbima.endosermenttreeview12"/>
+            <field name="act_window_id" ref="endos_hotel_invoice_tree1"/>
+        </record>
+       <record id="endo_hotel_invoice_tree1_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="clickbima.endosermentformview12"/>
+            <field name="act_window_id" ref="endos_hotel_invoice_tree1"/>
+        </record>
+
+
+
+    <menuitem name="Edorsement" id="list_221" parent="clickbima.menu_7" action="endos_hotel_invoice_tree1" sequence="3"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

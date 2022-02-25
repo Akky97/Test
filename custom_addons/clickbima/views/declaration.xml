@@ -1,0 +1,52 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="declarationlist">
+      <field name="name">declaration list</field>
+      <field name="model">declaration</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="declarationform">
+      <field name="name">declaration form</field>
+      <field name="model">declaration</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+             <field name="name"/>
+
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="declaration_action_window">
+      <field name="name">Declaration</field>
+      <field name="res_model">declaration</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="declaration_action_server">
+      <field name="name">declaration server</field>
+      <field name="model_id" ref="model_declaration"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Fire Declaration" id="list_220" parent="clickbima.menu_7" action="declaration_action_window" sequence="2"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

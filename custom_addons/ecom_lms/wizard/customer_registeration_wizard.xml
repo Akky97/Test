@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="customer_registration_form_view" model="ir.ui.view">
+            <field name="name">customer.registration.form.view</field>
+            <field name="model">customer.registration</field>
+            <field name="arch" type="xml">
+                <form string="Customer Registration">
+                        <group>
+                            <field name="upload_file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                    <footer>
+                        <button name="import_data_form_file" string="Upload"  class="oe_highlight" type="object"/>
+					    <button string="Cancel" special="cancel"/>
+				    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id = "action_customer_registration" model="ir.actions.act_window">
+            <field name="name">Customer Registration</field>
+            <field name="res_model">customer.registration</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="customer_registration_form_view"/>
+            <field name="target">new</field>
+        </record>
+
+       <menuitem id="registration_wizard_menu" name="Customer Registration" parent="base.menu_users"
+                 action="ecom_lms.action_customer_registration" sequence="5"/>
+    </data>
+</odoo>

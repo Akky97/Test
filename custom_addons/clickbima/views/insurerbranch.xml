@@ -1,0 +1,90 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="insurerbranchlist">
+      <field name="name">Branch Master</field>
+      <field name="model">insurerbranch</field>
+      <field name="arch" type="xml">
+        <tree import="false">
+            <field name="name"/>
+
+        </tree>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="insurerbranchform">
+      <field name="name">Branch Master</field>
+      <field name="model">insurerbranch</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+                <field name="name"/>
+
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="insurerbranchform123">
+      <field name="name">Branch Master</field>
+      <field name="model">insurerbranch</field>
+      <field name="arch" type="xml">
+        <search string="insurerbranch-Branch Master">
+          <field name="name"/>
+
+        </search>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="insurerbranchpivot">
+      <field name="name">Branch Master</field>
+      <field name="model">insurerbranch</field>
+      <field name="arch" type="xml">
+        <pivot string="insurerbranch-Branch Master">
+<!--          <field name="name" />-->
+
+        </pivot>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="insurerbranchgraph">
+      <field name="name">Branch Master</field>
+      <field name="model">insurerbranch</field>
+      <field name="arch" type="xml">
+        <graph string="insurerbranch-Branch Master">
+          <field name="name"/>
+
+        </graph>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="insurerbranch_action_window">
+      <field name="name">Branch Master</field>
+      <field name="res_model">insurerbranch</field>
+      <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="insurerbranch_action_server">
+      <field name="name">Branch Master</field>
+      <field name="model_id" ref="model_insurerbranch"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="Insurer Branch Master " id="list_211222"  parent="clickbima.menu_1"
+              action="insurerbranch_action_window" sequence="10"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

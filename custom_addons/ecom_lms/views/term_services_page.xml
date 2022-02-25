@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+             <template id="request_form">
+        	<t t-call="website.layout">
+<!--            	<div id="request_form">-->
+<!--                	<section class="s_website_form" data-vcss="001" data-snippet="s_website_form">-->
+                    	<div class="container">
+							  <div class="row">
+								  <div class="col-12" style="text-align: center;">
+									  <h1>
+										  Terms Of Serive
+									  </h1>
+									<p>
+										  terms of services and
+									</p>
+									  <h3 style="text-align: left;">
+										  terms of services here
+									  </h3>
+
+								  </div>
+							  </div>
+
+
+                    	</div>
+<!--                	</section>-->
+<!--            	</div>-->
+        	</t>
+    	</template>
+
+
+
+
+
+</odoo>

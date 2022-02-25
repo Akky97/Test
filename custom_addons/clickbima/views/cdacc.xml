@@ -1,0 +1,430 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="cdaclist">
+      <field name="name">cdac list</field>
+      <field name="model">cdac</field>
+      <field name="arch" type="xml">
+        <tree>
+            <field name="clientname12" />
+            <field name="groupname23" invisible="1"/>
+            <field name="insurername121"/>
+            <field name="insurerbranch22"/>
+            <field name="location_id" />
+            <field name="fy" />
+            <field name="segment" string="Category" invisible="1"/>
+            <field name="name" string="CD A/C No"/>
+            <field name="baldate"/>
+            <field name="closing_balance" string="Closing Balance"/>
+        </tree>
+      </field>
+    </record>
+
+       <record model="ir.ui.view" id="cdacgraph">
+      <field name="name">cdac graph</field>
+      <field name="model">cdac</field>
+      <field name="arch" type="xml">
+        <graph>
+            <!--<field name="clientname12"/>-->
+            <field name="groupname23" />
+            <field name="location_id"/>
+            <field name="insurerbranch22" />
+            <field name="insurername121"/>
+            <field name="segment" string="Category"/>
+            <field name="name" string="CD A/C No"/>
+            <field name="baldate"/>
+            <field name="closing_balance" string="Closing Balance"/>
+        </graph>
+      </field>
+    </record>
+
+      <record model="ir.ui.view" id="cdacsearch">
+      <field name="name">cdac search</field>
+      <field name="model">cdac</field>
+      <field name="arch" type="xml">
+        <search>
+            <!--<field name="clientname12"/>-->
+            <field name="groupname23" />
+            <field name="location_id"/>
+            <field name="insurerbranch22" />
+            <field name="insurername121"/>
+            <field name="segment" string="Category"/>
+            <field name="name" string="CD A/C No"/>
+            <field name="baldate"/>
+            <field name="closing_balance" string="Closing Balance"/>
+             <group expand="0" string="Group By">
+                  <!--<filter string="Client Name" name="groupby_clientname" context="{'group_by': 'clientname12'}"/>-->
+                  <filter string="Insurer Name" name="groupby_insurername" context="{'group_by': 'insurername121'}"/>
+                  <filter string="Insurer Branch" name="groupby_branch" context="{'group_by': 'insurerbranch22'}"/>
+<!--                  <filter string="Category" name="groupby_category" context="{'group_by': 'segment'}"/>-->
+                  <filter string="Location" name="groupby_location" context="{'group_by': 'location_id'}"/>
+             </group>
+        </search>
+      </field>
+    </record>
+
+       <record model="ir.ui.view" id="cdacpivot">
+      <field name="name">cdac pivot</field>
+      <field name="model">cdac</field>
+      <field name="arch" type="xml">
+        <pivot>
+           <field name="closing_balance"/>
+           <field name="accbal"/>
+           <field name="totalcr"/>
+           <field name="totaldr"/>
+        </pivot>
+      </field>
+    </record>
+
+<!--      <record id="cdac11" model="ir.sequence">-->
+<!--          <field name="name">No_PD</field>-->
+<!--          &lt;!&ndash;<field name="padding">3</field>&ndash;&gt;-->
+<!--          <field name="code">cdac</field>-->
+<!--        </record>-->
+
+      <record model="ir.ui.view" id="cdacform1">
+      <field name="name">cdac form</field>
+      <field name="model">cdac</field>
+      <field name="arch" type="xml">
+        <form>
+                <style>
+                .o_form_view.o_form_nosheet.o_form_editable {
+    background: url(http://localhost:8069/clickbima/static/image/retina_dust.png);
+    background-size: auto;
+}
+                .row.ist_table td {
+    width: auto !important;
+}
+ .second_grp {text-align: center;
+    background: #007AB4;
+    color: #fff;}
+
+                .th {
+    background: #bdbaf1;
+    color: #1a0b98;
+    border: 1px solid #8577f7;
+}
+                .pipelinedetails {
+    padding: 11px;
+    background: #007ab4;
+    border-radius: 5px;
+    color: #fff;
+                width:100%;
+                    font-size: 16px;
+}
+.pipelinedetails:hover  {
+color:#fff !important;
+}
+    .pipelinedetails:focus  {
+color:#fff !important;
+}
+                .button {
+                width:100%; font-size: 16px; background: #007ab4;  border-radius: 5px;  color: #fff !important;}
+<!--               .ist_table table{width:100%;}-->
+<!--                 .ist_table table th{    width: 30% !important;-->
+<!--    background: rgb(232,241,249);-->
+<!--    color: #007ab4;-->
+<!--    font-weight: 500;-->
+<!--    padding-left: 5px;}-->
+
+
+                    .spn {
+                    position: absolute;
+    right: 33%;}
+            </style>
+
+
+
+            <script>
+$( "#showbtn" ).click(function() {
+$(this).toggleClass('fa-minus-circle')
+  $( "#productdiv" ).toggle('slow');
+});
+
+                $( "#showbtn1" ).click(function() {
+$(this).toggleClass('fa-minus-circle')
+  $( "#productdiv1" ).toggle('slow');
+});</script>
+            <group>
+          <div class="row ist_table">
+        <div class="col-md-6">
+            <table>
+            <tr>
+              <th class="td">Broker Name</th>
+              <td><field name="brokername" placeholder="Broker Name" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"  style="margin-left:18px; width:493px;"/></td>
+            </tr>
+            </table>
+        </div>
+            <div class="col-md-3">
+                <table>
+                <tr>
+                    <th class="td">Location</th>
+                    <td><field name="location_id" placeholder="--select--" options="{'no_create': True, 'no_create_edit': True,'no_open':True}" style="margin-left:18px;" /></td>
+                </tr>
+                </table>
+            </div>
+            <div class="col-md-3">
+                <table>
+                    <tr>
+                        <th class="td">FY</th>
+                        <td> <field name="fy"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/></td>
+                    </tr>
+                </table>
+            </div>
+          </div>
+            </group>
+            <group>
+                 <div class="col-md-6" style="width: 100%; margin-left: -3%;">
+                    <table style="width: 100%;">
+                        <tr>
+                       <th  style="width: 17%;">Client Name</th>
+                    <td><field name="clientname12"  widget="many2many_tags" placeholder="Client Name" domain="[('x_client', '=', True)]" options="{'no_create': True, 'no_create_edit':True,'no_open':True}" context="{'default_parent_id': groupname23}"/>
+                     </td>
+                </tr>
+                <tr>
+                    <th  style="width: 17%;">Group Name</th>
+                    <td><field name="groupname23" placeholder="Group Name"   options="{'create': false, 'create_edit': false,'no_open':True}"/></td>
+                </tr>
+<!--                        <tr>-->
+<!--                    <th>POS Name</th>-->
+<!--                    <td><field name="pointofscale" placeholder="POS" /></td>-->
+<!--                </tr>-->
+
+
+        </table>
+        </div>
+                 <div class="col-md-6">
+         <table style="width: 201%;">
+                <tr>
+
+                    <th style="width: 15%;">Insurer Name</th>
+                    <td><field name="insurername121" placeholder="Select Insurer"  options="{'no_create': True, 'no_create_edit': True,'no_open':True}"/></td>
+                </tr>
+
+                <tr>
+                <th style="width: 15%;">Insurer Branch</th>
+                    <td><field name="insurerbranch22" placeholder="Select Branch"   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                </td>
+                </tr>
+
+        </table>
+    </div>
+
+
+            </group>
+            <group>
+                 <div>
+                    <table style="width:97%;">
+                        <tr>
+                    <th style="width:8%;">Category</th>
+                    <td><field name="segment" placeholder="Select Category"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}" widget="many2many_tags"/></td>
+                </tr>
+        </table>
+        </div>
+            </group>
+
+<group>
+                <div class="row ist_table">
+                  <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th scope="col">Cd A/c No</th>
+                          <th scope="col">Opening Balance Date</th>
+                          <th scope="col">Opening Balance</th>
+                          <th scope="col">Total Credit Balance</th>
+                          <th scope="col">Total Debit Balance</th>
+                          <th scope="col">Closing Balance Date</th>
+                          <th scope="col">Closing Balance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><field name="name"/></td>
+                          <td><field name="openbaldate"/></td>
+                          <td><field name="accbal" /></td>
+                          <td><field name="totalcr"/></td>
+                          <td><field name="totaldr" /></td>
+                          <td><field name="baldate"/></td>
+                          <td><field name="closing_balance" /></td>
+                        </tr>
+                      </tbody>
+                  </table>
+               </div>
+            </group>
+
+            <div class="col-md-12" style="display: none;" id="productdiv1">
+        <table style="width:96%">
+            <thead>
+                <tr>
+                    <th colspan="10" class="second_grp">Cd Payment History</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td colspan="10">
+                    <field name="adddetails">
+                        <form>
+                            <sheet>
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        <group>
+                                            <field name="line_no" string="Sr No."/>
+                                            <field name="date"/>
+                                            <field name="mode" placeholder="---Select One---"  invisible="1"/>
+                                            <field name="mode1"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Mode"/>
+                                            <field name="checkdd" string="Ch/DD No." placeholder="Ch/DD No." attrs="{'invisible':['|','|','|',('mode1','=',109),('mode1','=',145),('mode1','=',146),('mode1','=',150)]}"/>
+                                            <field name="others_mode_payment" string="Other Mode" attrs="{'invisible':['|','|','|','|','|','|','|',('mode1','=',False),('mode1','=',145),('mode1','=',146),('mode1','=',147),('mode1','=',148),('mode1','=',149),('mode1','=',118),('mode1','=',150)]}" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="insurername" invisible="1" attrs="{'invisible':['|','|','|','|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',147),('mode1','=',148),('mode1','=',149),('mode1','=',118),('mode1','=',150)]}" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="insurerbranch" invisible="1"  attrs="{'invisible':['|','|','|','|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',147),('mode1','=',148),('mode1','=',149),('mode1','=',118),('mode1','=',150)]}" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="location" invisible="1"  attrs="{'invisible':['|','|','|','|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',147),('mode1','=',148),('mode1','=',149),('mode1','=',118),('mode1','=',150)]}" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="clientname"  invisible="1"  attrs="{'invisible':['|','|','|','|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',147),('mode1','=',148),('mode1','=',149),('mode1','=',118),('mode1','=',150)]}" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="name" string="Cdno" attrs="{'invisible':['|','|','|','|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',147),('mode1','=',148),('mode1','=',149),('mode1','=',118),('mode1','=',150)]}" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="amount" attrs="{'invisible':[('mode1','=',150)]}" placeholder="Amount" sum="Amount"/>
+                                            <field name="dated" />
+                                            <field name="bankpy1" attrs="{'invisible':['|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',146),('mode1','=',150)]}" string="Bank" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="bankbranch" invisible="1" attrs="{'invisible':['|','|','|',('mode1','=',False),('mode1','=',145),('mode1','=',146),('mode1','=',150)]}" placeholder="Bank Branch"/>
+                                        </group>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <group>
+                                            <field name="bankpy" attrs="{'invisible':['|',('mode1','=',False),('mode1','=','not')]}" placeholder="Bank" invisible="1"/>
+                                            <!--<field name="bankpy1" attrs="{'invisible':['|','|','|','|',('mode1','=',109),('mode1','=',False),('mode1','=',145),('mode1','=',146),('mode1','=',150)]}" string="Bank" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
+                                            <!--<field name="bankbranch" invisible="1" attrs="{'invisible':['|','|','|',('mode1','=',False),('mode1','=',145),('mode1','=',146),('mode1','=',150)]}" placeholder="Bank Branch"/>-->
+                                            <field name="pymtdesc" />
+                                            <field name="rectno"/>
+                                            <field name="rectdate" />
+                                            <field name="remarks" />
+                                        </group>
+                                    </div>
+                                </div>
+                            </sheet>
+                        </form>
+                        <tree >
+                            <field name="line_no" string="ID"/>
+                            <field name="date"/>
+                            <field name="mode" placeholder="---Select One---"  invisible="1"/>
+                            <field name="mode1" options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Mode"/>
+                            <field name="checkdd" />
+                            <field name="amount"  sum="Amount"/>
+                            <field name="bankpy" attrs="{'invisible':['|',('mode1','=','Cash'),('mode1','=','not')]}" placeholder="Bank" invisible="1"/>
+                            <field name="bankpy1" string="Bank" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                            <field name="bankbranch" />
+                            <field name="dated" />
+                            <field name="pymtdesc" />
+                            <field name="rectno" />
+                            <field name="rectdate" />
+                            <field name="remarks" />
+                        </tree>
+                    </field>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+            </div>
+
+
+<!--                    <div class="col-md-4">-->
+<!--                  <table>-->
+<!--                         <tr>-->
+<!--                           <th class="td">Cd A/c No</th>-->
+<!--                            <td> <field name="name" placeholder="" style="margin-left:14px; width:250px"/></td>-->
+<!--                         </tr>-->
+<!--                  </table>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                      <table>-->
+<!--                         <tr>-->
+<!--                          <th class="td">Closing Bal. Date</th>-->
+<!--                            <td><field name="baldate" placeholder="Date" style="margin-left:14px; width:250px"/><span class="spn"><i class="fa fa-calendar" aria-hidden="true"/></span></td>-->
+<!--                         </tr>-->
+<!--                  </table>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                      <table>-->
+<!--                          <tr>-->
+<!--                          <th class="td">Opening Balance</th>-->
+<!--                          <td><field name="accbal" placeholder="" style="margin-left:14px; width:250px" /></td>-->
+<!--                          </tr>-->
+<!--                          <tr>-->
+<!--                              <th class="td">Closing Balance</th>-->
+<!--                              <td><field name="closing_balance" placeholder="" style="margin-left:14px;width:250px"/></td>-->
+<!--                          </tr>-->
+<!--                      </table>-->
+<!--                  </div>-->
+
+
+
+
+
+<!--             <group>-->
+<!--                <div class="row ist_table">-->
+<!--                  <div class="col-md-12">-->
+<!--                    <table style="width:96%;">-->
+<!--                     <thead>-->
+<!--&lt;!&ndash;                      <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                          <th class="second_grp">Cd A/c Details</th>&ndash;&gt;-->
+<!--&lt;!&ndash;                      </tr>&ndash;&gt;-->
+<!--                     </thead>-->
+<!--                    </table>-->
+<!--                      </div>-->
+<!-- <div class="col-md-6">-->
+<!--                      <table>-->
+<!--                          <tr>-->
+<!--                          <th class="td">Total Credit Balance</th>-->
+<!--                          <td> <field name="totalcr" string="Total Cr."/></td>-->
+<!--                          </tr>-->
+<!--                      </table>-->
+<!--                  </div>-->
+
+<!--                 <div class="col-md-6">-->
+<!--                      <table>-->
+<!--                          <tr>-->
+<!--                          <th class="td">Total Debit Balance</th>-->
+<!--                          <td> <field name="totaldr" string="Total Dr."/></td>-->
+<!--                          </tr>-->
+<!--                      </table>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--            </group>-->
+            <group>
+                <div class="row ist_table">
+                    <table style="float:right;">
+                        <tr>
+                            <th style="padding-top:5px padding-left:10px;"><a href="javascript:void(0)" id="showbtn1" class="pipelinedetails fa fa-plus-circle">Add Payment</a></th>
+                        </tr>
+                    </table>
+                </div>
+            </group>
+            <group>
+                <field name="startdate" invisible="1"/>
+                <field name="endate"  invisible="1"/>
+            </group>
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="cdac_action_window">
+      <field name="name">CD A/C Master</field>
+      <field name="res_model">cdac</field>
+      <field name="view_mode">tree,form,graph,pivot,search</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="cdac_action_server">
+      <field name="name">cdac server</field>
+      <field name="model_id" ref="model_cdac"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+
+    <menuitem name="CD A/C Master" id="list_225try" parent="clickbima.menu_1" action="cdac_action_window" sequence="12"/>
+
+<!--    <menuitem id="Airspring optionalportnrc" name="AirSpring Master Optional Port NRC" parent="air_spring1.menu_2" action="optionalportnrc" sequence="8"/>-->
+  </data>
+</odoo>

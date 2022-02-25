@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="pwa_course_card_view_template" name="Course Card View Template for PWA">
+        <t t-name="website.content-view">
+  <t t-call="website.layout">
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css"/>
+         <style>
+                  .pwa_content_view_play_btn{
+                     margin-top: -11px;
+                    }
+                .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+                    color: #0D7FE3  !important;
+                    background-color: #ffff;
+                    border-bottom: 3px solid #0D7FE3;
+                }
+              .nav-item-add-1{
+                font-size: 25px;
+                 }
+               .nav-item-add{
+                font-size: 25px;
+                 }
+                .card-title {
+                        margin-bottom: 0.75rem;
+                        white-space: nowrap;
+                        width: 133px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        height: 22px;
+                    }
+                .pwa_view_content_view_badge_btn{
+                    text-align: end !important;
+                    padding: 17px 21px;
+             }
+                   .view_all_view_head {
+                    font-size: 40px;
+                }
+                 .view_all_banner_sub {
+                        font-size: 20px;
+                    }
+
+                .view_all_banner{
+                height:200px;
+                width:100%;
+                background: #FFFFFF;
+                background: -webkit-linear-gradient(to left, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));  background: linear-gradient(to top, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));
+                border-radius: 10px;
+                }
+                 .card-img-top{
+                        padding-top: 50%;
+                        background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+                        background-size: cover;
+                        background-position: center;
+                }
+                @media(max-width: 765px){
+             .nav-item-add-1 {
+                    font-size: 21px;
+                }
+                .nav-item-add {
+                    font-size: 21px !important;
+                }
+
+             .card-title{
+                white-space: nowrap;
+                width: 88px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 27px;
+                 margin-left: -15px;
+             }
+             .card-text{
+                white-space: nowrap;
+                width: 88px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 27px;
+                 margin-left: -15px;
+             }
+                    .pwa_content_view_btn_section{
+                    padding: 4px 11px;
+                    font-size: 14px;
+                }
+             .pwa_content_view_btn_section_icon{
+                    display:none;
+             }
+                     .view_all_banner{
+                        height:auto;
+                        width:100%;
+                        background: #FFFFFF;
+                        background: -webkit-linear-gradient(to left, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5));  background: linear-gradient(to top, rgba(212, 252, 121, 0.5), rgba(150, 230, 161, 0.5))
+                        }
+                    .card-img-top{
+                            padding-top: 80%;
+                            background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+                            background-size: cover;
+                            background-position: center;
+                    }
+                    .view_all_view_head{
+                     font-size: 27px;
+                    }
+                }
+                @media (max-width: 525px){
+             .pwa_view_content_view_badge_btn1{
+                padding: 4px 9px;
+                font-size: 13px;
+             }
+                 .view_all_banner_sub {
+                        font-size: 17px;
+                    }
+
+                 }
+                @media (max-width: 360px){
+                    .nav-item-add-1{
+                     font-size: 12px;
+                     }
+                    .nav-item-add {
+                    font-size: 12px !important;
+                    }
+
+                        .pwa_content_view_play_btn {
+                            margin: -10px -15px;
+                        }
+                        .view_all_view_head {
+                            font-size: 24px;
+                        }
+                        .view_all_banner_sub{
+                        font-size: 12px;
+                        }
+                        .card-img-top {
+                            padding-top: 64%;
+                            background-image: url(/web/image/slide.channel/1/image_1024?unique=a28b63d);
+                            background-size: cover;
+                            background-position: center;
+                        }
+                        .view_all_card_text_section_head{
+                        white-space: nowrap;
+                        width: 138px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        height: 22px;
+                        }
+
+                .pwa_all_course_view_sub_head{
+                        white-space: nowrap;
+                        width: 109px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        height: 17px;
+                    }
+
+
+                }
+              @media (max-width: 330px){
+
+             .pwa_content_view_Completion_status_msg{
+             font-size: 13px;
+             }
+             .pwa_view_content_view_badge_btn1 {
+                padding: 4px 9px;
+                font-size: 10px;
+            }
+                    .pwa_content_view_btn_section {
+                    padding: 4px 8px;
+                    font-size: 10px;
+                }
+                    .card-title {
+                    white-space: nowrap;
+                    width: 74px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    height: 27px;
+                    margin-left: -15px;
+                }
+             }
+
+                @media (max-width: 320px){
+                .view_all_view_head {
+                    font-size: 17px;
+                }
+                 .view_all_banner_sub{
+                font-size: 9px;
+                }
+             .pwa_content_view_play_btn {
+                margin: -10px -21px;
+            }
+                }
+             @media (max-width: 301px)
+                    .card-title {
+                        white-space: nowrap;
+                        width: 73px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        height: 27px;
+                        margin-left: -15px;
+                    }
+             }
+
+      </style>
+    <div id="wrap" class="oe_structure oe_empty">
+      <div class="container">
+        <div class="view_all_banner">
+                    <div class="d-flex justify-content-between">
+                        <div class="display-4 ml-2">
+                          <h1 class="view_all_view_head mt-4" style=""><span t-esc="channel.name"></span></h1>
+                        </div>
+                        <div class="mr-2">
+                        	<form role="form" t-att-action="'/share/user/channel/%s' % (channel.id)" method="post">
+								<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+								<div class="body">
+									
+									<input type="hidden" name="course_id" t-att-value="channel.id" id="course_id"
+									class="form-control" invisibe="1"/>
+									<t t-if ="users_details">
+										<select name="usr_detail_id" id="select_user_id2" 
+										>
+			                              <option value="">User</option>
+			                              <t t-foreach="users_details" t-as="user_detail_id">
+			                              <option t-att-value="user_detail_id" id="user_detail_id2">
+			                                  <t t-esc="user_detail_id.name"/>
+			                              </option>
+			
+			                              </t>
+			                          </select>
+			                          <button type="send" style="width: auto;height: 48px;margin-left: 0px;margin-top: -4px;" class="btn btn-primary">Share</button>
+		                          </t>
+		                          
+								</div>
+							</form> 
+                        </div>
+                    </div>
+                      <div class="d-flex">
+                      	<t t-if ="channel.course_open_date">
+                      		<p class="ml-2">
+	                           <font class="view_all_banner_sub">Started : <span t-esc="channel.course_open_date.date()"></span></font>
+                            </p>
+                          </t>
+                          <t t-if ="channel.course_open_date and channel.course_close_date">
+	                          <p class="ml-2">
+	                            <font style="font-size: 18px;">&amp;nbsp; | &amp;nbsp;</font>
+	                          </p>
+                          </t>
+                        	<t t-if ="channel.course_close_date">
+	                          <p class="ml-2">
+	                            <font class="view_all_banner_sub">Ended : <span t-esc="channel.course_close_date.date()"></span></font>
+	                          </p>
+                          </t>
+                      </div>
+                    <div class="pwa_view_content_view_badge_btn">
+                        <button class="btn btn-primary pwa_view_content_view_badge_btn1" style="">View Badge</button>
+                    </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="shadow p-3 mb-5 bg-white rounded">
+        
+          <p class="pwa_content_view_Completion_status_msg">Watch all content or score a <strong>minimum <span t-esc="remaining_course_percent"></span>%</strong> on a test to complete the courses</p>
+          <p class="text-primary">Completion Status</p>
+          	<t t-if="not channel.is_member and channel.enroll == 'public'">
+          		<a  t-attf-href="/joined/pwa/slides/#{slug(channel)}">
+          			<span class="btn btn-info">Join Course</span>
+                 </a>
+             </t>
+          
+                <t t-if="channel.is_member">
+                    <button class="d-flex align-items-center alert my-0 px-2 px-xl-3 bg-100 w-100 o_wslides_js_channel_unsubscribe"
+                            t-att-data-channel-id="channel.id"
+                            t-att-data-is-follower="channel.message_is_follower"
+                            t-att-data-enroll="channel.enroll">
+                        <t t-call="website_slides.slides_misc_user_image">
+                            <t t-set="img_class" t-value="'rounded-circle mr-1'"/>
+                            <t t-set="img_style" t-value="'width: 1.4em; height: 1.4em; object-fit: cover;'"/>
+                        </t>
+                        <h6 class="d-flex flex-grow-1 my-0">You're enrolled</h6>
+                        <i class="fa fa-check"/>
+                        <i class="fa fa-times"/>
+                    </button>
+                    <div class="d-flex align-items-center pt-4 mb-5" >
+                        <t t-if="channel.completed">
+                            <span class="badge badge-pill badge-success py-1 px-2 mx-auto" style="font-size: 1em"><i class="fa fa-check"/> Completed</span>
+                        </t>
+                        <t t-else="">
+                            <div class="progress flex-grow-1 bg-black-50 rounded" style="height:10px;">
+                                <div class="progress-bar" role="progressbar" t-attf-style="width: #{channel.completion}%" t-att-aria-valuenow="channel.completion" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="ml-3 small" >
+                                <span class="o_wslides_progress_percentage" t-esc="channel.completion"/> %
+                            </div>
+                            <span class="btn btn-primary" style="margin-left: 28px;">Take test</span>
+
+                        </t>
+                    </div>
+                </t>
+        </div>
+        <div class="p-2 mb-5 shadow white rounded">
+            <ul class="nav nav-pills view_all_nav_section mb-3" id="pills-tab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active nav-item-add-1" style="color: #BFBFBF" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true"><i class="fa fa-play-circle"></i> Watch</a>
+              </li>
+              <li class="nav-item nav-item-add">
+                <a class="nav-link view_all_card_text_sectionnk" style="color: #BFBFBF" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">
+                    <i class="fas fa-book-open"></i> Read
+                </a>
+              </li>
+              <li class="nav-item nav-item-add">
+                <a class="nav-link" id="pills-contact-tab" style="color: #BFBFBF" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false"><i class="fa fa-volume-up"></i> Listen</a>
+              </li>
+            </ul>
+       </div>
+        
+      </div>
+      <section class="s_three_columns bg-200 pt32 pb32 o_colored_level" data-vcss="001" data-snippet="s_three_columns" data-name="Columns">
+        <div class="container">
+        	<div class="tab-content" id="pills-tabContent">
+
+          <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+
+                                <div class="row d-flex align-items-stretch">
+                                <t t-foreach="channel.slide_ids" t-as="slide">
+                               		<t t-if="video_present_count &gt; 1">
+                                    <t t-if="slide.slide_type == 'video' and slide.slide_attachment.mimetype == 'video/mp4' or slide.is_category">
+                                            <t t-if="slide.slide_type and not slide.is_category">
+
+
+		            <div class="col-lg-3 col-6 s_col_no_bgcolor pt16 pb16">
+		                  <div class=" bg-white h-100" style="box-shadow: 0px 6px 12px #0000002b;width: 104% !important;">
+		                    <img class="card-img-top" alt="" loading="lazy" data-original-id="312" data-original-src="/web/image/website.library_image_11" data-mimetype="image/jpeg"/>
+		                            <div class="card-body">
+		                                        <div class="row">
+		                                            <div class="col-8">
+		                                                 <div>
+		                                            <p class="card-title">
+		                                                	<t t-if="slide.slide_type and not slide.is_category">
+
+		                                                    <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+		                                                        <span t-field="slide.name"/>
+		                                                    </a>
+		                                                     <!-- <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/slides/slide/#{slug(slide)}">
+		                                                        <span t-field="slide.name"/>
+		                                                    </a> -->
+		                                                    <span t-else="">
+		                                                        <span t-esc="slide.name"/>
+		                                                    </span>
+		                                                </t>
+		                                                <t t-else="">
+		                                                    <span t-esc="slide.name"/>
+		                                                </t>
+		                                            </p>
+		                                            <p class="card-text"><small t-if="slide.completion_time" class="font-weight-bold" t-esc="slide.completion_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></p>
+		                                            <!-- <p class="card-text">1 min 25 sec</p> -->
+		                                          </div>
+		                                            </div>
+		                                              <div class="col-2">
+		                                                   <div class="pwa_content_view_play_btn" >
+		                                                   <a  t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+		                                            			<img style="" src="/ecom_lms/static/src/img/ecom_lms_play_img.png"  alt="" loading="lazy"/>
+		                                            	</a>
+		                                          </div>
+		                                          <div>
+
+		                                          </div>
+		                                            </div>
+		                                        </div>
+
+
+		                            </div>
+		                  </div>
+		            </div>
+
+	            </t>
+
+	                                        <t t-else="">
+                            <div class="row" style="display: contents;" >
+                                <div class="col-12 mt-3">
+                                    <h2><span t-esc="slide.name"/></h2>
+                                </div>
+
+                            </div>
+
+                        </t>
+
+                                    </t>
+                                   </t>
+
+                                </t>
+
+        </div>
+
+          </div>
+          <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+                   <div class="row d-flex align-items-stretch">
+
+                                <t t-foreach="channel.slide_ids" t-as="slide">
+                                    <t t-if="not slide.slide_type == 'video' ">
+                                                <t t-if="slide.slide_type and not slide.is_category">
+
+
+                                                    <div class="col-lg-3 col-6 s_col_no_bgcolor pt16 pb16">
+                                                      <div class=" bg-white h-100" style="box-shadow: 0px 6px 12px #0000002b;width: 104% !important;">
+                                                        <img class="card-img-top" alt="" loading="lazy" data-original-id="312" data-original-src="/web/image/website.library_image_11" data-mimetype="image/jpeg"/>
+                                                                <div class="card-body">
+                                                                            <div class="row">
+                                                                                <div class="col-8">
+                                                                                     <div>
+                                                                                <p class="card-title">
+                                                                                        <t t-if="slide.slide_type and not slide.is_category">
+
+                                                                                        <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+                                                                                            <span t-field="slide.name"/>
+                                                                                        </a>
+                                                                                         <!-- <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/slides/slide/#{slug(slide)}">
+                                                                                            <span t-field="slide.name"/>
+                                                                                        </a> -->
+                                                                                        <span t-else="">
+                                                                                            <span t-esc="slide.name"/>
+                                                                                        </span>
+                                                                                    </t>
+                                                                                    <t t-else="">
+                                                                                        <span t-esc="slide.name"/>
+                                                                                    </t>
+                                                                                </p>
+                                                                                <p class="card-text"><small t-if="slide.completion_time" class="font-weight-bold" t-esc="slide.completion_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></p>
+                                                                                <!-- <p class="card-text">1 min 25 sec</p> -->
+                                                                              </div>
+                                                                                </div>
+                                                                                  <div class="col-2">
+                                                                                       <div class="pwa_content_view_play_btn" >
+                                                                                       <a  t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+                                                                                            <img style="" src="/ecom_lms/static/src/img/ecom_lms_play_img.png"  alt="" loading="lazy"/>
+                                                                                    </a>
+                                                                              </div>
+                                                                              <div>
+
+                                                                              </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                </div>
+                                                      </div>
+                                                </div>
+
+	                                            </t>
+
+	                                            <t t-else="">
+                            <div class="row" style="display: contents;" >
+                                <div class="col-12 mt-3">
+                                    <h2><span t-esc="slide.name"/></h2>
+                                </div>
+
+                            </div>
+
+                        </t>
+
+                                    </t>
+
+                                </t>
+
+
+          </div>
+
+          </div>
+          <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+
+                    <div class="row d-flex align-items-stretch">
+
+                            <t t-foreach="channel.slide_ids" t-as="slide">
+                            	<t t-if="audio_present_count &gt; 1">
+                                <t t-if="slide.slide_type == 'video' and slide.slide_attachment.mimetype == 'audio/mpeg' or slide.is_category">
+                                        <t t-if="slide.slide_type and not slide.is_category">
+
+
+                                    <div class="col-lg-3 col-6 s_col_no_bgcolor pt16 pb16">
+                                          <div class=" bg-white h-100" style="box-shadow: 0px 6px 12px #0000002b;width: 104% !important;">
+                                            <img class="card-img-top" alt="" loading="lazy" data-original-id="312" data-original-src="/web/image/website.library_image_11" data-mimetype="image/jpeg"/>
+                                                    <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-8">
+                                                                         <div>
+                                                                    <p class="card-title">
+                                                                            <t t-if="slide.slide_type and not slide.is_category">
+
+                                                                            <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+                                                                                <span t-field="slide.name"/>
+                                                                            </a>
+                                                                            <span t-else="">
+                                                                                <span t-esc="slide.name"/>
+                                                                            </span>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <span t-esc="slide.name"/>
+                                                                        </t>
+                                                                    </p>
+                                                                    <p class="card-text"><small t-if="slide.completion_time" class="font-weight-bold" t-esc="slide.completion_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></p>
+                                                                    <!-- <p class="card-text">1 min 25 sec</p> -->
+                                                                  </div>
+                                                                    </div>
+                                                                      <div class="col-2">
+                                                                           <div class="pwa_content_view_play_btn" >
+                                                                           <a  t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+                                                                                <img style="" src="/ecom_lms/static/src/img/ecom_lms_play_img.png"  alt="" loading="lazy"/>
+                                                                        </a>
+                                                                  </div>
+                                                                  <div>
+
+                                                                  </div>
+                                                                    </div>
+                                                                </div>
+
+
+                                                    </div>
+                                          </div>
+                                    </div>
+
+                                </t>
+
+                                        <t t-else="">
+                                            <div class="row" style="display: contents;" >
+                                                <div class="col-12 mt-3">
+                                                    <h2><span t-esc="slide.name"/></h2>
+                                                </div>
+
+                                            </div>
+
+                                        </t>
+
+                                </t>
+                               </t>
+
+
+                            </t>
+
+                    </div>
+          </div>
+
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        <!-- <div class="row d-flex align-items-stretch">
+              <t t-foreach="channel.slide_ids" t-as="slide">
+              <t t-if="slide.slide_type and not slide.is_category">
+		            <div class="col-lg-3 col-6 s_col_no_bgcolor pt16 pb16">
+		                  <div class=" bg-white h-100" style="box-shadow: 0px 6px 12px #0000002b;width: 104% !important;">
+		                    <img class="card-img-top" alt="" loading="lazy" data-original-id="312" data-original-src="/web/image/website.library_image_11" data-mimetype="image/jpeg"/>
+		                            <div class="card-body">
+		                                        <div class="row">
+		                                            <div class="col-8">
+		                                                 <div>
+		                                            <p class="card-title">
+		                                                	<t t-if="slide.slide_type and not slide.is_category">
+																<t t-if="channel.is_member">
+				                                                    <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+				                                                        <span t-field="slide.name"/>
+				                                                    </a>
+				                                                     <a t-if="slide.is_preview or channel.is_member or channel.can_publish" class="o_wslides_js_slides_list_slide_link" t-attf-href="/slides/slide/#{slug(slide)}">
+				                                                        <span t-field="slide.name"/>
+				                                                    </a>
+				                                                    <span t-else="">
+				                                                        <span t-esc="slide.name"/>
+				                                                    </span>
+			                                                    </t>
+			                                                    
+			                                                    <span t-else="">
+				                                                        <span t-esc="slide.name"/>
+				                                                    </span>
+			                                                    
+		                                                </t>
+		                                                <t t-else="">
+		                                                    <span t-esc="slide.name"/>
+		                                                </t>
+		                                            </p>
+		                                            <p class="card-text"><small t-if="slide.completion_time" class="font-weight-bold" t-esc="slide.completion_time" t-options="{'widget': 'duration', 'unit': 'hour', 'round': 'minute'}"/></p>
+		                                            <p class="card-text">1 min 25 sec</p>
+		                                          </div>
+		                                            </div>
+		                                              <div class="col-2">
+		                                                   <div class="pwa_content_view_play_btn" >
+		                                                   <t t-if="channel.is_member">
+			                                                   <a  t-attf-href="/pwa/slides/slide/#{slug(slide)}">
+			                                            			<img style="" src="/ecom_lms/static/src/img/ecom_lms_play_img.png"  alt="" loading="lazy"/>
+			                                            		</a>
+		                                            		</t>
+		                                            		<span t-else="">
+		                                                        <img style="" src="/ecom_lms/static/src/img/ecom_lms_play_img.png"  alt="" loading="lazy"/>
+		                                                    </span>
+		                                            		
+		                                          </div>
+		                                          <div>
+		                                            
+		                                          </div>
+		                                            </div>
+		                                        </div>
+		
+		
+		                            </div>
+		                  </div>
+		            </div>
+		            
+	            </t>
+	            <t t-else="">
+                            <div class="row" style="display: contents;" >
+                                <div class="col-12 mt-3">
+                                    <h2><span t-esc="slide.name"/></h2>
+
+
+                                </div>
+
+
+                            </div>
+
+                       </t>
+	            
+               </t>
+
+          </div> -->
+        
+        
+        </div>
+      </section>
+
+    </div>
+  </t>
+</t>
+
+    </template>
+</odoo>

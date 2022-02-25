@@ -1,0 +1,439 @@
+<?xml version="1.0" ?>
+<odoo>
+
+
+	<template id="toggle_region_most_completed" inherit_id="website_slides.slides_home_users_small" active="True" customize_show="True" name='Display Most Completed'>
+    <xpath expr="//div[hasclass('o_wslides_home_aside')]" position="inside">
+    	<br/>
+    	<br/>
+        <div class="row o_wslides_home_aside_title">
+            <div class="col">
+                <!-- <a href="/profile/users" class="float-right">View all</a> -->
+                <h5 class="m-0">Regions with most completed courses</h5>
+                <hr/>
+            </div>
+        </div>
+        <div class="row">
+           <form class="oe_reset_password_form mt-0 mb-0 p-0" role="form" method="post" action="/home-region-wise/most-courses">
+                    
+                  <!-- <div class="row "> -->
+                   <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <!-- <t t-if ="language_change"> -->
+                   <label for="region">Region:</label>
+                   <select name="home_region" id="home_region_id">
+                   	<option value="select">Select..</option>
+                       <option value="north">North</option>
+                       <option value="south">South</option>
+                       <option value="east">East</option>
+                       <option value="west">West</option>
+                       <option value="ihq">IHQ</option>
+                       <option value="central">Central</option>
+                   </select>
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                   <!-- </t> -->
+                   
+              <!-- </div>  -->
+	                
+	                
+                	</form> 
+        </div>
+        <hr/>
+
+        <div class="d-flex justify-content-between o_wslides_home_aside_title">
+            <div>
+                <h5 class="m-0">Employees with most certifications</h5>
+
+            </div>
+              <div class="m-0">
+          <form class="oe_reset_password_form m-0 p-0" role="form" method="post" action="/home/employee-with-most-certification">
+<!--               <div class="row ">-->
+                   <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <button type="submit" class="btn btn-primary">View</button>
+<!--             	</div>-->
+           </form>
+        </div>
+        </div>
+        <hr/>
+
+        <div class="d-flex justify-content-between o_wslides_home_aside_title">
+            <div>
+                <h5 class="m-0"> Employees with most completed courses</h5>
+            </div>
+            <div class="m-0">
+          <form class="oe_reset_password_form m-0 p-0" role="form" method="post" action="/home/employee-with-most-completed-course">
+<!--               <div class="row ">-->
+                   <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                   	 	<button type="submit" class="btn btn-primary">View</button>
+<!--             	</div>-->
+           </form>
+        </div>
+        </div>
+
+    </xpath>
+	</template>
+
+    <template id="ecom_portal" inherit_id="portal.portal_my_home" name="Ecom Portal">
+
+    </template>
+    <template id="newest_course" name="Newest Course" inherit_id="website_slides.courses_home">
+           <xpath expr="//div[@class='wrap o_wslides_wrap']" position="replace">
+                   <section class="s_banner overflow-hidden bg-900" style="background-image: url(&quot;/website_slides/static/src/img/banner_default.svg&quot;); background-size: cover; background-position: 55% 65%" data-snippet="s_banner">
+                <div class="container align-items-center d-flex mb-5 mt-lg-5 pt-lg-4 pb-lg-1">
+                    <div>
+                        <h1 class="display-3 mb-0">Reach new heights</h1>
+                        <h2 class="mb-4">Start your online course today!</h2>
+                        <div class="row mt-1 mb-3">
+                            <div class="col">
+                                <p>Skill up and have an impact! Your business career starts here.<br/>Time to start a course.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <div class="container mt16 o_wslides_home_nav position-relative">
+                <nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background: white!important">
+                    <form method="GET" class="form-inline o_wslides_nav_navbar_right order-lg-3" t-attf-action="/slides/all" role="search">
+                        <div class="input-group">
+                            <input type="search" name="search" class="form-control" placeholder="Search Courses/Keywords" aria-label="Search" t-att-value="search_term"/>
+                            <div class="input-group-append">
+                                <button class="btn border border-left-0 oe_search_button" type="submit" aria-label="Search" title="Search">
+                                    <i class="fa fa-search"/>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <button class="navbar-toggler px-2 order-1" type="button"
+                        data-toggle="collapse" data-target="#navbarSlidesHomepage"
+                        aria-controls="navbarSlidesHomepage" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"/>
+                    </button>
+                    <div class="collapse navbar-collapse order-2" id="navbarSlidesHomepage">
+                        <div class="navbar-nav pt-3 pt-lg-0">
+                            <a class="nav-link nav-link mr-md-2 o_wslides_home_all_slides" href="/slides/all"><i class="fa fa-graduation-cap mr-1"/>All courses</a>
+                        </div>
+                        <t t-if="request.env.user.lang_from_website and language_switched">
+	                        <div class="navbar-nav pt-3 pt-lg-0">
+	                        	<div class="nav-link nav-link mr-md-2 o_wslides_home_all_slides">
+	                        	
+	                        		Switched Language :   <span t-esc="request.env.user.lang_from_website"/>
+	                        	</div>
+	                        
+	                        	 
+	                        
+	                        </div>
+                        </t>
+                        
+                        <!-- <form class="oe_reset_password_form" role="form" method="post" action="/slides/my/languages/change">
+                    
+	                    <div class="row ">
+		                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+		                    <input type="hidden" name="language_change"/>
+		                     <t t-if ="language_change">
+		                    <label for="language">Switch Language:</label>
+		                    <select class="form-control form-control-sm" name="language" id="language">
+		                    	<option value="select">Select..</option>
+		                        <option value="english">English</option>
+		                        <option value="hindi">Hindi</option>
+		                        <option value="gujarati">Gujarati</option>
+		                        <option value="marathi">Marathi</option>
+		                        <option value="assamese">Assamese</option>
+		                        <option value="tamil">Tamil</option>
+		                        <option value="kannada">Kannada</option>
+		                        <option value="malyalam">Malyalam</option>
+		                        <option value="telugu">Telugu</option>
+		                    </select>
+		                    
+	                    	<div class="clearfix oe_login_buttons"> 
+			                    <button type="submit" class="btn btn-primary btn-block">Confirm</button>
+			                 </div> 
+		                    </t>
+		                    
+	                </div> 
+	                
+	                
+                	</form> -->
+                   </div>
+                    
+                    
+                    
+                
+                
+                </nav>
+                <div class="o_wprofile_email_validation_container">
+                    <t t-call="website_profile.email_validation_banner">
+                        <t t-set="redirect_url" t-value="'/slides'"/>
+                        <t t-set="send_alert_classes" t-value="'alert alert-danger alert-dismissable mt-4 mb-0'"/>
+                        <t t-set="done_alert_classes" t-value="'alert alert-success alert-dismissable mt-4 mb-0'"/>
+                        <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate at the eLearning.</t>
+                        <t t-set="additional_validated_email_message"> You may now participate in our eLearning.</t>
+                    </t>
+                </div>
+            </div>
+        <div class="container o_wslides_home_main">
+                <div class="row">
+                    <t t-set="has_side_column" t-value="is_view_active('website_slides.toggle_leaderboard')"/>
+                    <t t-if="is_public_user">
+                        <div t-if="has_side_column" class="col-lg-3 order-3 order-lg-2">
+                            <div class="row">
+                                <div class="col-12 col-md-5 col-lg-12">
+                                    <div class="pl-md-5 pl-lg-0">
+                                        <t t-call="website_slides.slides_home_users_small"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <div t-else="" class="col-lg-3 order-lg-2">
+                        <t t-set="has_side_column" t-value="True"/>
+                        <div class="o_wslides_home_aside_loggedin card p-3 p-lg-0 mb-4">
+                            <div class="o_wslides_home_aside_title">
+                                <div class="d-flex align-items-center">
+                                    <t t-call="website_slides.slides_misc_user_image">
+                                        <t t-set="img_class" t-value="'rounded-circle mr-1'"/>
+                                        <t t-set="img_style" t-value="'width: 22px; height: 22px; object-fit: cover;'"/>
+                                    </t>
+                                    <h5 t-esc="user.name" class="d-flex flex-grow-1 mb-0"/>
+                                    <a class="d-none d-lg-block" t-att-href="'/profile/user/%s' % user.id">View</a>
+                                    <a class="d-lg-none btn btn-sm bg-white border" href="#" data-toggle="collapse" data-target="#o_wslides_home_aside_content">More info</a>
+                                </div>
+                                <hr class="d-none d-lg-block mt-2 pt-2 mb-1"/>
+                            </div>
+                            <div id="o_wslides_home_aside_content" class="collapse d-lg-block">
+                                <div class="row no-gutters mb-5 mt-3 mt-lg-0">
+                                    <div class="col-12 col-sm-6 col-lg-12">
+                                        <t t-call="website_slides.slides_home_user_profile_small"/>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-12 pl-md-5 pl-lg-0 mt-lg-4">
+                                        <t t-call="website_slides.slides_home_user_achievements_small"/>
+                                    </div>
+                                    <div class="col-12 col-md-7 col-lg-12 pl-md-5 pl-lg-0 mt-lg-4 mb-3">
+                                        <t t-call="website_slides.slides_home_achievements_small"/>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-12 pl-md-5 pl-lg-0 mt-lg-4">
+                                        <t t-call="website_slides.slides_home_users_small"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div t-att-class="'col-lg-9 pr-lg-5 order-lg-1' if has_side_column else 'col-lg pr-lg'">
+                        <div class="o_wslides_home_content_section mb-3" t-if="not channels_complete and not channels_suggested and not channels_assign and not channels_feature and not channels_resumed">
+                            <!-- t-if="not channels_popular and not channels_complete and not channels_suggested and not channels_assign"> -->
+                            <p class="h2">No course available yet.</p>
+                            <p groups="website_slides.group_website_slides_officer">Click on "New" in the top-right corner to write your first course.</p>
+                        </div>
+<!--                        <t t-if="channels_my">-->
+<!--                            <t t-set="void_count" t-value="3 - len(channels_my[:3])"/>-->
+<!--                            <div class="o_wslides_home_content_section mb-3">-->
+<!--                                <div class="row o_wslides_home_content_section_title align-items-center">-->
+<!--                                    <div class="col">-->
+<!--                                        <a href="/slides/all?my=1" class="float-right">View all</a>-->
+<!--                                        <h5 class="m-0">My courses</h5>-->
+<!--                                        <hr class="mt-2 pb-1 mb-1"/>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="row mx-n2 mt8">-->
+<!--                                    <t t-foreach="channels_my[:3]" t-as="channel">-->
+<!--                                        <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">-->
+<!--                                            <t t-call="website_slides.course_card"/>-->
+<!--                                        </div>-->
+<!--                                    </t>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </t>-->
+                        
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_resumed">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/slides/resumed/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Resume Learning</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_resumed[:4]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                         <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_assign">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/slides/assigned/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Assigned Courses</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_assign[:4]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_complete">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/slides/completed/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Completed Courses</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_complete[:4]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_feature">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/slides/featured/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Featured Courses</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_feature[:4]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        
+                       <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_suggested">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/slides/suggested/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Suggested Courses</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_suggested[:4]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div> 
+                        
+                        
+                        
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="journey_details">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/journey/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Journey</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="journey_details[:4]" t-as="journey">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="ecom_lms.journey_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="journey_suggested">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/slides/journey/suggested/pwa/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Suggested Journey</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="journey_suggested[:4]" t-as="journey">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="ecom_lms.journey_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="quizzes_details">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="/quizzes/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Quizzes</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="quizzes_details[:4]" t-as="quizzes">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="ecom_lms.quiz_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        
+                        
+                        <!-- <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_popular">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="slides/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Most popular courses</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_popular[:3]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="o_wslides_home_content_section mb-3"
+                            t-if="channels_newest">
+                            <div class="row o_wslides_home_content_section_title align-items-center">
+                                <div class="col">
+                                    <a href="slides/all" class="float-right">View all</a>
+                                    <h5 class="m-0">Newest courses</h5>
+                                    <hr class="mt-2 pb-1 mb-1"/>
+                                </div>
+                            </div>
+                            <div class="row mx-n2 mt8">
+                                <t t-foreach="channels_newest[:3]" t-as="channel">
+                                    <div class="col-md-4 col-sm-6 px-2 col-xs-12 d-flex flex-grow-1">
+                                        <t t-call="website_slides.course_card"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div> -->
+                </div>
+            </div>
+        </div>
+           </xpath>
+    </template>
+</odoo>

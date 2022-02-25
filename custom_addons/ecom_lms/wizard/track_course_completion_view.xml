@@ -1,0 +1,45 @@
+<odoo>
+    <data>
+        <record id="track_course_form_view12" model="ir.ui.view">
+            <field name="name">track.course.completion.form</field>
+            <field name="model">track.course.completion</field>
+            <field name="arch" type="xml">
+                <form string="Track Course Completion Report">
+                <group>
+                	<group >
+                		<field name="course_journey" required="1" widget="radio" />
+                		<field name="region" required="1"/>
+                        <!-- <field name="user_ids" widget="many2many_tags"/> -->
+                    </group>
+                </group>
+                     <footer>
+                         <button name="button_print" string="Print" type="object" class="oe_highlight" />
+                         <button string="Cancel" class="oe_link" special="cancel" /> 
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="track_course_completion_report_print" model="ir.actions.act_window">
+            <field name="name">Track Course Completion Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">track.course.completion</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+       <record id="track_course_completion_report_view" model="ir.ui.view">
+			<field name="name">Track Course Completion Report</field>
+			<field name="model">track.course.completion.report</field>
+			<field name="arch" type="xml">
+				<form string="Excel Report file" create="false" edit="false" duplicate="false" delete="false">
+                    <group>
+                        <field name="excel_file" readonly="1" filename="file_name" />
+                        <field name="file_name" invisible="1" />
+				    </group>
+				</form>
+			</field>
+		</record> 
+		
+		<menuitem id="track_course_completion_report_view_menu" name="Track Course Completion Report" parent="website_slides.website_slides_menu_report" action="track_course_completion_report_print" sequence="2"/>
+    </data>
+</odoo>

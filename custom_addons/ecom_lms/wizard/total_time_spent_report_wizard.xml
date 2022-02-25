@@ -1,0 +1,55 @@
+<odoo>
+    <data>
+        <record id="time_spent_report_wizard_form_view" model="ir.ui.view">
+            <field name="name">total.time.spent.report.wizard.form</field>
+            <field name="model">total.time.spent.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Total Time Spent Report">
+                <group>
+                	<group>
+                        <field name="region" required="1"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="user_ids" widget="many2many_tags" invisible="1"/>
+                        <field name="user_is_regional_admin" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="user_role" invisible="1"/>
+                    </group>
+                </group>
+                     <footer>
+                         <button name="button_print" string="Print" type="object" class="oe_highlight" />
+                         <button string="Cancel" class="oe_link" special="cancel" /> 
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="time_spent_act_window" model="ir.actions.act_window">
+            <field name="name">Total Time Spent Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">total.time.spent.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        
+        <record id="total_time_spent_view_report_id" model="ir.ui.view">
+            <field name="name">Total Time Spent View Report</field>
+            <field name="model">total.time.spent.view.report</field>
+            <field name="arch" type="xml">
+                <form string="Excel total_time_spent_view_report_ file" create="false" edit="false" duplicate="false" delete="false">
+                    <group>
+                        <field name="excel_file" readonly="1" filename="file_name" />
+                        <field name="file_name" invisible="1" />
+                    </group>
+                </form>
+            </field>
+        </record>
+		
+        <menuitem name="Total Time Spent Report"
+            id="total_time_spent_report"
+            parent="website_slides.website_slides_menu_report"
+            action="time_spent_act_window"
+            groups="base.group_user"/>
+    </data>
+</odoo>
