@@ -31,8 +31,12 @@ class OdooAPI(http.Controller):
             orders = ""
         if "limit" in params:
             limit = int(params["limit"])
+        else:
+            limit = ""
         if "offset" in params:
             offset = int(params["offset"])
+        else:
+            offset = ""
         records = request.env[model].search([], order=orders, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -61,4 +65,3 @@ class OdooAPI(http.Controller):
             "result": temp
         }
         return return_Response(res)
-
