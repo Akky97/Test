@@ -17,7 +17,7 @@ class OdooAPI(http.Controller):
     def product_template_view(self, **params):
         try:
             model = 'product.template'
-            records = request.env[model].search([])
+            records = request.env[model].sudo().search([])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
