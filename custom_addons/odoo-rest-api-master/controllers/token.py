@@ -179,7 +179,7 @@ expires_in = 'odoo-rest-api-master.access_token_expires_in'
 class AccessToken(http.Controller):
     """."""
 
-    @http.route('/api/auth/token', methods=['POST'], type='http', auth='none', csrf=False, cors='*')
+    @http.route('/api/auth/token', methods=['POST'], type='http', auth='none', csrf=False)
     def token(self, **kwargs):
         """The token URL to be used for getting the access_token:
         Args:
@@ -201,9 +201,15 @@ class AccessToken(http.Controller):
            content = json.loads(req.content.decode('utf-8'))
            headers.update(access-token=content.get('access_token'))
         """
-
         try:
-            db, username, password = kwargs['db'], kwargs['login'], kwargs['password']
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        db = jdata.get('db')
+        login = jdata.get('login')
+        password = jdata.get('password')
+        try:
+            db, username, password = db, login,password
             print(db,username,password,"PASWWORDSS")
         except Exception as e:
             # Invalid database:
