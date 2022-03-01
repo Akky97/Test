@@ -37,7 +37,7 @@ class OdooAPI(http.Controller):
             offset = int(params["offset"])
         else:
             offset = ""
-        records = request.env[model].search([], order=orders, limit=limit, offset=offset)
+        records = request.env[model].sudo().search([], order=orders, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
