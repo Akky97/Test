@@ -33,32 +33,12 @@ class OdooAPI(http.Controller):
             limit = int(params["limit"])
         if "offset" in params:
             offset = int(params["offset"])
-        if "filter" in params:
-            filters = params["filter"]
-            records = request.env[model].search(ast.literal_eval(filters), order=orders, limit=limit, offset=offset)
-
+        records = request.env[model].search([], order=orders, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
         current_page = 1
 
-        if "page_size" in params:
-            page_size = int(params["page_size"])
-            count = len(records)
-            total_page_number = math.ceil(count / page_size)
-            if "page" in params:
-                current_page = int(params["page"])
-            else:
-                current_page = 1  # Default page Number
-            start = page_size * (current_page - 1)
-            stop = current_page * page_size
-            records = records[start:stop]
-            next_page = current_page + 1 \
-                if 0 < current_page + 1 <= total_page_number \
-                else None
-            prev_page = current_page - 1 \
-                if 0 < current_page - 1 <= total_page_number \
-                else None
         try:
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
