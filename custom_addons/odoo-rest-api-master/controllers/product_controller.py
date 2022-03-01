@@ -60,7 +60,7 @@ class OdooAPI(http.Controller):
                 if 0 < current_page - 1 <= total_page_number \
                 else None
         try:
-            base_url = request.env['ir.config_parameter'].search([('key', '=', 'web.base.url')], limit=1)
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
                 temp.append({"id": i.id, "name": i.name,
