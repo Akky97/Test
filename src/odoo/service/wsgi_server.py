@@ -70,7 +70,7 @@ def xmlrpc_return(start_response, service, method, params, string_faultcode=Fals
 
         response = xmlrpclib.dumps((result,), methodresponse=1, allow_none=False, encoding=None)
 
-    except Exception, e:
+    except Exception as e:
 
         if string_faultcode:
 
