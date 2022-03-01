@@ -179,7 +179,7 @@ expires_in = 'odoo-rest-api-master.access_token_expires_in'
 class AccessToken(http.Controller):
     """."""
 
-    @http.route('/api/auth/token', methods=['POST'], type='http', auth='none', csrf=False)
+    @http.route('/api/auth/token', methods=['POST'], type='http', auth='none', csrf=False,cors='*')
     def token(self, **kwargs):
         """The token URL to be used for getting the access_token:
         Args:
