@@ -7,11 +7,7 @@ WSGI stack, common code.
 
 """
 
-import httplib
 import urllib
-import xmlrpclib
-import StringIO
-
 import errno
 import logging
 import platform
