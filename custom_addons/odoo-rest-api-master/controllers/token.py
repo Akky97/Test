@@ -210,7 +210,6 @@ class AccessToken(http.Controller):
         password = jdata.get('password')
         try:
             db, username, password = db, login,password
-            print(db,username,password,"PASWWORDSS")
         except Exception as e:
             # Invalid database:
             error = 'missing'
@@ -231,8 +230,6 @@ class AccessToken(http.Controller):
 
         uid = request.session.uid
 
-        print(uid,"UID")
-
         # odoo login failed:
         if not uid:
             error = 'authentication failed'
@@ -243,8 +240,7 @@ class AccessToken(http.Controller):
         # Generate tokens
         access_token = request.env['api.access_token'].sudo().find_one_or_create_token(
             user_id=uid, create=True)
-        print(access_token,"AAACC")
-
+        
         # Successful response:
         return token_response({
             'uid': uid,
