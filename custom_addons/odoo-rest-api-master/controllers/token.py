@@ -242,10 +242,14 @@ class AccessToken(http.Controller):
             user_id=uid, create=True)
         
         # Successful response:
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         return token_response({
             'uid': uid,
             'user_context': request.session.get_context(),
             'company_id': request.env.user.company_id.id,
+            'email': request.env.user.partner_id.email,
+            'name': request.env.user.name,
+            "image": base_url.value + '/web/image/res.partner/' + str(request.env.user.partner_id.id) + "/image_1920",
             'access_token': access_token,
             'expires_in': request.env.ref(expires_in).sudo().value,
         })

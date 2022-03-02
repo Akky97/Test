@@ -26,3 +26,10 @@ def return_Response(res):
         status=200,
         mimetype='application/json'
     )
+
+def return_Response_error(res):
+    return http.Response(
+        json.dumps(res),
+        status=400,
+        mimetype='application/json'
+    )
