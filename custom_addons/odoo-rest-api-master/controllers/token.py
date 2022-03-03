@@ -232,9 +232,13 @@ class AccessToken(http.Controller):
 
         # Login in odoo database:
         try:
-            request.session.authenticate(db, login, password)
-            http.request.session.authenticate(db, login, password)
-            res = request.env['ir.http'].session_info()
+            r = request.session.authenticate(db, login, password)
+            url = "https://stagingbackend.pandostores.com/web/session/authenticate"
+            headers = json.dumps({"Content-Type": "application/json"})
+            headers = {"Content-Type": "application/json"}
+            data = {"jsonrpc": "2.0", "params": {"login": username, "password": password, "db": "pandostaging"}}
+            r1 = requests.post(url, data=json.dumps(data), headers=headers)
+            print(r1.text, "WWW")
         except Exception as e:
             # Invalid database:
             error = 'invalid_database'
@@ -243,38 +247,22 @@ class AccessToken(http.Controller):
             return invalid_response(error, info)
 
         uid = request.session.uid
-        session = odoo.http.root.session_store.new()
-        session.db = db
-        odoo.http.root.session_store.save(session)
-        print(session.sid,"SESSSIONS",request.session.sid)
-
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
                                        ('res_id', 'in', [request.env.user.partner_id.id])])
-        print(res_id, "REDD")
-        request.session.uid = uid
-
         res_id.sudo().write({"public": True})
-
         # odoo login failed:
         if not uid:
             error = 'authentication failed'
             info = 'authentication failed'
             _logger.error(info)
             return invalid_response(error, info)
-
         # Generate tokens
         access_token = request.env['api.access_token'].sudo().find_one_or_create_token(
             user_id=uid, create=True)
-
         # Successful response:
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-        # url = base_url.value + '/web/session/authenticate'
-        # r = requests.post(url,)
-        d= Session.authenticate(self,db, login, password)
-
-
         return token_response({
             'uid': uid,
             'user_context': request.session.get_context(),
@@ -282,11 +270,11 @@ class AccessToken(http.Controller):
             'email': request.env.user.partner_id.email,
             'name': request.env.user.name,
             "image": base_url.value + '/web/image?model=res.partner&field=image_1920&id=' + str(
-                request.env.user.partner_id.id) + '&session_id=' + str(session.sid),
+                request.env.user.partner_id.id) + '&session_id=' + str(request.session.sid),
             'access_token': access_token,
             'expires_in': request.env.ref(expires_in).sudo().value,
-            'session': res,
-            'session_id': request.session.sid
+            'session_id': request.session.sid,
+            "r": r
         })
 
     @http.route('/api/auth/token', methods=['DELETE'], type='http', auth='none', csrf=False)
