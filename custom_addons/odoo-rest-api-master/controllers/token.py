@@ -6,6 +6,7 @@ from odoo import http
 from odoo.http import request
 import odoo
 import time
+
 """Common methods"""
 import ast
 import logging
@@ -38,6 +39,7 @@ def set_cookie(self, key, value='', max_age=None, expires=None,
 
 
 BaseResponse.set_cookie = set_cookie
+
 
 def token_response(data):
     """Token Response
@@ -254,12 +256,17 @@ class AccessToken(http.Controller):
         # Login in odoo database:
         try:
             r = request.session.authenticate(db, login, password)
-            # url = "https://stagingbackend.pandostores.com/web/session/authenticate"
-            # headers = json.dumps({"Content-Type": "application/json"})
-            # headers = {"Content-Type": "application/json"}
-            # data = {"jsonrpc": "2.0", "params": {"login": username, "password": password, "db": "pandostaging"}}
-            # r1 = requests.post(url, data=json.dumps(data), headers=headers)
-            # print(r1.text, "WWW")
+            url = "https://stagingbackend.pandostores.com/web/session/authenticate"
+            headers = json.dumps({"Content-Type": "application/json"})
+            headers = {"Content-Type": "application/json"}
+            data = {"jsonrpc": "2.0", "params": {"login": username, "password": password, "db": "pandostaging"}}
+            cookies = {
+                "login": login,
+                "password": password,
+                "session_id": request.session.sid
+            }
+            r1 = requests.post(url, data=json.dumps(data), headers=headers,cookies=cookies)
+            print(r1.text, "WWW")
         except Exception as e:
             # Invalid database:
             error = 'invalid_database'
@@ -268,7 +275,7 @@ class AccessToken(http.Controller):
             return invalid_response(error, info)
 
         uid = request.session.uid
-        print(request.httprequest.cookies,"cookies.get_dict()",request.session.sid)
+        print(request.httprequest.cookies, "cookies.get_dict()", request.session.sid)
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
