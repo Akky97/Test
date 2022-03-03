@@ -289,8 +289,7 @@ class AccessToken(http.Controller):
             'company_id': request.env.user.company_id.id,
             'email': request.env.user.partner_id.email,
             'name': request.env.user.name,
-            "image": base_url.value + '/web/image?model=res.partner&field=image_1920&id=' + str(
-                request.env.user.partner_id.id) + '&session_id=' + str(request.session.sid),
+            "image": base_url.value + '/web/image/'+str(res_id.id),
             'access_token': access_token,
             'expires_in': request.env.ref(expires_in).sudo().value,
             'session_id': request.session.sid,
