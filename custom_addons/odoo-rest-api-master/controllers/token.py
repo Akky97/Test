@@ -5,7 +5,7 @@ import werkzeug.wrappers
 from odoo import http
 from odoo.http import request
 import odoo
-
+import time
 """Common methods"""
 import ast
 import logging
@@ -17,6 +17,27 @@ from odoo.addons.web.controllers.main import Session
 
 _logger = logging.getLogger(__name__)
 
+from werkzeug.wrappers import BaseResponse
+from odoo.tools.config import config
+
+original_set_cookie = BaseResponse.set_cookie
+
+
+def set_cookie(self, key, value='', max_age=None, expires=None,
+               path='/', domain=None, secure=False, httponly=False):
+    if expires != 0 and max_age != 0:  # not delete
+        if config.get('cookie_max_age') is not None:
+            max_age = int(config['cookie_max_age'])
+        if config.get('cookie_secure') is not None:
+            secure = bool(config['cookie_secure'])
+        if config.get('cookie_domain') is not None:
+            domain = config['cookie_domain']
+
+    return original_set_cookie(self, key, value=value, max_age=max_age, expires=expires, path=path, domain=domain,
+                               secure=secure, httponly=httponly)
+
+
+BaseResponse.set_cookie = set_cookie
 
 def token_response(data):
     """Token Response
