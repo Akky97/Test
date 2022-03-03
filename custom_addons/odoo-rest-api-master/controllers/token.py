@@ -4,6 +4,7 @@ import json
 import werkzeug.wrappers
 from odoo import http
 from odoo.http import request
+import odoo
 
 """Common methods"""
 import ast
@@ -12,6 +13,7 @@ import json
 
 from odoo.http import Response
 from odoo.tools import date_utils
+from odoo.tests.common import HttpCaseCommon
 
 _logger = logging.getLogger(__name__)
 
@@ -241,12 +243,15 @@ class AccessToken(http.Controller):
             return invalid_response(error, info)
 
         uid = request.session.uid
+        self.session = session = odoo.http.root.session_store.new()
+        session.db = db
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
                                        ('res_id', 'in', [request.env.user.partner_id.id])])
         print(res_id, "REDD")
         request.session.uid = uid
+
         res_id.sudo().write({"public": True})
 
         # odoo login failed:
