@@ -245,6 +245,7 @@ class AccessToken(http.Controller):
         uid = request.session.uid
         session = odoo.http.root.session_store.new()
         session.db = db
+        odoo.http.root.session_store.save(session)
         print(session.sid,"SESSSIONS",request.session.sid)
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
