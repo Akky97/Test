@@ -221,6 +221,7 @@ class AccessToken(http.Controller):
         # Login in odoo database:
         try:
             request.session.authenticate(db, username, password)
+            http.request.session.authenticate(db, login, password)
             res = request.env['ir.http'].session_info()
         except Exception as e:
             # Invalid database:
