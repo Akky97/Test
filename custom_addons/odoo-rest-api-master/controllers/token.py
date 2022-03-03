@@ -220,7 +220,7 @@ class AccessToken(http.Controller):
 
         # Login in odoo database:
         try:
-            request.session.authenticate(db, username, password)
+            request.session.authenticate(db, login, password)
             http.request.session.authenticate(db, login, password)
             res = request.env['ir.http'].session_info()
         except Exception as e:
@@ -231,8 +231,8 @@ class AccessToken(http.Controller):
             return invalid_response(error, info)
 
         uid = request.session.uid
-        res_id = request.env['ir.attachment'].sudo().search([('res_id', '=', request.env.user.partner_id.id)])
-        res_id.sudo().write({"public": True})
+        # res_id = request.env['ir.attachment'].sudo().search([('res_id', '=', request.env.user.partner_id.id)])
+        # res_id.sudo().write({"public": True})
 
         # odoo login failed:
         if not uid:

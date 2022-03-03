@@ -1,10 +1,0 @@
-
-wpython:S1192q"_Define a constant instead of duplicating this literal "The model `%s` does not exist." 8 times.(İÓÉ
-opython:S1192B"RDefine a constant instead of duplicating this literal 'application/json' 15 times.( ıŸõşÿÿÿÿ
-kpython:S3776m"TRefactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.(û¥èw
-Cpython:S1481¿"%Remove the unused local variable "e".(¼–¯¸ÿÿÿÿÿ
-rpython:S3776‰"TRefactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.(«Ç¼Ëùÿÿÿÿ
-Apython:S108»")Either remove or fill this block of code.(ã‘Û¾
-Cpython:S1481€"%Remove the unused local variable "e".(¼–¯¸ÿÿÿÿÿ
-rpython:S3776Ç"TRefactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.(éÑÕŞùÿÿÿÿ
-Apython:S108û")Either remove or fill this block of code.(ã‘Û¾
