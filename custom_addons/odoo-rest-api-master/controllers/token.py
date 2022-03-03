@@ -5,7 +5,6 @@ import werkzeug.wrappers
 from odoo import http
 from odoo.http import request
 
-
 """Common methods"""
 import ast
 import logging
@@ -15,6 +14,7 @@ from odoo.http import Response
 from odoo.tools import date_utils
 
 _logger = logging.getLogger(__name__)
+
 
 def token_response(data):
     """Token Response
@@ -29,6 +29,7 @@ def token_response(data):
         ]
     )
 
+
 def valid_response(data, status=200):
     """Valid Response
     This will be return when the http request was successfully processed."""
@@ -38,8 +39,8 @@ def valid_response(data, status=200):
         response = None
     elif isinstance(data, str):
         response = json.dumps({
-        'message': data
-    })
+            'message': data
+        })
     elif isinstance(data, list):
         response = json.dumps({
             'count': len(data),
@@ -55,6 +56,7 @@ def valid_response(data, status=200):
         status=status,
         content_type='application/json; charset=utf-8'
     )
+
 
 def invalid_response(error, message=None, status=401):
     """Invalid Response
@@ -72,6 +74,7 @@ def invalid_response(error, message=None, status=401):
         content_type='application/json; charset=utf-8'
     )
 
+
 def prepare_response(data, one=False):
     """Replaces ids as lists with two different keys with id and string values.
     Like: {country_id: [1, 'United States'], company_currency: [1, 'EUR']} => {country_id: 1, country: 'United States', company_currency_id: 1, company_currency: 'EUR'}.
@@ -84,12 +87,13 @@ def prepare_response(data, one=False):
             if isinstance(_result, dict):
                 item = {}
                 for key, value in _result.items():
-                    if isinstance(value, tuple) and len(value) == 2 and isinstance(value[0], int) and isinstance(value[1], str):
+                    if isinstance(value, tuple) and len(value) == 2 and isinstance(value[0], int) and isinstance(
+                            value[1], str):
                         _int, _str = value
                         _key = key.replace('_id', '').replace('_uid', '')
                         _key_id = '{}_id'.format(_key)
                         item[_key_id] = _int
-                        item[_key]    = _str
+                        item[_key] = _str
                     else:
                         item[key] = value
             else:
@@ -102,6 +106,7 @@ def prepare_response(data, one=False):
             else:
                 result = None
     return result
+
 
 def parse_dict(obj):
     keys = list(obj.keys())
@@ -125,6 +130,7 @@ def parse_dict(obj):
 
     return (left, center, right)
 
+
 def parse_expr(expr):
     if isinstance(expr, tuple):
         return expr
@@ -132,6 +138,7 @@ def parse_expr(expr):
         return tuple(expr)
     elif isinstance(expr, dict):
         return parse_dict(expr)
+
 
 def parse_domain(prepared):
     result = []
@@ -141,12 +148,14 @@ def parse_domain(prepared):
             result.append(obj)
     return result
 
+
 def parse_list(domain):
     if isinstance(domain, str):
         if not (domain[0] == '[' and domain[-1] == ']'):
             domain = '[{0}]'.format(domain)
         domain = ast.literal_eval(domain)
     return domain
+
 
 def extract_arguments(payload={}):
     """Parse "[('id','=','100')]" or {'id': '100'} notation as domain
@@ -155,8 +164,8 @@ def extract_arguments(payload={}):
     _domain = payload.get('domain')
     _fields = payload.get('fields')
     _offset = payload.get('offset')
-    _limit  = payload.get('limit')
-    _order  = payload.get('order')
+    _limit = payload.get('limit')
+    _order = payload.get('order')
     if _domain:
         domain_list = parse_list(_domain)
         domain = parse_domain(domain_list)
@@ -165,10 +174,10 @@ def extract_arguments(payload={}):
     if _offset:
         offset = int(_offset)
     if _limit:
-        limit  = int(_limit)
+        limit = int(_limit)
     if _order:
         parsed_order = parse_list(_order)
-        order  = ','.join(parsed_order) if parsed_order else None
+        order = ','.join(parsed_order) if parsed_order else None
     return [domain, fields, offset, limit, order]
 
 
@@ -176,10 +185,11 @@ _logger = logging.getLogger(__name__)
 
 expires_in = 'odoo-rest-api-master.access_token_expires_in'
 
+
 class AccessToken(http.Controller):
     """."""
 
-    @http.route('/api/auth/token', methods=['POST'], type='http', auth='none', csrf=False,cors='*')
+    @http.route('/api/auth/token', methods=['POST'], type='http', auth='none', csrf=False, cors='*')
     def token(self, **kwargs):
         """The token URL to be used for getting the access_token:
         Args:
@@ -209,7 +219,7 @@ class AccessToken(http.Controller):
         login = jdata.get('login')
         password = jdata.get('password')
         try:
-            db, username, password = db, login,password
+            db, username, password = db, login, password
         except Exception as e:
             # Invalid database:
             error = 'missing'
@@ -233,9 +243,10 @@ class AccessToken(http.Controller):
         uid = request.session.uid
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
-                                ('res_field', '=', 'image_1920'),
-                                ('res_id', 'in', [request.env.user.partner_id.id])])
-        print(res_id,"REDD")
+                                       ('res_field', '=', 'image_1920'),
+                                       ('res_id', 'in', [request.env.user.partner_id.id])])
+        print(res_id, "REDD")
+        request.session.uid = uid
         res_id.sudo().write({"public": True})
 
         # odoo login failed:
@@ -248,7 +259,7 @@ class AccessToken(http.Controller):
         # Generate tokens
         access_token = request.env['api.access_token'].sudo().find_one_or_create_token(
             user_id=uid, create=True)
-        
+
         # Successful response:
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         return token_response({
@@ -267,7 +278,7 @@ class AccessToken(http.Controller):
     def delete(self, **kwargs):
         """."""
         request_token = request.httprequest.headers.get('access_token')
-        access_token  = request.env['api.access_token'].sudo().search([('token', '=', request_token)])
+        access_token = request.env['api.access_token'].sudo().search([('token', '=', request_token)])
         if not access_token:
             error = 'no_access_token'
             info = 'No access token was provided in request!'
