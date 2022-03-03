@@ -231,8 +231,8 @@ class AccessToken(http.Controller):
         # Login in odoo database:
         try:
             request.session.authenticate(db, login, password)
-            # http.request.session.authenticate(db, login, password)
-            # res = request.env['ir.http'].session_info()
+            http.request.session.authenticate(db, login, password)
+            res = request.env['ir.http'].session_info()
         except Exception as e:
             # Invalid database:
             error = 'invalid_database'
@@ -271,7 +271,7 @@ class AccessToken(http.Controller):
             "image": base_url.value + '/web/image/res.partner/' + str(request.env.user.partner_id.id) + "/image_1920",
             'access_token': access_token,
             'expires_in': request.env.ref(expires_in).sudo().value,
-            # 'session': res
+            'session': res
         })
 
     @http.route('/api/auth/token', methods=['DELETE'], type='http', auth='none', csrf=False)
