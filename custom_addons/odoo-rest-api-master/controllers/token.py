@@ -10,10 +10,10 @@ import odoo
 import ast
 import logging
 import json
-
+import requests
 from odoo.http import Response
 from odoo.tools import date_utils
-from odoo.tests.common import HttpCaseCommon
+from odoo.addons.web.controllers.main import Session
 
 _logger = logging.getLogger(__name__)
 
@@ -247,6 +247,7 @@ class AccessToken(http.Controller):
         session.db = db
         odoo.http.root.session_store.save(session)
         print(session.sid,"SESSSIONS",request.session.sid)
+
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
@@ -269,6 +270,11 @@ class AccessToken(http.Controller):
 
         # Successful response:
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        # url = base_url.value + '/web/session/authenticate'
+        # r = requests.post(url,)
+        d= Session.authenticate(self,db, login, password)
+
+
         return token_response({
             'uid': uid,
             'user_context': request.session.get_context(),
