@@ -255,6 +255,7 @@ class AccessToken(http.Controller):
 
         # Login in odoo database:
         try:
+            request.session.logout()
             request.session.authenticate(db, login, password)
             r= request.env['ir.http'].session_info()
         except Exception as e:
@@ -280,6 +281,7 @@ class AccessToken(http.Controller):
         access_token = request.env['api.access_token'].sudo().find_one_or_create_token(
             user_id=uid, create=True)
         # Successful response:
+        print(request.httprequest.headers,":fg")
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         return token_response({
             'uid': uid,
