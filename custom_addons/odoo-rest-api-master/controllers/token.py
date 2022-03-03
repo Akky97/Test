@@ -231,6 +231,8 @@ class AccessToken(http.Controller):
             return invalid_response(error, info)
 
         uid = request.session.uid
+        res_id = request.env['ir_attachment'].sudo().search([('res_id', '=', request.env.user.partner_id.id)])
+        res_id.sudo().write({"public": True})
 
         # odoo login failed:
         if not uid:
