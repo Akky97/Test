@@ -243,8 +243,9 @@ class AccessToken(http.Controller):
             return invalid_response(error, info)
 
         uid = request.session.uid
-        self.session = session = odoo.http.root.session_store.new()
+        session = odoo.http.root.session_store.new()
         session.db = db
+        print(session.sid,"SESSSIONS",request.session.sid)
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
@@ -274,7 +275,7 @@ class AccessToken(http.Controller):
             'email': request.env.user.partner_id.email,
             'name': request.env.user.name,
             "image": base_url.value + '/web/image?model=res.partner&field=image_1920&id=' + str(
-                request.env.user.partner_id.id) + '&session_id=' + str(request.session.sid),
+                request.env.user.partner_id.id) + '&session_id=' + str(session.sid),
             'access_token': access_token,
             'expires_in': request.env.ref(expires_in).sudo().value,
             'session': res,
