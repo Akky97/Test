@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 class OdooAPI(http.Controller):
     @http.route('/api/v1/c/res.company.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
-    def product_template_view(self, **params):
+    def company_detail_view(self, **params):
         try:
             model = 'res.company'
             records = request.env[model].sudo().search([('name', '=', 'Pando Mall')])
