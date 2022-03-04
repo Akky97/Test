@@ -257,7 +257,7 @@ class AccessToken(http.Controller):
         try:
             request.session.logout()
             request.session.authenticate(db, login, password)
-            r= request.env['ir.http'].session_info()
+            r = request.env['ir.http'].session_info()
         except Exception as e:
             # Invalid database:
             error = 'invalid_database'
@@ -281,7 +281,7 @@ class AccessToken(http.Controller):
         access_token = request.env['api.access_token'].sudo().find_one_or_create_token(
             user_id=uid, create=True)
         # Successful response:
-        print(request.httprequest.headers,":fg")
+        print(request.httprequest.headers, ":fg")
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         return token_response({
             'uid': uid,
@@ -289,10 +289,11 @@ class AccessToken(http.Controller):
             'company_id': request.env.user.company_id.id,
             'email': request.env.user.partner_id.email,
             'name': request.env.user.name,
-            "image": base_url.value + '/web/image/'+str(res_id.id),
+            "image": base_url.value + '/web/image/' + str(res_id.id),
             'access_token': access_token,
             'expires_in': request.env.ref(expires_in).sudo().value,
             'session_id': request.session.sid,
+            'partner_id': request.env.user.partner_id.id,
             "r": r
         })
 
