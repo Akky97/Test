@@ -76,7 +76,7 @@ class OdooAPI(http.Controller):
                              "variant":variant,
                              "stock":0,
                              "sm_pictures": image,
-                             "featured":i.website_ribbon_id.name,
+                             "featured":i.website_ribbon_id.html,
                              "seller_ids":sellers
                              })
         except (SyntaxError, QueryFormatError) as e:
