@@ -99,19 +99,17 @@ class OdooAPI(http.Controller):
     def product_template_view_by_categ(self, **params):
         try:
             model = 'product.template'
-            categ = params["categ_id"]
-
-            if not categ:
-                error = {"message":"categ_id is not present in the params"}
-                return return_Response_error(error)
-
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
-        if "query" in params:
-            query = params["query"]
-        else:
-            query = "{*}"
+
+        if "categ_id" not in params:
+            error = {"message": "categ_id is not present in the params"}
+            return return_Response_error(error)
+
+        if "categ_id" in params:
+           categ = params["categ_id"]
+
         if "order" in params:
             orders = params["order"]
         else:
@@ -124,7 +122,6 @@ class OdooAPI(http.Controller):
             offset = int(params["offset"])
         else:
             offset = ""
-
         if categ == 'all':
             records = request.env[model].sudo().search(
                 [('is_published', '=', True)], order=orders, limit=limit,
@@ -132,7 +129,6 @@ class OdooAPI(http.Controller):
         else:
             records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(categ)])], order=orders, limit=limit,
                 offset=offset)
-
         prev_page = None
         next_page = None
         total_page_number = 1
