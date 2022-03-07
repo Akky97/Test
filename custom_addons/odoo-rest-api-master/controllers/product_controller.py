@@ -17,7 +17,6 @@ class OdooAPI(http.Controller):
     def product_template_view(self, **params):
         try:
             model = 'product.template'
-            records = request.env[model].sudo().search([])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -48,17 +47,38 @@ class OdooAPI(http.Controller):
             temp = []
             for i in records:
                 image = []
+                category=[]
+                variant=[]
+                sellers=[]
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
+                for z in i.public_categ_ids:
+                    category.append({"id": z.id, "name": z.name,
+                             "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
+                for k in i.attribute_line_ids:
+                    variant.append({"id": k.id, "name": k.name})
+
+                for n in i.attribute_line_ids:
+                    sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
-                             'type': i.type, 'sales_price': i.list_price, "cost_price": i.standard_price,
+                             'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
-                             'description_sale': i.description_sale if i.description_sale != False else '',
+                             'short_desc': i.description_sale if i.description_sale != False else '',
                              'categ_id': i.categ_id.id if i.categ_id.id != False else '',
                              'categ_name': i.categ_id.name if i.categ_id.name != False else '',
-                             "additional_images": image})
+                             "category":category,
+                             "create_uid":i.create_uid.id,
+                             "create_name":i.create_uid.name,
+                             "write_uid":i.write_uid.id,
+                             "write_name":i.write_uid.name,
+                             "variant":variant,
+                             "stock":0,
+                             "sm_pictures": image,
+                             "featured":i.website_ribbon_id.name,
+                             "seller_ids":sellers
+                             })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
