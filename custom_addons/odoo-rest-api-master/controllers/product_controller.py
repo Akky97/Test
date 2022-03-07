@@ -104,7 +104,7 @@ class OdooAPI(http.Controller):
             return error_response(e, msg)
 
         if "categ_id" not in params:
-            error = {"message": "categ_id is not present in the params"}
+            error = {"message": "categ_id is not present in the params","status":400}
             return return_Response_error(error)
 
         if "categ_id" in params:

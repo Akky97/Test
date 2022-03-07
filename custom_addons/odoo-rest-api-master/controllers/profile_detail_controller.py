@@ -12,7 +12,6 @@ _logger = logging.getLogger(__name__)
 
 
 class OdooAPI(http.Controller):
-    # @validate_id
     @validate_token
     @http.route(['/api/v1/c/res.partner.view/','/api/v1/c/res.partner.view/<id>/'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def profile_detail_view(self, id=None,**params):
