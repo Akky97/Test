@@ -8,20 +8,30 @@ from odoo.http import request
 from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
-
 _logger = logging.getLogger(__name__)
 
 
 class OdooAPI(http.Controller):
-    @http.route('/api/v1/c/res.partner.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
-    def profile_detail_view(self, **params):
+    # @validate_id
+    @validate_token
+    @http.route(['/api/v1/c/res.partner.view/','/api/v1/c/res.partner.view/<id>/'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def profile_detail_view(self, id=None,**params):
         try:
+            if not id:
+                error = {"message": "id is not present in the request", "status": 400}
+                return return_Response_error(error)
             model = 'res.partner'
-            records = request.env[model].sudo().search([('id', '=', 14)])
+            records = request.env[model].sudo().search([('id', '=', id)])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
         try:
+            res_id = request.env['ir.attachment'].sudo()
+            res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                           ('res_field', '=', 'image_1920'),
+                                           ('res_id', 'in', [id])])
+            res_id.sudo().write({"public": True})
+
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
@@ -39,7 +49,7 @@ class OdooAPI(http.Controller):
                                                 "zip": j.zip if j.zip != False else "",
                                                 "country_id": j.country_id.id if j.country_id.id != False else "",
                                                 "country_name": j.country_id.name if j.country_id.name != False else "",
-                                                "image": base_url.value + '/web/image/res.partner/' + str(j.id) + "/image_1920",
+                                                "image":  base_url.value + '/web/image/' + str(res_id.id),
                                                 "website": j.website if j.website != False else ""})
                 temp.append({"id": i.id, "name": i.name, "phone": i.phone if i.phone != False else "",
                              "mobile": i.mobile if i.mobile != False else "",
@@ -52,7 +62,7 @@ class OdooAPI(http.Controller):
                              "zip": i.zip if i.zip != False else "",
                              "country_id": i.country_id.id if i.country_id.id != False else "",
                              "country_name": i.country_id.name if i.country_id.name != False else "",
-                             "image": base_url.value + '/web/image/res.partner/' + str(i.id) + "/image_1920",
+                             "image": base_url.value + '/web/image/' + str(res_id.id),
                              "website": i.website if i.website != False else "", "other_addresses": other_addresses})
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
