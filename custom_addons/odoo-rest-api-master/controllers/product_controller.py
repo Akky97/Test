@@ -146,20 +146,54 @@ class OdooAPI(http.Controller):
             temp = []
             for i in records:
                 image = []
+                category = []
+                variant = []
+                sellers = []
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
-                web_categ = []
                 for z in i.public_categ_ids:
-                    web_categ.append({"id": z.id, "name": z.name})
+                    category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
+                                     "image": base_url.value + '/web/image/product.public.category/' + str(
+                                         z.id) + "/image_1920", })
+                for k in i.attribute_line_ids:
+                    values = []
+                    for b in k.value_ids:
+                        values.append({"id": b.id, "name": b.name})
+
+                    variant.append({"id": k.id, "attribute_id": {"id": k.attribute_id.id, "name": k.attribute_id.name,
+                                                                 "value": values}})
+
+                for n in i.seller_ids:
+                    sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
-                             'type': i.type, 'sales_price': i.list_price, "cost_price": i.standard_price,
+                             'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
-                             'description_sale': i.description_sale if i.description_sale != False else '',
-                             'public_categ_ids': web_categ, "additional_images": image})
+                             'short_desc': i.description_sale if i.description_sale != False else '',
+                             'categ_id': i.categ_id.id if i.categ_id.id != False else '',
+                             'categ_name': i.categ_id.name if i.categ_id.name != False else '',
+                             "category": category,
+                             "create_uid": i.create_uid.id if i.create_uid.id != False else '',
+                             "create_name": i.create_uid.name if i.create_uid.name != False else '',
+                             "write_uid": i.write_uid.id if i.write_uid.id != False else '',
+                             "write_name": i.write_uid.name if i.write_uid.name != False else '',
+                             "variant": variant,
+                             "stock": 0,
+                             "sm_pictures": image,
+                             "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
+                             "seller_ids": sellers,
+                             "slug": i.name.lower().replace(" ", "-"),
+                             "top": True,
+                             "new": None,
+                             "author": "Pando-Stores",
+                             "sold": 10,
+                             "review": 2,
+                             "rating": 3
+                             })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+
         res = {
             "count": len(temp),
             "prev": prev_page,
