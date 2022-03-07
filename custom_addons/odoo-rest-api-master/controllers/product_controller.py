@@ -200,7 +200,7 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
-            "result": temp
+            "products": temp
         }
         return return_Response(res)
 
@@ -252,6 +252,6 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
-            "result": temp
+            "products": temp
         }
         return return_Response(res)
