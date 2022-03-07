@@ -54,7 +54,7 @@ class OdooAPI(http.Controller):
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
                 for z in i.public_categ_ids:
-                    category.append({"id": z.id, "name": z.name,
+                    category.append({"id": z.id, "name": z.name,"slug":z.name.lower().replace(" ","-"),
                              "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
                 for k in i.attribute_line_ids:
                     values=[]
@@ -81,7 +81,14 @@ class OdooAPI(http.Controller):
                              "stock":0,
                              "sm_pictures": image,
                              "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
-                             "seller_ids":sellers
+                             "seller_ids":sellers,
+                             "slug":i.name.lower().replace(" ","-"),
+                             "top":True,
+                             "new":None,
+                             "author":"Pando-Stores",
+                             "sold":10,
+                             "review":2,
+                             "rating":3
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
