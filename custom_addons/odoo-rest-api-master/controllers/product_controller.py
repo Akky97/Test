@@ -100,6 +100,11 @@ class OdooAPI(http.Controller):
         try:
             model = 'product.template'
             categ = params["categ_id"]
+
+            if not categ:
+                error = {"message":"categ_id is not present in the params"}
+                return return_Response_error(error)
+
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
