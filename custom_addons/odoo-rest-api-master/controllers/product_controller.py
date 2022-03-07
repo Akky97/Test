@@ -73,14 +73,14 @@ class OdooAPI(http.Controller):
                              'categ_id': i.categ_id.id if i.categ_id.id != False else '',
                              'categ_name': i.categ_id.name if i.categ_id.name != False else '',
                              "category":category,
-                             "create_uid":i.create_uid.id,
-                             "create_name":i.create_uid.name,
-                             "write_uid":i.write_uid.id,
-                             "write_name":i.write_uid.name,
+                             "create_uid":i.create_uid.id if i.create_uid.id != False else '',
+                             "create_name":i.create_uid.name if i.create_uid.name != False else '',
+                             "write_uid":i.write_uid.id if i.write_uid.id != False else '',
+                             "write_name":i.write_uid.name if i.write_uid.name != False else '',
                              "variant":variant,
                              "stock":0,
                              "sm_pictures": image,
-                             "featured":i.website_ribbon_id.html,
+                             "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids":sellers
                              })
         except (SyntaxError, QueryFormatError) as e:
@@ -119,8 +119,15 @@ class OdooAPI(http.Controller):
             offset = int(params["offset"])
         else:
             offset = ""
-        records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(categ)])], order=orders, limit=limit,
-                                                   offset=offset)
+
+        if categ == 'all':
+            records = request.env[model].sudo().search(
+                [('is_published', '=', True)], order=orders, limit=limit,
+                offset=offset)
+        else:
+            records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(categ)])], order=orders, limit=limit,
+                offset=offset)
+
         prev_page = None
         next_page = None
         total_page_number = 1
