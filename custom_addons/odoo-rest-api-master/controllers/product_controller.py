@@ -57,9 +57,13 @@ class OdooAPI(http.Controller):
                     category.append({"id": z.id, "name": z.name,
                              "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
                 for k in i.attribute_line_ids:
-                    variant.append({"id": k.id, "name": k.name})
+                    values=[]
+                    for b in k.value_ids:
+                        values.append({"id":b.id,"name":b.name})
 
-                for n in i.attribute_line_ids:
+                    variant.append({"id": k.id, "attribute_id": {"id":k.attribute_id.id,"name":k.attribute_id.name ,"value":values}})
+
+                for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
