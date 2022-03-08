@@ -88,7 +88,8 @@ class OdooAPI(http.Controller):
                              "author":"Pando-Stores",
                              "sold":10,
                              "review":2,
-                             "rating":3
+                             "rating":3,
+                             "pictures": [{"image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -167,7 +168,8 @@ class OdooAPI(http.Controller):
                              "author": "Pando-Stores",
                              "sold": 10,
                              "review": 2,
-                             "rating": 3
+                             "rating": 3,
+                             "pictures": [{"image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -268,7 +270,8 @@ class OdooAPI(http.Controller):
                              "author": "Pando-Stores",
                              "sold": 10,
                              "review": 2,
-                             "rating": 3
+                             "rating": 3,
+                             "pictures":[{"image":base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
