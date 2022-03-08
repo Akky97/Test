@@ -1,3 +1,4 @@
 odoo.conf
 requirements.txt
 src
+venv
