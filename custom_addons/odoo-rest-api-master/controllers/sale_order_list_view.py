@@ -11,7 +11,7 @@ from .error_or_response_parser import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 _logger = logging.getLogger(__name__)
 
-def get_sale_order_line(order_id=None, order_line_id = None)
+def get_sale_order_line(order_id=None, order_line_id = None):
 
     saleOrderLine = {}
     solObject = request.env['sale.order.line'].sudo()
