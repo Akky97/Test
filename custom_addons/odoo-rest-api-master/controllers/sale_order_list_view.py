@@ -82,11 +82,11 @@ class SaleOrderController(http.Controller):
     # @validate_token
     @http.route('/api/v1/c/sale_orders/<partner_id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def sale_order_list_view(self, partner_id=None ,**params):
+        model = 'sale.order'
         try:
             if not partner_id:
                 error = {"message": "partner_id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            model = 'sale.order'
             records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
