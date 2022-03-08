@@ -77,7 +77,7 @@ class OdooAPI(http.Controller):
                              "create_name":i.create_uid.name if i.create_uid.name != False else '',
                              "write_uid":i.write_uid.id if i.write_uid.id != False else '',
                              "write_name":i.write_uid.name if i.write_uid.name != False else '',
-                             "variant":variant,
+                             "variants":variant,
                              "stock":0,
                              "sm_pictures": image,
                              "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
