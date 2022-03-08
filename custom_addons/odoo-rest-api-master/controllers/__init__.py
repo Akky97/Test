@@ -8,3 +8,4 @@ from . import error_or_response_parser   # response and error return api
 from . import company_detail_controller  #
 from . import signup                     #
 from . import profile_detail_controller  #
+from . import sale_order_list_view
