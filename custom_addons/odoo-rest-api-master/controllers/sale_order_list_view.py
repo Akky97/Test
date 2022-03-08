@@ -8,6 +8,7 @@ from odoo.http import request
 from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 _logger = logging.getLogger(__name__)
 
 def get_sale_order_line(order_id=None, order_line_id = None):
@@ -129,5 +130,38 @@ class SaleOrderController(http.Controller):
         res = {
             "count": len(sale_order_data),
             "result": sale_order_data
+        }
+        return return_Response(res)
+
+class WebsiteSale(WebsiteSale):
+
+    @http.route('/api/v1/c/cart_update', type='json', auth='public', methods=['POST'], csrf=False,cors='*')
+    def cart_update(self, **params):
+        try:
+            sale_order = request.website.sale_get_order()
+            if sale_order.state != 'draft':
+                request.session['sale_order_id'] = None
+                sale_order = request.website.sale_get_order(force_create=True)
+            add_qty = 1
+            if 'add_qty' in params and params.get('add_qty'):
+                add_qty = int(params.get('add_qty'))
+            set_qty = 0
+            if 'set_qty' in params and params.get('set_qty'):
+                set_qty = int(params.get('set_qty'))
+            product_id = False
+            if 'product_id' in params and params.get('product_id'):
+                product_id = int(params.get('product_id'))
+            if product_id:
+                sale_order._cart_update(
+                    product_id=int(product_id),
+                    add_qty=add_qty,
+                    set_qty=set_qty,
+                    product_custom_attribute_values=None,
+                    no_variant_attribute_values=None
+                )
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result":'success'
         }
         return return_Response(res)

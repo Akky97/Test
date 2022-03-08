@@ -3,6 +3,7 @@ import math
 import logging
 import requests
 import ast
+import phonenumbers
 from odoo import http, _, exceptions
 from odoo.http import request
 from .serializers import Serializer
@@ -10,10 +11,12 @@ from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 _logger = logging.getLogger(__name__)
 
+import base64
 
 class OdooAPI(http.Controller):
-    @validate_token
-    @http.route(['/api/v1/c/res.partner.view/','/api/v1/c/res.partner.view/<id>/'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    # @validate_id
+    # @validate_token
+    @http.route(['/api/v1/c/res.partner.view/','/api/v1/c/res.partner.view/<id>/'], type='http', auth='public', methods=['GET','PUT'], csrf=False, cors='*')
     def profile_detail_view(self, id=None,**params):
         try:
             if not id:
@@ -63,6 +66,39 @@ class OdooAPI(http.Controller):
                              "country_name": i.country_id.name if i.country_id.name != False else "",
                              "image": base_url.value + '/web/image/' + str(res_id.id),
                              "website": i.website if i.website != False else "", "other_addresses": other_addresses})
+
+            # Code --> Update partner address
+            if params.get('method') == 'PUT':
+                params.pop('method')
+                if 'image' in params:
+                    image = params.get('image')
+                    params.pop('image')
+                    res_id.sudo().write({
+                        'name': 'image_1920',
+                        'checksum':image,
+                        'datas': image,
+                        'type': 'binary'
+                    })
+                for rec in records:
+                    if "country_id" in params and params.get('country_id'):
+                        country_id = request.env['res.country'].sudo().search([('id', '=', params.get('country_id'))])
+                    else:
+                        country_id = rec.country_id
+
+                    if "mobile" in params and params.get('mobile'):
+                        my_number = phonenumbers.parse(str(params.get('mobile')), country_id.code)
+                        if not phonenumbers.is_valid_number(my_number):
+                            error = {"message": "Please Enter Correct Mobile Number", "status": 400}
+                            return return_Response_error(error)
+                    if "phone" in params and params.get('phone'):
+                        my_number = phonenumbers.parse(str(params.get('phone')), country_id.code)
+                        if not phonenumbers.is_valid_number(my_number):
+                            error = {"message": "Please Enter Correct Phone Number", "status": 400}
+                            return return_Response_error(error)
+
+                    rec.sudo().write(params)
+            # End here
+
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
