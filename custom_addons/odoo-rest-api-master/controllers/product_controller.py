@@ -100,6 +100,7 @@ class OdooAPI(http.Controller):
             "total_pages": total_page_number,
             "products": temp
         }
+
         return return_Response(res)
 
     @http.route('/api/v1/c/categ/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
