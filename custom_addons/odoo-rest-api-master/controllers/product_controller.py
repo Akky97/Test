@@ -77,7 +77,9 @@ class OdooAPI(http.Controller):
                 sellers=[]
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
-                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
+                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+                                  'url': base_url.value + '/web/image/product.template/' + str(j.id) + "/image_1920",
+                                  })
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name,"slug":z.name.lower().replace(" ","-"),
                              "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
@@ -93,6 +95,7 @@ class OdooAPI(http.Controller):
                 data = _compute_quantities(self=i)
                 print("data", data)
                 temp.append({"id": i.id, "name": i.name,
+                             'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
@@ -116,7 +119,7 @@ class OdooAPI(http.Controller):
                              "sold":10,
                              "review":2,
                              "rating":3,
-                             "pictures": [{"image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
+                             "pictures": [{'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -158,6 +161,7 @@ class OdooAPI(http.Controller):
                 sellers = []
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
+                                  'url': base_url.value + '/web/image/product.template/' + str(j.id) + "/image_1920",
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
@@ -176,6 +180,7 @@ class OdooAPI(http.Controller):
                 data = _compute_quantities(self=i)
                 print("data", data)
                 temp.append({"id": i.id, "name": i.name,
+                             'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
@@ -199,7 +204,7 @@ class OdooAPI(http.Controller):
                              "sold": 10,
                              "review": 2,
                              "rating": 3,
-                             "pictures": [{"image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
+                             "pictures": [{ 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -263,7 +268,9 @@ class OdooAPI(http.Controller):
                 sellers = []
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
-                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
+                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+                                  'url': base_url.value + '/web/image/product.template/' + str(j.id) + "/image_1920",
+                                  })
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
@@ -282,6 +289,7 @@ class OdooAPI(http.Controller):
                 print("data", data)
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
+                             'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
                              'short_desc': i.description_sale if i.description_sale != False else '',
@@ -304,7 +312,7 @@ class OdooAPI(http.Controller):
                              "sold": 10,
                              "review": 2,
                              "rating": 3,
-                             "pictures":[{"image":base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
+                             "pictures":[{"image":base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920", 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
