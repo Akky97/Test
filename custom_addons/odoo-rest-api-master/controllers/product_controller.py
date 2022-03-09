@@ -12,6 +12,32 @@ from .error_or_response_parser import *
 _logger = logging.getLogger(__name__)
 
 
+def _compute_quantities(self):
+    print("self - ", self)
+    res = self._compute_quantities_dict()
+    print("res - ", res)
+    qty_available = res[self.id]['qty_available']
+    print("qty_available - ", qty_available)
+    return res[self.id]['qty_available']
+
+
+def _product_available(self, name, arg):
+    return self._compute_quantities_dict()
+
+
+def _compute_quantities_dict(self):
+    variants_available = self.mapped('product_variant_ids')._product_available()
+    prod_available = {}
+    for template in self:
+        qty_available = 0
+        for p in template.product_variant_ids:
+            qty_available += variants_available[p.id]["qty_available"]
+        prod_available[template.id] = {
+            "qty_available": qty_available,
+        }
+    return prod_available
+
+
 class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view(self, **params):
@@ -65,6 +91,8 @@ class OdooAPI(http.Controller):
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
+                data = _compute_quantities(self=i)
+                print("data", data)
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
@@ -78,7 +106,7 @@ class OdooAPI(http.Controller):
                              "write_uid":i.write_uid.id if i.write_uid.id != False else '',
                              "write_name":i.write_uid.name if i.write_uid.name != False else '',
                              "variants":variant,
-                             "stock":0,
+                             "stock":data,
                              "sm_pictures": image,
                              "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids":sellers,
@@ -145,6 +173,8 @@ class OdooAPI(http.Controller):
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
+                data = _compute_quantities(self=i)
+                print("data", data)
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
@@ -158,7 +188,7 @@ class OdooAPI(http.Controller):
                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
                              "variants": variant,
-                             "stock": 0,
+                             "stock": data,
                              "sm_pictures": image,
                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids": sellers,
@@ -247,6 +277,8 @@ class OdooAPI(http.Controller):
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
+                data = _compute_quantities(self=i)
+                print("data", data)
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
@@ -260,7 +292,7 @@ class OdooAPI(http.Controller):
                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
                              "variants": variant,
-                             "stock": 0,
+                             "stock": data,
                              "sm_pictures": image,
                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids": sellers,
