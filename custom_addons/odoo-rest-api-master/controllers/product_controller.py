@@ -54,14 +54,13 @@ class OdooAPI(http.Controller):
             orders = params["order"]
         else:
             orders = ""
-        if "limit" in params:
-            limit = int(params["limit"])
-        else:
-            limit = ""
-        if "offset" in params:
-            offset = int(params["offset"])
-        else:
-            offset = ""
+        limit = 0
+        offset = 0
+        if "page" in params:
+            limit = 12
+            page = int(params["page"])
+            offset = (page - 1) * 12
+        record_count = request.env[model].sudo().search_count([('is_published', '=', True)])
         records = request.env[model].sudo().search([('is_published', '=', True)], order=orders, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -122,6 +121,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "total_count": record_count,
             "count": len(temp),
             "prev": prev_page,
             "current": current_page,
@@ -232,19 +232,20 @@ class OdooAPI(http.Controller):
             orders = params["order"]
         else:
             orders = ""
-        if "limit" in params:
-            limit = int(params["limit"])
-        else:
-            limit = ""
-        if "offset" in params:
-            offset = int(params["offset"])
-        else:
-            offset = ""
+        limit = 0
+        offset = 0
+        if "page" in params:
+            limit = 12
+            page = int(params["page"])
+            offset = (page - 1) * 12
         if "category" not in params:
+            record_count = request.env[model].sudo().search_count([('is_published', '=', True)])
             records = request.env[model].sudo().search(
                 [('is_published', '=', True)], order=orders, limit=limit,
                 offset=offset)
         else:
+            record_count = request.env[model].sudo().search_count(
+                [('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])])
             records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])], order=orders, limit=limit,
                 offset=offset)
         prev_page = None
@@ -309,6 +310,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
 
         res = {
+            "total_count": record_count,
             "count": len(temp),
             "prev": prev_page,
             "current": current_page,
