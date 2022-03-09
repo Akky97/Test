@@ -134,8 +134,9 @@ class SaleOrderController(http.Controller):
         }
         return return_Response(res)
 
-class WebsiteSale(WebsiteSale):
 
+class WebsiteSale(WebsiteSale):
+    @validate_token
     @http.route('/api/v1/c/cart_update', type='json', auth='public', methods=['POST'], csrf=False,cors='*')
     def cart_update(self, **params):
         try:
@@ -164,5 +165,73 @@ class WebsiteSale(WebsiteSale):
             return error_response(e, e.msg)
         res = {
             "result":'success'
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/product.wishlist/', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def add_to_wishlistlist(self, **params):
+        try:
+            # pricelist_context, pricelist_id = self._get_pricelist_context()
+            website_id = request.env['website'].get_current_website()
+            pricelist_id = website_id.get_current_pricelist()
+
+            if 'partner_id' in params:
+                partner_id = int(params['partner_id'])
+            else:
+                partner_id = request.env.user.partner_id.id
+            if 'product_id' in params:
+                model = 'product.product'
+                product_id = request.env[model].sudo().search([('id', '=', int(params['product_id']))])
+            model = 'product.wishlist'
+            records = request.env[model].sudo().search(
+                [('partner_id', '=', partner_id), ('product_id', '=', product_id.id)])
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        try:
+            if not records:
+                values = {
+                    'partner_id': partner_id,
+                    'product_id': product_id.id,
+                    'pricelist_id': pricelist_id.id,
+                    'price': product_id.product_tmpl_id.list_price,
+                    'website_id': website_id.id
+                }
+                request.env['product.wishlist'].sudo().create(values)
+
+            else:
+                error = {"message": "The Selected Product is in wishlist", "status": 400}
+                return return_Response_error(error)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": 'Success'
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/product.wishlist/', type='http', auth='public', methods=['DELETE'], csrf=False, cors='*')
+    def remove_from_wishlistlist(self, **params):
+        try:
+            if 'partner_id' in params:
+                partner_id = int(params['partner_id'])
+            else:
+                partner_id = request.env.user.partner_id.id
+
+            model = 'product.wishlist'
+            records = request.env[model].sudo().search(
+                [('partner_id', '=', partner_id), ('product_id', '=', int(params['product_id']))])
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        try:
+            if records:
+                for rec in records:
+                    rec.unlink()
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": 'Success'
         }
         return return_Response(res)
