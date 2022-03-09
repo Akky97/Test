@@ -221,12 +221,12 @@ class OdooAPI(http.Controller):
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
 
-        if "categ_id" not in params:
-            error = {"message": "categ_id is not present in the params","status":400}
-            return return_Response_error(error)
+        # if "categ_id" not in params:
+        #     error = {"message": "categ_id is not present in the params","status":400}
+        #     return return_Response_error(error)
 
-        if "categ_id" in params:
-           categ = params["categ_id"]
+        # if "categ_id" in params:
+        #    categ = params["categ_id"]
 
         if "order" in params:
             orders = params["order"]
@@ -240,7 +240,7 @@ class OdooAPI(http.Controller):
             offset = int(params["offset"])
         else:
             offset = ""
-        if categ == 'all':
+        if "category" not in params:
             records = request.env[model].sudo().search(
                 [('is_published', '=', True)], order=orders, limit=limit,
                 offset=offset)
