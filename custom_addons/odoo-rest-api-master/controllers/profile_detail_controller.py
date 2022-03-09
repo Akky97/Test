@@ -13,9 +13,10 @@ _logger = logging.getLogger(__name__)
 
 import base64
 
+
 class OdooAPI(http.Controller):
     # @validate_id
-    # @validate_token
+    @validate_token
     @http.route(['/api/v1/c/res.partner.view/','/api/v1/c/res.partner.view/<id>/'], type='http', auth='public', methods=['GET','PUT'], csrf=False, cors='*')
     def profile_detail_view(self, id=None,**params):
         try:
@@ -99,6 +100,30 @@ class OdooAPI(http.Controller):
                     rec.sudo().write(params)
             # End here
 
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "result": temp
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/get_country_state', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def get_country_state(self, **params):
+        try:
+            if "country_id" in params:
+                model = 'res.country.state'
+                records = request.env[model].sudo().search([('country_id', '=', int(params["country_id"]))])
+            else:
+                model = 'res.country'
+                records = request.env[model].sudo().search([])
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        try:
+            temp = []
+            for i in records:
+                temp.append({"id": i.id, "name": i.name})
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
