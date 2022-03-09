@@ -245,7 +245,7 @@ class OdooAPI(http.Controller):
                 [('is_published', '=', True)], order=orders, limit=limit,
                 offset=offset)
         else:
-            records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(categ)])], order=orders, limit=limit,
+            records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])], order=orders, limit=limit,
                 offset=offset)
         prev_page = None
         next_page = None
