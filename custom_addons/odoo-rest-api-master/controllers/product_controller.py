@@ -104,7 +104,7 @@ class OdooAPI(http.Controller):
                                                              "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
-                    res_data = {"id": k.id, "price": k.standard_price,
+                    res_data = {"id": k.id, "price": k.list_price,
                                 "pivot": {"product_id": i.id, "component_id": k.id}}
                     for dic in data:
                         res = list(dic.items())[0]
@@ -212,7 +212,7 @@ class OdooAPI(http.Controller):
                                                    "pivot": {"components_variants_variant_id": k.id, "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
-                    res_data = {"id": k.id, "price": k.standard_price,
+                    res_data = {"id": k.id, "price": k.list_price,
                                 "pivot": {"product_id": i.id, "component_id": k.id}}
                     for dic in data:
                         res = list(dic.items())[0]
@@ -343,7 +343,7 @@ class OdooAPI(http.Controller):
                                                              "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
-                    res_data = {"id": k.id, "price": k.standard_price,
+                    res_data = {"id": k.id, "price": k.list_price,
                                 "pivot": {"product_id": i.id, "component_id": k.id}}
                     for dic in data:
                         res = list(dic.items())[0]
