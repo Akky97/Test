@@ -212,7 +212,7 @@ class OdooAPI(http.Controller):
                                                    "pivot": {"components_variants_variant_id": k.id, "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
-                        res_data={}
+                    res_data={}
                     # res_data = {"id": k.id, "price": k.list_price,
                     #             "pivot": {"product_id": i.id, "component_id": k.id}}
                     for dic in data:
