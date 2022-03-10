@@ -104,20 +104,16 @@ class OdooAPI(http.Controller):
                                                              "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
-                    if len(values) != 0:
-                        res_data = {"id": k.id, "price": k.list_price,
-                                    "pivot": {"product_id": i.id, "component_id": k.id}}
-
-                        for dic in data:
-                            res = list(dic.items())[0]
-                            if res[0].lower() == 'color':
-                                res_data.update(
-                                    {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
-                            if len(data) == 0:
-                                pass
-                            if len(data) != 0:
-                                res_data.update(dic)
-                        variant.append(res_data)
+                    res_data = {"id": k.id, "price": k.list_price,
+                                "pivot": {"product_id": i.id, "component_id": k.id}}
+                    for dic in data:
+                        res = list(dic.items())[0]
+                        if res[0].lower() == 'color':
+                            res_data.update(
+                                {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+                        else:
+                            res_data.update(dic)
+                    variant.append(res_data)
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
