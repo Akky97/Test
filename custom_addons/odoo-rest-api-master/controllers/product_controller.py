@@ -214,13 +214,22 @@ class OdooAPI(http.Controller):
                         values = []
                     res_data = {"id": k.id, "price": k.list_price,
                                 "pivot": {"product_id": i.id, "component_id": k.id}}
-                    for dic in data:
-                        res = list(dic.items())[0]
-                        if res[0].lower() == 'color':
-                            res_data.update({"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
-                        else:
-                            res_data.update(dic)
-                    variant.append(res_data)
+
+                    if len(data) != 0:
+                        for dic in data:
+                            res = list(dic.items())[0]
+                            print(len(res), "RWSSSS")
+                            # if len
+                            if res[0].lower() == 'color':
+                                res_data.update(
+                                    {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+                            else:
+                                res_data.update(dic)
+
+
+                        variant.append(res_data)
+                    else:
+                        pass
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
@@ -352,7 +361,7 @@ class OdooAPI(http.Controller):
                                 {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
                         else:
                             res_data.update(dic)
-                    variant.append(res_data)
+                    # variant.append(res_data)
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
