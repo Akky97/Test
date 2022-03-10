@@ -111,7 +111,9 @@ class OdooAPI(http.Controller):
                         if res[0].lower() == 'color':
                             res_data.update(
                                 {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
-                        else:
+                        if len(data) == 0:
+                            pass
+                        if len(data) != 0:
                             res_data.update(dic)
                     variant.append(res_data)
 
@@ -212,9 +214,8 @@ class OdooAPI(http.Controller):
                                                    "pivot": {"components_variants_variant_id": k.id, "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
-                    res_data={}
-                    # res_data = {"id": k.id, "price": k.list_price,
-                    #             "pivot": {"product_id": i.id, "component_id": k.id}}
+                    res_data = {"id": k.id, "price": k.list_price,
+                                "pivot": {"product_id": i.id, "component_id": k.id}}
                     for dic in data:
                         res = list(dic.items())[0]
                         if res[0].lower() == 'color':
