@@ -4,3 +4,4 @@ from . import models
 from . import access_token
 from . import ir_model
 from . import product_template
+from . import pando_banners
