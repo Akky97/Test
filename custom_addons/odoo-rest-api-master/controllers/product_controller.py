@@ -83,12 +83,37 @@ class OdooAPI(http.Controller):
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name,"slug":z.name.lower().replace(" ","-"),
                              "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
-                for k in i.attribute_line_ids:
-                    values=[]
-                    for b in k.value_ids:
-                        values.append({"id":b.id,"name":b.name})
-
-                    variant.append({"id": k.id, "attribute_id": {"id":k.attribute_id.id,"name":k.attribute_id.name ,"value":values}})
+                product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                for k in product_var:
+                    values = []
+                    attribute_name = ''
+                    id = []
+                    data = []
+                    for c in k.product_template_attribute_value_ids:
+                        id.append(c.attribute_id.id)
+                    for attr_id in list(set(id)):
+                        for b in k.product_template_attribute_value_ids:
+                            if attr_id == b.attribute_id.id:
+                                attribute_name = b.attribute_id.name
+                                if attribute_name.lower() == 'color':
+                                    values.append({"color": b.product_attribute_value_id.name,
+                                                   "color_name": b.product_attribute_value_id.html_color})
+                                else:
+                                    values.append({"id": b.id, "name": b.name, "slug": None,
+                                                   "pivot": {"components_variants_variant_id": k.id,
+                                                             "component_id": b.id}})
+                        data.append({attribute_name: values})
+                        values = []
+                    res_data = {"id": k.id, "price": k.standard_price,
+                                "pivot": {"product_id": i.id, "component_id": k.id}}
+                    for dic in data:
+                        res = list(dic.items())[0]
+                        if res[0].lower() == 'color':
+                            res_data.update(
+                                {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+                        else:
+                            res_data.update(dic)
+                    variant.append(res_data)
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
@@ -167,13 +192,35 @@ class OdooAPI(http.Controller):
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
                                          z.id) + "/image_1920", })
-                for k in i.attribute_line_ids:
+                product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                for k in product_var:
                     values = []
-                    for b in k.value_ids:
-                        values.append({"id": b.id, "name": b.name})
-
-                    variant.append({"id": k.id, "attribute_id": {"id": k.attribute_id.id, "name": k.attribute_id.name,
-                                                                 "value": values}})
+                    attribute_name = ''
+                    id = []
+                    data = []
+                    for c in k.product_template_attribute_value_ids:
+                        id.append(c.attribute_id.id)
+                    for attr_id in list(set(id)):
+                        for b in k.product_template_attribute_value_ids:
+                            if attr_id == b.attribute_id.id:
+                                attribute_name = b.attribute_id.name
+                                if attribute_name.lower() == 'color':
+                                    values.append({"color": b.product_attribute_value_id.name,
+                                                   "color_name": b.product_attribute_value_id.html_color})
+                                else:
+                                    values.append({"id": b.id, "name": b.name, "slug": None,
+                                                   "pivot": {"components_variants_variant_id": k.id, "component_id": b.id}})
+                        data.append({attribute_name: values})
+                        values = []
+                    res_data = {"id": k.id, "price": k.standard_price,
+                                "pivot": {"product_id": i.id, "component_id": k.id}}
+                    for dic in data:
+                        res = list(dic.items())[0]
+                        if res[0].lower() == 'color':
+                            res_data.update({"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+                        else:
+                            res_data.update(dic)
+                    variant.append(res_data)
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
@@ -275,13 +322,37 @@ class OdooAPI(http.Controller):
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
                                          z.id) + "/image_1920", })
-                for k in i.attribute_line_ids:
+                product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                for k in product_var:
                     values = []
-                    for b in k.value_ids:
-                        values.append({"id": b.id, "name": b.name})
-
-                    variant.append({"id": k.id, "attribute_id": {"id": k.attribute_id.id, "name": k.attribute_id.name,
-                                                                 "value": values}})
+                    attribute_name = ''
+                    id = []
+                    data = []
+                    for c in k.product_template_attribute_value_ids:
+                        id.append(c.attribute_id.id)
+                    for attr_id in list(set(id)):
+                        for b in k.product_template_attribute_value_ids:
+                            if attr_id == b.attribute_id.id:
+                                attribute_name = b.attribute_id.name
+                                if attribute_name.lower() == 'color':
+                                    values.append({"color": b.product_attribute_value_id.name,
+                                                   "color_name": b.product_attribute_value_id.html_color})
+                                else:
+                                    values.append({"id": b.id, "name": b.name, "slug": None,
+                                                   "pivot": {"components_variants_variant_id": k.id,
+                                                             "component_id": b.id}})
+                        data.append({attribute_name: values})
+                        values = []
+                    res_data = {"id": k.id, "price": k.standard_price,
+                                "pivot": {"product_id": i.id, "component_id": k.id}}
+                    for dic in data:
+                        res = list(dic.items())[0]
+                        if res[0].lower() == 'color':
+                            res_data.update(
+                                {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+                        else:
+                            res_data.update(dic)
+                    variant.append(res_data)
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
