@@ -137,7 +137,7 @@ class SaleOrderController(http.Controller):
 
 class WebsiteSale(WebsiteSale):
     @validate_token
-    @http.route('/api/v1/c/cart_update', type='json', auth='public', methods=['POST'], csrf=False,cors='*')
+    @http.route('/api/v1/c/cart_update', type='http', auth='public', methods=['POST'], csrf=False,cors='*')
     def cart_update(self, **params):
         try:
             sale_order = request.website.sale_get_order()
@@ -169,7 +169,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist/', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def add_to_wishlistlist(self, **params):
         try:
             # pricelist_context, pricelist_id = self._get_pricelist_context()
@@ -180,9 +180,12 @@ class WebsiteSale(WebsiteSale):
                 partner_id = int(params['partner_id'])
             else:
                 partner_id = request.env.user.partner_id.id
-            if 'product_id' in params:
+            if 'product_id' in params and 'variant_id' in params:
                 model = 'product.product'
-                product_id = request.env[model].sudo().search([('id', '=', int(params['product_id']))])
+                product_id = request.env[model].sudo().search([('id', '=', int(params['variant_id']))])
+            else:
+                model = 'product.product'
+                product_id = request.env[model].sudo().search([('product_tmpl_id', '=', int(params['product_id']))])
             model = 'product.wishlist'
             records = request.env[model].sudo().search(
                 [('partner_id', '=', partner_id), ('product_id', '=', product_id.id)])
@@ -211,7 +214,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist/', type='http', auth='public', methods=['DELETE'], csrf=False, cors='*')
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['DELETE'], csrf=False, cors='*')
     def remove_from_wishlistlist(self, **params):
         try:
             if 'partner_id' in params:
@@ -219,9 +222,13 @@ class WebsiteSale(WebsiteSale):
             else:
                 partner_id = request.env.user.partner_id.id
 
+            if 'product_id' in params and 'variant_id' in params:
+                product_id = params['product_id']
+            else:
+                product_id = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(params['product_id']))])
             model = 'product.wishlist'
             records = request.env[model].sudo().search(
-                [('partner_id', '=', partner_id), ('product_id', '=', int(params['product_id']))])
+                [('partner_id', '=', partner_id), ('product_id', '=', int(product_id))])
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -235,3 +242,38 @@ class WebsiteSale(WebsiteSale):
             "result": 'Success'
         }
         return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/product.wishlist', type='json', auth='public', methods=['GET'], csrf=False, cors='*',
+                website=True)
+    def get_wishlistlist(self, **params):
+        try:
+            wishList = []
+            if 'partner_id' in params:
+                model = 'product.wishlist'
+                records = request.env[model].sudo().search([('partner_id', '=', int(params['partner_id']))])
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        try:
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            wishList = []
+            if records:
+                for rec in records:
+                    values = {
+                        'product_id': rec.product_id.id,
+                        'product_name': rec.product_id.product_tmpl_id.name,
+                        'image': base_url.value + '/web/image/product.template/' + str(
+                            rec.id) + '/image_1920/' + rec.product_id.product_tmpl_id.name,
+                        'pricelist_id': rec.pricelist_id.id,
+                        'price': rec.product_id.product_tmpl_id.list_price,
+                    }
+                    wishList.append(values)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(wishList),
+            "result": wishList
+        }
+        return res
+

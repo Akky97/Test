@@ -13,11 +13,8 @@ _logger = logging.getLogger(__name__)
 
 
 def _compute_quantities(self):
-    print("self - ", self)
     res = self._compute_quantities_dict()
-    print("res - ", res)
     qty_available = res[self.id]['qty_available']
-    print("qty_available - ", qty_available)
     return res[self.id]['qty_available']
 
 
@@ -152,6 +149,8 @@ class OdooAPI(http.Controller):
                              "sold":10,
                              "review":2,
                              "rating":3,
+                             "additional_info": i.additional_info,
+                             "shipping_return": i.shipping_return,
                              "pictures": [{'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
@@ -268,6 +267,8 @@ class OdooAPI(http.Controller):
                              "sold": 10,
                              "review": 2,
                              "rating": 3,
+                             "additional_info": i.additional_info,
+                             "shipping_return": i.shipping_return,
                              "pictures": [{ 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
@@ -406,6 +407,8 @@ class OdooAPI(http.Controller):
                              "sold": 10,
                              "review": 2,
                              "rating": 3,
+                             "additional_info": i.additional_info,
+                             "shipping_return": i.shipping_return,
                              "pictures":[{"image":base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920", 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",}]
                              })
         except (SyntaxError, QueryFormatError) as e:

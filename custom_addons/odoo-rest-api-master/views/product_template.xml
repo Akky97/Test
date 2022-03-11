@@ -7,6 +7,14 @@
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="country_id"/>
                 </xpath>
+                <xpath expr="//page[@name='variants']" position="after">
+                <page name="addition_info" string="Additional Information">
+                    <field name="additional_info" widget="html"/>
+                </page>
+                <page name="shipping_returns" string="Shipping Returns">
+                    <field name="shipping_return" widget="html"/>
+                </page>
+            </xpath>
             </field>
         </record>
     </data>

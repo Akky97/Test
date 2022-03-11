@@ -5,3 +5,5 @@ from . import access_token
 from . import ir_model
 from . import product_template
 from . import pando_banners
+from . import email_verification
+from . import category

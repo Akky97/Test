@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product'],
+    'depends': ['base', 'product','website_sale'],
 
     # always loaded
     'data': [
@@ -30,7 +30,9 @@
         'views/res_users.xml',
         'data/ir_config_param.xml',
         'views/pando_banner.xml',
-        'views/product_template.xml'
+        'views/product_template.xml',
+        'views/category_view.xml',
+        'security/ir.model.access.csv'
     ],
     # only loaded in demonstration mode
     'demo': [
