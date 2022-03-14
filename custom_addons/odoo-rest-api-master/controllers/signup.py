@@ -1,5 +1,7 @@
 import logging
 import json
+import smtplib
+
 import werkzeug.wrappers
 from odoo import http
 from odoo.http import request
@@ -19,6 +21,8 @@ from .error_or_response_parser import *
 import ast
 import logging
 import json
+import random
+import math
 
 from odoo.http import Response
 from odoo.tools import date_utils
@@ -35,12 +39,22 @@ class SignupAPI(AuthSignupHome):
                 jdata = json.loads(request.httprequest.stream.read())
             except:
                 jdata = {}
+            if not jdata.get('email') or not jdata.get('name') or not jdata.get('password') or not jdata.get('otp'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
             email = jdata.get('email')
             name = jdata.get('name')
             password = jdata.get('password')
+            otp = jdata.get('otp')
             confirm_password = jdata.get('confirm_password')
             qcontext.update({"login": email, "name": name, "password": password,
                              "confirm_password": confirm_password})
+            email_veri = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1)
+            if email_veri and int(email_veri.otp) == int(otp):
+                pass
+            else:
+                msg = {"message": "OTP not verified!!", "status_code": 400}
+                return return_Response_error(msg)
             if not qcontext.get('token') and not qcontext.get('signup_enabled'):
                 raise werkzeug.exceptions.NotFound()
 
@@ -57,7 +71,9 @@ class SignupAPI(AuthSignupHome):
                                                    raise_if_not_found=False)
                         if user_sudo and template:
                             template.sudo().send_mail(user_sudo.id, force_send=True)
-                    res = {"message": "Account Successfully Created","status_code":200}
+                    res = {"message": "Account Successfully Created", "status_code": 200}
+                    email_get = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1)
+                    email_get.sudo().unlink()
                     return return_Response(res)
                 except KeyError as e:
                     msg = e.args[0]
@@ -74,3 +90,41 @@ class SignupAPI(AuthSignupHome):
         except Exception as e:
             msg = {"message": "Something Went Wrong.","status_code":400}
             return return_Response_error(msg)
+
+    @http.route('/api/v1/c/customer/sendotp', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def sendmail_custom(self):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+            if not jdata.get('name') or not jdata.get('email'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+            name = jdata.get('name')
+            email = jdata.get('email')
+            print(name, email)
+            template = request.env.ref('odoo-rest-api-master.send_otp_email_template',
+                                       raise_if_not_found=False)
+            print(template)
+            outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).smtp_user
+            print(outgoing_server_name)
+            otp = random.randint(100000, 999999);
+            print(otp)
+            if outgoing_server_name:
+                email_check = request.env['res.users'].sudo().search([('login', '=', email)])
+                print(email_check)
+                if email_check:
+                    msg = {"message": "User already exist!!", "status_code": 400}
+                    return return_Response_error(msg)
+                template.email_from = outgoing_server_name
+                template.email_to = email
+                template.body_html = int(otp)
+                template.sudo().send_mail(3, force_send=True)
+                vals = {'email': email, 'otp': otp}
+                data = request.env['email.verification'].sudo().create(vals)
+                print(data)
+                res = {"message": "OTP sent Successfully!!", "status_code": 200}
+                return return_Response(res)
+        except Exception as e:
+            msg = {"message": str(e), "status_code": 400}
+            return return_Response_error(msg)
+
+

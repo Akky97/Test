@@ -47,10 +47,15 @@ class OdooAPI(http.Controller):
             query = params["query"]
         else:
             query = "{*}"
-        if "order" in params:
-            orders = params["order"]
-        else:
-            orders = ""
+        search = ''
+        if "orderBy" in params:
+            orders = params["orderBy"]
+            if orders == 'rating':
+                pass
+            elif orders == 'new':
+                search = 'create_date DESC'
+            elif orders == 'featured':
+                search = ''
         limit = 0
         offset = 0
         if "page" in params:
@@ -58,7 +63,7 @@ class OdooAPI(http.Controller):
             page = int(params["page"])
             offset = (page - 1) * 12
         record_count = request.env[model].sudo().search_count([('is_published', '=', True)])
-        records = request.env[model].sudo().search([('is_published', '=', True)], order=orders, limit=limit, offset=offset)
+        records = request.env[model].sudo().search([('is_published', '=', True)], order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -473,6 +478,37 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
+            "products": temp
+        }
+        return return_Response(res)
+
+    @http.route('/api/v1/c/product.template.search', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def product_template_search(self, **params):
+        try:
+            domain = []
+            if 'search' in params and 'categ_id' in params:
+                domain = ['&', ('is_published', '=', True), '|', ('name', 'ilike', params['search']),
+                          ('public_categ_ids', 'in', [int(params['categ_id'])])]
+            if 'search' in params and 'categ_id' not in params:
+                domain = [('is_published', '=', True), ('name', 'ilike', params['search'])]
+            if 'search' not in params and 'categ_id' in params:
+                domain = [('is_published', '=', True), ('public_categ_ids', 'in', [int(params['categ_id'])])]
+            model = 'product.template'
+            record = request.env['product.template'].sudo().search(domain)
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            temp = []
+            for i in record:
+                val = {
+                    "id": i.id,
+                    "name": i.name,
+                    'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"
+                }
+                temp.append(val)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
             "products": temp
         }
         return return_Response(res)

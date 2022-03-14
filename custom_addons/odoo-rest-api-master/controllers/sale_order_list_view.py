@@ -137,22 +137,20 @@ class SaleOrderController(http.Controller):
 
 class WebsiteSale(WebsiteSale):
     @validate_token
-    @http.route('/api/v1/c/cart_update', type='http', auth='public', methods=['POST'], csrf=False,cors='*')
+    @http.route('/api/v1/c/cart_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*', website=True)
     def cart_update(self, **params):
         try:
+            jdata = json.loads(request.httprequest.stream.read())
+            if not jdata.get('product_id') or not jdata.get('set_qty') or not jdata.get('add_qty'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+            product_id = int(jdata.get('product_id')) or False
+            set_qty = int(jdata.get('set_qty')) or 0
+            add_qty = int(jdata.get('add_qty')) or 1
             sale_order = request.website.sale_get_order()
             if sale_order.state != 'draft':
                 request.session['sale_order_id'] = None
                 sale_order = request.website.sale_get_order(force_create=True)
-            add_qty = 1
-            if 'add_qty' in params and params.get('add_qty'):
-                add_qty = int(params.get('add_qty'))
-            set_qty = 0
-            if 'set_qty' in params and params.get('set_qty'):
-                set_qty = int(params.get('set_qty'))
-            product_id = False
-            if 'product_id' in params and params.get('product_id'):
-                product_id = int(params.get('product_id'))
             if product_id:
                 sale_order._cart_update(
                     product_id=int(product_id),
@@ -163,9 +161,7 @@ class WebsiteSale(WebsiteSale):
                 )
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {
-            "result":'success'
-        }
+        res = {"result": 'success', "status": 200}
         return return_Response(res)
 
     @validate_token

@@ -32,7 +32,8 @@
         'views/pando_banner.xml',
         'views/product_template.xml',
         'views/category_view.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'views/email_template.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
