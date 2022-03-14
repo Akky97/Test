@@ -67,44 +67,73 @@ class OdooAPI(http.Controller):
                              "country_name": i.country_id.name if i.country_id.name != False else "",
                              "image": base_url.value + '/web/image/' + str(res_id.id),
                              "website": i.website if i.website != False else "", "other_addresses": other_addresses})
-
-            # Code --> Update partner address
-            if params.get('method') == 'PUT':
-                params.pop('method')
-                if 'image' in params:
-                    image = params.get('image')
-                    params.pop('image')
-                    res_id.sudo().write({
-                        'name': 'image_1920',
-                        'checksum':image,
-                        'datas': image,
-                        'type': 'binary'
-                    })
-                for rec in records:
-                    if "country_id" in params and params.get('country_id'):
-                        country_id = request.env['res.country'].sudo().search([('id', '=', params.get('country_id'))])
-                    else:
-                        country_id = rec.country_id
-
-                    if "mobile" in params and params.get('mobile'):
-                        my_number = phonenumbers.parse(str(params.get('mobile')), country_id.code)
-                        if not phonenumbers.is_valid_number(my_number):
-                            error = {"message": "Please Enter Correct Mobile Number", "status": 400}
-                            return return_Response_error(error)
-                    if "phone" in params and params.get('phone'):
-                        my_number = phonenumbers.parse(str(params.get('phone')), country_id.code)
-                        if not phonenumbers.is_valid_number(my_number):
-                            error = {"message": "Please Enter Correct Phone Number", "status": 400}
-                            return return_Response_error(error)
-
-                    rec.sudo().write(params)
-            # End here
-
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
             "count": len(temp),
             "result": temp
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route(['/api/v1/c/res.partner.view/', '/api/v1/c/res.partner.view/<id>/'], type='http', auth='public',
+                methods=['PUT'], csrf=False, cors='*')
+    def profile_detail_update(self, id=None, **params):
+        try:
+            if not id:
+                error = {"message": "id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            model = 'res.partner'
+            records = request.env[model].sudo().search([('id', '=', id)])
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            res_id = request.env['ir.attachment'].sudo()
+            res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                           ('res_field', '=', 'image_1920'),
+                                           ('res_id', 'in', [id])])
+            res_id.sudo().write({"public": True})
+
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if 'image' in jdata:
+                    image = jdata.get('image')
+                    jdata.pop('image')
+                    res_id.sudo().write({
+                        'name': 'image_1920',
+                        'checksum': image,
+                        'datas': image,
+                        'type': 'binary'
+                    })
+                for rec in records:
+                    if jdata.get('country_id'):
+                        country_id = request.env['res.country'].sudo().search([('id', '=', jdata.get('country_id'))])
+                    else:
+                        country_id = rec.country_id
+
+                    if jdata.get('mobile'):
+                        my_number = phonenumbers.parse(str(jdata.get('mobile')), country_id.code)
+                        if not phonenumbers.is_valid_number(my_number):
+                            error = {"message": "Please Enter Correct Mobile Number", "status": 400}
+                            return return_Response_error(error)
+                    if jdata.get('phone'):
+                        my_number = phonenumbers.parse(str(jdata.get('phone')), country_id.code)
+                        if not phonenumbers.is_valid_number(my_number):
+                            error = {"message": "Please Enter Correct Phone Number", "status": 400}
+                            return return_Response_error(error)
+
+                    rec.sudo().write(jdata)
+            # End here
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": "Record Updated Successfully", "status": 200
         }
         return return_Response(res)
 

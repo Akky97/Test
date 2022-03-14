@@ -161,7 +161,7 @@ class WebsiteSale(WebsiteSale):
                 )
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {"result": 'success', "status": 200}
+        res = {"result": 'Updated cart Successfully', "status": 200}
         return return_Response(res)
 
     @validate_token
@@ -171,17 +171,25 @@ class WebsiteSale(WebsiteSale):
             # pricelist_context, pricelist_id = self._get_pricelist_context()
             website_id = request.env['website'].get_current_website()
             pricelist_id = website_id.get_current_pricelist()
-
-            if 'partner_id' in params:
-                partner_id = int(params['partner_id'])
+            jdata = json.loads(request.httprequest.stream.read())
+            if not jdata.get('product_id'):
+                error = {"message": "Product id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            if not jdata.get('variant_id'):
+                variant_id = False
             else:
-                partner_id = request.env.user.partner_id.id
-            if 'product_id' in params and 'variant_id' in params:
+                variant_id = jdata.get('variant_id')
+            if not jdata.get('partner_id'):
+                error = {"message": "Partner id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            product_id = jdata.get('product_id')
+            partner_id = jdata.get('partner_id')
+            if product_id and variant_id:
                 model = 'product.product'
-                product_id = request.env[model].sudo().search([('id', '=', int(params['variant_id']))])
-            else:
+                product_id = request.env[model].sudo().search([('id', '=', int(variant_id))])
+            elif product_id and not variant_id:
                 model = 'product.product'
-                product_id = request.env[model].sudo().search([('product_tmpl_id', '=', int(params['product_id']))])
+                product_id = request.env[model].sudo().search([('product_tmpl_id', '=', int(product_id))])
             model = 'product.wishlist'
             records = request.env[model].sudo().search(
                 [('partner_id', '=', partner_id), ('product_id', '=', product_id.id)])
@@ -205,7 +213,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'Success'
+            "result": 'Product Added Successfully', 'status': 200
         }
         return return_Response(res)
 
@@ -213,19 +221,19 @@ class WebsiteSale(WebsiteSale):
     @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['DELETE'], csrf=False, cors='*')
     def remove_from_wishlistlist(self, **params):
         try:
-            if 'partner_id' in params:
-                partner_id = int(params['partner_id'])
-            else:
-                partner_id = request.env.user.partner_id.id
+            jdata = json.loads(request.httprequest.stream.read())
 
-            if 'product_id' in params and 'variant_id' in params:
-                product_id = params['product_id']
-            else:
-                product_id = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(params['product_id']))])
+            if not jdata.get('product_id'):
+                error = {"message": "Product id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            product_id = int(jdata.get('product_id'))
+            if not jdata.get('product_id'):
+                error = {"message": "Partner id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            partner_id = int(jdata.get('partner_id'))
             model = 'product.wishlist'
             records = request.env[model].sudo().search(
-                [('partner_id', '=', partner_id), ('product_id', '=', int(product_id))])
-
+                [('partner_id', '=', partner_id), ('product_id', '=', product_id)])
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         try:
@@ -235,19 +243,22 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'Success'
+            "result": 'Product Deleted Successfully', "status": 200
         }
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='json', auth='public', methods=['GET'], csrf=False, cors='*',
-                website=True)
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_wishlistlist(self, **params):
         try:
             wishList = []
-            if 'partner_id' in params:
-                model = 'product.wishlist'
-                records = request.env[model].sudo().search([('partner_id', '=', int(params['partner_id']))])
+            jdata = json.loads(request.httprequest.stream.read())
+            if not jdata.get('partner_id'):
+                error = {"message": "Partner Id is not present in request", "status": 400}
+                return return_Response_error(error)
+            partner_id = int(jdata.get('partner_id'))
+            model = 'product.wishlist'
+            records = request.env[model].sudo().search([('partner_id', '=', partner_id)])
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         try:
@@ -271,5 +282,5 @@ class WebsiteSale(WebsiteSale):
             "count": len(wishList),
             "result": wishList
         }
-        return res
+        return return_Response(res)
 

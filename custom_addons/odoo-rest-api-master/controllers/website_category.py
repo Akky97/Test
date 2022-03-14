@@ -32,15 +32,3 @@ class WebsiteCategory(http.Controller):
             "result": polularCategoryList
         }
         return return_Response(res)
-
-    @http.route('/api/v1/c/email.verification', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def get_email_verification(self, **params):
-        try:
-            if 'email' in params and 'send_otp' in params:
-                result = request.env['email.verification'].sudo().create(params)
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
-        res = {
-            "result": 'Success'
-        }
-        return return_Response(res)

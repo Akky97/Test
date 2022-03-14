@@ -116,7 +116,14 @@ class SignupAPI(AuthSignupHome):
                     return return_Response_error(msg)
                 template.email_from = outgoing_server_name
                 template.email_to = email
-                template.body_html = int(otp)
+                template.body_html = f"""<![CDATA[
+                <p>Dear {name},
+                <br/><br/>
+                Your Signup OTP is {otp}
+                <br/><br/>
+                Thanks and Regards<br/>
+                Pando Store
+                </p>"""
                 template.sudo().send_mail(3, force_send=True)
                 vals = {'email': email, 'otp': otp}
                 data = request.env['email.verification'].sudo().create(vals)
