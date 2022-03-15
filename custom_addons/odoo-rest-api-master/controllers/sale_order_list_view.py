@@ -213,7 +213,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'Product Added Successfully', 'status': 200
+            "message": 'Product Added Successfully', 'status': 200
         }
         return return_Response(res)
 
