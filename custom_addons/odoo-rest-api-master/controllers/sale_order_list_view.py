@@ -165,8 +165,8 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def add_to_wishlistlist(self, **params):
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['POST'], csrf=False, cors='*', website=True)
+    def add_to_wishlistlist(self):
         try:
             # pricelist_context, pricelist_id = self._get_pricelist_context()
             website_id = request.env['website'].get_current_website()
@@ -218,8 +218,8 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['DELETE'], csrf=False, cors='*')
-    def remove_from_wishlistlist(self, **params):
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['DELETE'], csrf=False, cors='*', website=True)
+    def remove_from_wishlistlist(self):
         try:
             jdata = json.loads(request.httprequest.stream.read())
 
@@ -248,8 +248,8 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
-    def get_wishlistlist(self, **params):
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['GET'], csrf=False, cors='*', website=True)
+    def get_wishlistlist(self):
         try:
             wishList = []
             jdata = json.loads(request.httprequest.stream.read())
