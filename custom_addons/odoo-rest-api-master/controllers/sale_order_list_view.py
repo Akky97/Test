@@ -208,7 +208,7 @@ class WebsiteSale(WebsiteSale):
                 request.env['product.wishlist'].sudo().create(values)
 
             else:
-                error = {"message": "The Selected Product is in wishlist", "status": 400}
+                error = {"message": "The Selected Product is in wishlist", "status": 200}
                 return return_Response_error(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
