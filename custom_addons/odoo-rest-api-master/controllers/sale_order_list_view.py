@@ -209,7 +209,7 @@ class WebsiteSale(WebsiteSale):
 
             else:
                 error = {"message": "The Selected Product is in wishlist", "status": 200}
-                return return_Response_error(error)
+                return return_Response(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
