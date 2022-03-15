@@ -311,7 +311,13 @@ class OdooAPI(http.Controller):
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
-        if "category" not in params:
+        if "search" in params:
+            search_data = params["search"]
+            record_count = request.env[model].sudo().search_count([('is_published', '=', True), ('name', 'ilike', search_data)])
+            records = request.env[model].sudo().search(
+                [('is_published', '=', True), ('name', 'ilike', search_data)], order=search, limit=limit,
+                offset=offset)
+        elif "category" not in params:
             record_count = request.env[model].sudo().search_count([('is_published', '=', True)])
             records = request.env[model].sudo().search(
                 [('is_published', '=', True)], order=search, limit=limit,
@@ -319,7 +325,7 @@ class OdooAPI(http.Controller):
         else:
             record_count = request.env[model].sudo().search_count(
                 [('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])])
-            records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])], order=orders, limit=limit,
+            records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])], order=search, limit=limit,
                 offset=offset)
         prev_page = None
         next_page = None
