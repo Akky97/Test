@@ -218,7 +218,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['DELETE'], csrf=False, cors='*')
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['DELETE'], csrf=False, cors='*', website=True)
     def remove_from_wishlistlist(self):
         try:
             jdata = json.loads(request.httprequest.stream.read())
@@ -248,15 +248,14 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['GET'], csrf=False, cors='*')
-    def get_wishlistlist(self):
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='public', methods=['GET'], csrf=False, cors='*', website=True)
+    def get_wishlistlist(self, **params):
         try:
             wishList = []
-            jdata = json.loads(request.httprequest.stream.read())
-            if not jdata.get('partner_id'):
+            if "partner_id" not in params:
                 error = {"message": "Partner Id is not present in request", "status": 400}
                 return return_Response_error(error)
-            partner_id = int(jdata.get('partner_id'))
+            partner_id = int(params["partner_id"])
             model = 'product.wishlist'
             records = request.env[model].sudo().search([('partner_id', '=', partner_id)])
         except (SyntaxError, QueryFormatError) as e:
