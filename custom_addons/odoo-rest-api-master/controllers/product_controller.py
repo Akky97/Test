@@ -496,10 +496,15 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in record:
+                category = []
+                for z in i.public_categ_ids:
+                    category.append({"name": z.name, "slug": z.id,
+                                     "pivot": {"product_id": i.id, "product-category_id": z.id}})
                 val = {
                     "id": i.id,
                     "name": i.name,
-                    'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"
+                    "image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
+                    "cat": None if len(category)==0 else category
                 }
                 temp.append(val)
 
