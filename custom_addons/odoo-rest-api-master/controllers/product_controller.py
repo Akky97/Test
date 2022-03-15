@@ -112,7 +112,7 @@ class OdooAPI(http.Controller):
                     if len(data) != 0:
                         for dic in data:
                             res = list(dic.items())[0]
-                            print(len(res), "RWSSSS")
+
                             # if len
                             if res[0].lower() == 'color':
                                 res_data.update(
@@ -128,7 +128,7 @@ class OdooAPI(http.Controller):
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
                 data = _compute_quantities(self=i)
-                print("data", data)
+
                 temp.append({"id": i.id, "name": i.name,
                              'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
@@ -230,7 +230,7 @@ class OdooAPI(http.Controller):
                     if len(data) != 0:
                         for dic in data:
                             res = list(dic.items())[0]
-                            print(len(res), "RWSSSS")
+
                             # if len
                             if res[0].lower() == 'color':
                                 res_data.update(
@@ -246,7 +246,6 @@ class OdooAPI(http.Controller):
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
                 data = _compute_quantities(self=i)
-                print("data", data)
                 temp.append({"id": i.id, "name": i.name,
                              'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
@@ -375,7 +374,6 @@ class OdooAPI(http.Controller):
                     if len(data) != 0:
                         for dic in data:
                             res = list(dic.items())[0]
-                            print(len(res), "RWSSSS")
                             # if len
                             if res[0].lower() == 'color':
                                 res_data.update(
@@ -390,7 +388,6 @@ class OdooAPI(http.Controller):
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
                 data = _compute_quantities(self=i)
-                print("data", data)
                 temp.append({"id": i.id, "name": i.name,
                              'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                              'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
@@ -543,7 +540,7 @@ class OdooAPI(http.Controller):
                         if len(data) != 0:
                             for dic in data:
                                 res = list(dic.items())[0]
-                                print(len(res), "RWSSSS")
+
                                 # if len
                                 if res[0].lower() == 'color':
                                     res_data.update(
@@ -558,7 +555,7 @@ class OdooAPI(http.Controller):
                     for n in i.seller_ids:
                         sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
                     data = _compute_quantities(self=i)
-                    print("data", data)
+
                     temp.append({"id": i.id, "name": i.name,
                                  'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
                                  'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",

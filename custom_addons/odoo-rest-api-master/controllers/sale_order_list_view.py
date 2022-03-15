@@ -218,7 +218,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['DELETE'], csrf=False, cors='*', website=True)
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['DELETE'], csrf=False, cors='*')
     def remove_from_wishlistlist(self):
         try:
             jdata = json.loads(request.httprequest.stream.read())
@@ -248,7 +248,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['GET'], csrf=False, cors='*', website=True)
+    @http.route('/api/v1/c/product.wishlist', type='http', auth='none', methods=['GET'], csrf=False, cors='*')
     def get_wishlistlist(self):
         try:
             wishList = []

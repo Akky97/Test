@@ -49,7 +49,7 @@ class SignupAPI(AuthSignupHome):
             confirm_password = jdata.get('confirm_password')
             qcontext.update({"login": email, "name": name, "password": password,
                              "confirm_password": confirm_password})
-            email_veri = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1)
+            email_veri = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1,order='create_date desc')
             if email_veri and int(email_veri.otp) == int(otp):
                 pass
             else:
@@ -72,7 +72,7 @@ class SignupAPI(AuthSignupHome):
                         if user_sudo and template:
                             template.sudo().send_mail(user_sudo.id, force_send=True)
                     res = {"message": "Account Successfully Created", "status_code": 200}
-                    email_get = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1)
+                    email_get = request.env['email.verification'].sudo().search([('email', '=', email)],order='create_date desc',limit=1)
                     email_get.sudo().unlink()
                     return return_Response(res)
                 except KeyError as e:
@@ -81,7 +81,6 @@ class SignupAPI(AuthSignupHome):
                 except (SignupError, AssertionError) as e:
                     user = request.env["res.users"].sudo().search([("login", "=", qcontext.get('login'))])
                     if user:
-                        print("user", user)
                         msg = {"message": "Another user is already registered using this email address.","status_code":400}
                         return return_Response_error(msg)
                     else:
@@ -100,17 +99,12 @@ class SignupAPI(AuthSignupHome):
                 return return_Response_error(msg)
             name = jdata.get('name')
             email = jdata.get('email')
-            print(name, email)
             template = request.env.ref('odoo-rest-api-master.send_otp_email_template',
                                        raise_if_not_found=False)
-            print(template)
             outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).smtp_user
-            print(outgoing_server_name)
-            otp = random.randint(100000, 999999);
-            print(otp)
+            otp = random.randint(100000, 999999)
             if outgoing_server_name:
                 email_check = request.env['res.users'].sudo().search([('login', '=', email)])
-                print(email_check)
                 if email_check:
                     msg = {"message": "User already exist!!", "status_code": 400}
                     return return_Response_error(msg)
@@ -127,7 +121,6 @@ class SignupAPI(AuthSignupHome):
                 template.sudo().send_mail(3, force_send=True)
                 vals = {'email': email, 'otp': otp}
                 data = request.env['email.verification'].sudo().create(vals)
-                print(data)
                 res = {"message": "OTP sent Successfully!!", "status_code": 200}
                 return return_Response(res)
         except Exception as e:
