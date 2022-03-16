@@ -258,7 +258,7 @@ class WebsiteSale(WebsiteSale):
             temp = []
             if records:
                 for rec in records:
-                    i = request.env['product.template'].sudo().search([('id', '=', rec.product_id.product_tmpl_id.id)])
+                    i = request.env['product.product'].sudo().search([('id', '=', rec.product_id.id)])
                     image = []
                     category = []
                     variant = []
