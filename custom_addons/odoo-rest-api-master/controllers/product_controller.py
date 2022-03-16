@@ -131,8 +131,8 @@ class OdooAPI(http.Controller):
                              "sold":i.sales_count,
                              "review":2,
                              "rating":3,
-                             "additional_info": i.additional_info,
-                             "shipping_return": i.shipping_return,
+                             "additional_info": i.additional_info if i.additional_info else '',
+                             "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
@@ -249,8 +249,8 @@ class OdooAPI(http.Controller):
                              "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
-                             "additional_info": i.additional_info,
-                             "shipping_return": i.shipping_return,
+                             "additional_info": i.additional_info if i.additional_info else '',
+                             "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [
                                  {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                                   "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
@@ -395,8 +395,8 @@ class OdooAPI(http.Controller):
                              "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
-                             "additional_info": i.additional_info,
-                             "shipping_return": i.shipping_return,
+                             "additional_info": i.additional_info if i.additional_info else '',
+                             "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [
                                  {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                                   "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
@@ -449,7 +449,8 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
-                search_count = request.env['product.product'].sudo().search_count([('public_categ_ids', 'in', [i.id])])
+                search_count = request.env['product.product'].sudo().search_count([('public_categ_ids', 'in', [i.id]),
+                                                                                   ('is_published', '=', True)])
                 temp.append({"id": i.id, "name": i.name,
                              "image": base_url.value + '/web/image/product.public.category/' + str(i.id) + "/image_1920",
                              'parent_id': i.parent_id.id if i.parent_id.id != False else '',
@@ -564,8 +565,8 @@ class OdooAPI(http.Controller):
                                  "sold": 10,
                                  "review": 2,
                                  "rating": 3,
-                                 "additional_info": i.additional_info,
-                                 "shipping_return": i.shipping_return,
+                                 "additional_info": i.additional_info if i.additional_info else '',
+                                 "shipping_return": i.shipping_return if i.shipping_return else '',
                                  "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(
                                      i.id) + "/image_1920",
                                                "image": base_url.value + '/web/image/product.product/' + str(

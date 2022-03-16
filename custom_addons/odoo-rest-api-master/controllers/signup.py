@@ -127,4 +127,87 @@ class SignupAPI(AuthSignupHome):
             msg = {"message": str(e), "status_code": 400}
             return return_Response_error(msg)
 
+    @http.route('/api/v1/c/customer/forgot_password_send_otp', type='http', auth='public', methods=['POST'], csrf=False,
+                cors='*')
+    def forgot_password_send_otp(self):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata and jdata.get('email'):
+                email = jdata.get('email')
+                user = request.env['res.users'].sudo().search([('login', '=', email)])
+                if user:
+                    name = user.partner_id.name
+                    template = request.env.ref('odoo-rest-api-master.send_otp_email_template',
+                                               raise_if_not_found=False)
+                    outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).smtp_user
+                    otp = random.randint(100000, 999999)
+                    if outgoing_server_name:
+                        template.email_from = outgoing_server_name
+                        template.email_to = email
+                        template.body_html = f"""<![CDATA[
+                            <p>Dear {name},
+                            <br/><br/>
+                            You have requested to change password. So your OTP is {otp}
+                            <br/><br/>
+                            Thanks and Regards<br/>
+                            Pando Store
+                            </p>"""
+                        template.sudo().send_mail(3, force_send=True)
+                        vals = {'email': email, 'otp': otp}
+                        email_otp = request.env['forgot.password'].sudo().search([('email', '=', email)])
+                        if email_otp:
+                            email_otp.sudo().write({'otp': otp})
+                        else:
+                            data = request.env['forgot.password'].sudo().create(vals)
+                        res = {"message": "OTP sent Successfully!!", "status_code": 200}
+                        return return_Response(res)
+                else:
+                    msg = {"message": "User does not exist!!", "status_code": 400}
+                    return return_Response_error(msg)
+            else:
+                msg = {"message": "Email is not present in parameter", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": str(e), "status_code": 400}
+            return return_Response_error(msg)
+
+    @http.route('/api/v1/c/customer/forgot_password', type='http', auth='public', methods=['POST'], csrf=False,
+                cors='*')
+    def forgot_password(self):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata and jdata.get('email') and jdata.get('otp') and jdata.get('password'):
+                email = jdata.get('email')
+                otp = jdata.get('otp')
+                psw = jdata.get('password')
+                user = request.env['res.users'].sudo().search([('login', '=', email)])
+                if not user:
+                    msg = {"message": "User does not exist!!", "status_code": 400}
+                    return return_Response_error(msg)
+                email_otp = request.env['forgot.password'].sudo().search([('email', '=', email)],
+                                                                         order='create_date desc', limit=1)
+                if not email_otp:
+                    msg = {"message": "Please Resend OTP", "status_code": 400}
+                    return return_Response_error(msg)
+                if user and email_otp:
+                    if int(otp) == int(email_otp.otp):
+                        user.sudo().write({'password': psw})
+                        msg = {"message": "Password has been Changed Successfully", "status_code": 200}
+                        return return_Response(msg)
+                    else:
+                        msg = {"message": "OTP Is Incorrect", "status_code": 200}
+                        return return_Response(msg)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": str(e), "status_code": 400}
+            return return_Response_error(msg)
+
 

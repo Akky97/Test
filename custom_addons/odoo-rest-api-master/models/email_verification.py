@@ -9,6 +9,14 @@ class emailVerification(models.Model):
     otp = fields.Integer('Send OTP')
 
 
+class forgotPassword(models.Model):
+
+    _name = "forgot.password"
+
+    email = fields.Char('Email')
+    otp = fields.Integer('Send OTP')
+
+
 
 
 

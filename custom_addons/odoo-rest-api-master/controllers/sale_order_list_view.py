@@ -339,8 +339,8 @@ class WebsiteSale(WebsiteSale):
                                  "sold": i.sales_count,
                                  "review": 2,
                                  "rating": 3,
-                                 "additional_info": i.additional_info,
-                                 "shipping_return": i.shipping_return,
+                                 "additional_info": i.additional_info if i.additional_info else '',
+                                 "shipping_return": i.shipping_return if i.shipping_return else '',
                                  "pictures": [
                                      {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                                       "image": base_url.value + '/web/image/product.template/' + str(
