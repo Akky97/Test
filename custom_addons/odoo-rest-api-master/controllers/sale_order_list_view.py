@@ -139,16 +139,41 @@ class SaleOrderController(http.Controller):
 
 class WebsiteSale(WebsiteSale):
     @validate_token
+    @http.route('/api/v1/c/get_cart', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
+                website=True)
+    def get_cart(self, **params):
+        try:
+            sale_order = {}
+            order = request.website.sale_get_order()
+            if order and order.order_line:
+                sale_order = {
+                    'id': order.id,
+                    'order_line': get_sale_order_line(order_id=order.id),
+                    'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else "",
+                    'amount_tax': order.amount_tax if order.amount_tax != False else "",
+                    'amount_total': order.amount_total if order.amount_total != False else "",
+                    'symbol': order.currency_id.symbol if order.currency_id.symbol != False else ""
+                }
+            else:
+                message = {"message": "Cart is Empty", "status": 200}
+                return return_Response(message)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {"result": sale_order}
+        return return_Response(res)
+
+    @validate_token
     @http.route('/api/v1/c/cart_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*', website=True)
     def cart_update(self, **params):
         try:
             jdata = json.loads(request.httprequest.stream.read())
-            if not jdata.get('product_id') or not jdata.get('set_qty') or not jdata.get('add_qty'):
+            if not jdata.get('product_id') or not jdata.get('add_qty'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             product_id = int(jdata.get('product_id')) or False
-            set_qty = int(jdata.get('set_qty')) or 0
-            add_qty = int(jdata.get('add_qty')) or 1
+            set_qty = int(jdata.get('set_qty')) if jdata.get('set_qty') else 0
+            add_qty = int(jdata.get('add_qty')) if jdata.get('add_qty') else 1
             sale_order = request.website.sale_get_order()
             if sale_order.state != 'draft':
                 request.session['sale_order_id'] = None
