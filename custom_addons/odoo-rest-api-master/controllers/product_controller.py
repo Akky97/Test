@@ -3,7 +3,8 @@ import math
 import logging
 import requests
 import ast
-from odoo import http, _, exceptions
+from odoo import http, _, exceptions, fields
+from odoo.tools.float_utils import float_round
 from odoo.http import request
 from .serializers import Serializer
 from .exceptions import QueryFormatError
@@ -12,34 +13,11 @@ from .error_or_response_parser import *
 _logger = logging.getLogger(__name__)
 
 
-def _compute_quantities(self):
-    res = self._compute_quantities_dict()
-    qty_available = res[self.id]['qty_available']
-    return res[self.id]['qty_available']
-
-
-def _product_available(self, name, arg):
-    return self._compute_quantities_dict()
-
-
-def _compute_quantities_dict(self):
-    variants_available = self.mapped('product_variant_ids')._product_available()
-    prod_available = {}
-    for template in self:
-        qty_available = 0
-        for p in template.product_variant_ids:
-            qty_available += variants_available[p.id]["qty_available"]
-        prod_available[template.id] = {
-            "qty_available": qty_available,
-        }
-    return prod_available
-
-
 class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view(self, **params):
         try:
-            model = 'product.template'
+            model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -80,12 +58,12 @@ class OdooAPI(http.Controller):
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                  'url': base_url.value + '/web/image/product.template/' + str(j.id) + "/image_1920",
+                                  'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
                                   })
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name,"slug":z.name.lower().replace(" ","-"),
                              "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
-                product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
                 for k in product_var:
                     values = []
                     attribute_name = ''
@@ -127,11 +105,10 @@ class OdooAPI(http.Controller):
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
-                data = _compute_quantities(self=i)
 
                 temp.append({"id": i.id, "name": i.name,
-                             'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
-                             'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
+                             'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                             'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
                              'short_desc': i.description_sale if i.description_sale != False else '',
@@ -143,7 +120,7 @@ class OdooAPI(http.Controller):
                              "write_uid":i.write_uid.id if i.write_uid.id != False else '',
                              "write_name":i.write_uid.name if i.write_uid.name != False else '',
                              "variants":variant,
-                             "stock":data,
+                             "stock":i.qty_available,
                              "sm_pictures": image,
                              "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids":sellers,
@@ -151,12 +128,12 @@ class OdooAPI(http.Controller):
                              "top": True if i.website_ribbon_id.html == 'Trending' else None,
                              "new": True if i.website_ribbon_id.html == 'New' else None,
                              "author":"Pando-Stores",
-                             "sold":10,
+                             "sold":i.sales_count,
                              "review":2,
                              "rating":3,
                              "additional_info": i.additional_info,
                              "shipping_return": i.shipping_return,
-                             "pictures": [{'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
+                             "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -198,13 +175,14 @@ class OdooAPI(http.Controller):
                 sellers = []
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
-                                  'url': base_url.value + '/web/image/product.template/' + str(j.id) + "/image_1920",
-                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920"})
+                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+                                  'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+                                  })
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
                                          z.id) + "/image_1920", })
-                product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
                 for k in product_var:
                     values = []
                     attribute_name = ''
@@ -221,7 +199,8 @@ class OdooAPI(http.Controller):
                                                    "color_name": b.product_attribute_value_id.html_color})
                                 else:
                                     values.append({"id": b.id, "name": b.name, "slug": None,
-                                                   "pivot": {"components_variants_variant_id": k.id, "component_id": b.id}})
+                                                   "pivot": {"components_variants_variant_id": k.id,
+                                                             "component_id": b.id}})
                         data.append({attribute_name: values})
                         values = []
                     res_data = {"id": k.id, "price": k.list_price,
@@ -238,17 +217,16 @@ class OdooAPI(http.Controller):
                             else:
                                 res_data.update(dic)
 
-
                         variant.append(res_data)
                     else:
                         pass
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
-                data = _compute_quantities(self=i)
+
                 temp.append({"id": i.id, "name": i.name,
-                             'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
-                             'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
+                             'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                             'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
                              'short_desc': i.description_sale if i.description_sale != False else '',
@@ -260,7 +238,7 @@ class OdooAPI(http.Controller):
                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
                              "variants": variant,
-                             "stock": data,
+                             "stock": i.qty_available,
                              "sm_pictures": image,
                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids": sellers,
@@ -268,12 +246,14 @@ class OdooAPI(http.Controller):
                              "top": True if i.website_ribbon_id.html == 'Trending' else None,
                              "new": True if i.website_ribbon_id.html == 'New' else None,
                              "author": "Pando-Stores",
-                             "sold": 10,
+                             "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
                              "additional_info": i.additional_info,
                              "shipping_return": i.shipping_return,
-                             "pictures": [{ 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
+                             "pictures": [
+                                 {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                  "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -342,13 +322,13 @@ class OdooAPI(http.Controller):
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                  'url': base_url.value + '/web/image/product.template/' + str(j.id) + "/image_1920",
+                                  'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
                                   })
                 for z in i.public_categ_ids:
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
                                          z.id) + "/image_1920", })
-                product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
                 for k in product_var:
                     values = []
                     attribute_name = ''
@@ -371,9 +351,11 @@ class OdooAPI(http.Controller):
                         values = []
                     res_data = {"id": k.id, "price": k.list_price,
                                 "pivot": {"product_id": i.id, "component_id": k.id}}
+
                     if len(data) != 0:
                         for dic in data:
                             res = list(dic.items())[0]
+
                             # if len
                             if res[0].lower() == 'color':
                                 res_data.update(
@@ -387,10 +369,10 @@ class OdooAPI(http.Controller):
 
                 for n in i.seller_ids:
                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
-                data = _compute_quantities(self=i)
+
                 temp.append({"id": i.id, "name": i.name,
-                             'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
-                             'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
+                             'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                             'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                              'description': i.description if i.description != False else '',
                              'short_desc': i.description_sale if i.description_sale != False else '',
@@ -402,7 +384,7 @@ class OdooAPI(http.Controller):
                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
                              "variants": variant,
-                             "stock": data,
+                             "stock": i.qty_available,
                              "sm_pictures": image,
                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids": sellers,
@@ -410,12 +392,14 @@ class OdooAPI(http.Controller):
                              "top": True if i.website_ribbon_id.html == 'Trending' else None,
                              "new": True if i.website_ribbon_id.html == 'New' else None,
                              "author": "Pando-Stores",
-                             "sold": 10,
+                             "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
                              "additional_info": i.additional_info,
                              "shipping_return": i.shipping_return,
-                             "pictures":[{"image":base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920", 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",}]
+                             "pictures": [
+                                 {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                  "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)

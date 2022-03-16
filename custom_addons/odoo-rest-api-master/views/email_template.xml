@@ -4,18 +4,5 @@
             <field name="model_id" ref="odoo-rest-api-master.model_email_verification"/>
             <field name="email_from">${(object.email) | safe}</field>
             <field name="subject">Send OTP</field>
-            <field name="body_html" type="html">
-                <div style="margin:0px; padding: 0px;">
-                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                    <br/>
-                    <br/>
-                    <br/>
-                    OTP = ${(object.otp)}
-                    <br/>
-                    <p> </p>
-                    <br/>
-                    </p>
-                </div>
-            </field>
         </record>
 </odoo>
