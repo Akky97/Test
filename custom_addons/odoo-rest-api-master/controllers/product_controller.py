@@ -133,7 +133,7 @@ class OdooAPI(http.Controller):
                              "rating":3,
                              "additional_info": i.additional_info,
                              "shipping_return": i.shipping_return,
-                             "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920"}]
+                             "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
                              })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -151,7 +151,7 @@ class OdooAPI(http.Controller):
 
     @http.route('/api/v1/c/product.template.view/<product_id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view_single(self, product_id=None, **params):
-        model = 'product.template'
+        model = 'product.product'
         try:
             if not product_id:
                 error = {"message": "product_id is not present in the request", "status": 400}
@@ -270,7 +270,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/categ/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view_by_categ(self, **params):
         try:
-            model = 'product.template'
+            model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -449,7 +449,7 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
-                search_count = request.env['product.template'].sudo().search_count([('public_categ_ids', 'in', [i.id])])
+                search_count = request.env['product.product'].sudo().search_count([('public_categ_ids', 'in', [i.id])])
                 temp.append({"id": i.id, "name": i.name,
                              "image": base_url.value + '/web/image/product.public.category/' + str(i.id) + "/image_1920",
                              'parent_id': i.parent_id.id if i.parent_id.id != False else '',
@@ -478,7 +478,7 @@ class OdooAPI(http.Controller):
                 domain = [('is_published', '=', True), ('name', 'ilike', params['search'])]
             if 'search' not in params and 'categ_id' in params:
                 domain = [('is_published', '=', True), ('public_categ_ids', 'in', [int(params['categ_id'])])]
-            model = 'product.template'
+            model = 'product.product'
             record = request.env[model].sudo().search(domain)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
@@ -490,14 +490,14 @@ class OdooAPI(http.Controller):
                     for j in i.product_template_image_ids:
                         image.append({"id": j.id, "name": j.name,
                                       "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                      'url': base_url.value + '/web/image/product.template/' + str(
+                                      'url': base_url.value + '/web/image/product.product/' + str(
                                           j.id) + "/image_1920",
                                       })
                     for z in i.public_categ_ids:
                         category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                          "image": base_url.value + '/web/image/product.public.category/' + str(
                                              z.id) + "/image_1920", })
-                    product_var = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(i.id))])
+                    product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
                     for k in product_var:
                         values = []
                         attribute_name = ''
@@ -538,11 +538,10 @@ class OdooAPI(http.Controller):
 
                     for n in i.seller_ids:
                         sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
-                    data = _compute_quantities(self=i)
 
                     temp.append({"id": i.id, "name": i.name,
-                                 'url': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
-                                 'image': base_url.value + '/web/image/product.template/' + str(i.id) + "/image_1920",
+                                 'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                                  'description': i.description if i.description != False else '',
                                  'short_desc': i.description_sale if i.description_sale != False else '',
@@ -554,7 +553,7 @@ class OdooAPI(http.Controller):
                                  "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                                  "write_name": i.write_uid.name if i.write_uid.name != False else '',
                                  "variants": variant,
-                                 "stock": data,
+                                 "stock": i.sales_count,
                                  "sm_pictures": image,
                                  "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                                  "seller_ids": sellers,
@@ -567,9 +566,9 @@ class OdooAPI(http.Controller):
                                  "rating": 3,
                                  "additional_info": i.additional_info,
                                  "shipping_return": i.shipping_return,
-                                 "pictures": [{'url': base_url.value + '/web/image/product.template/' + str(
+                                 "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(
                                      i.id) + "/image_1920",
-                                               "image": base_url.value + '/web/image/product.template/' + str(
+                                               "image": base_url.value + '/web/image/product.product/' + str(
                                                    i.id) + "/image_1920"}]
                                  })
 
