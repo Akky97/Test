@@ -111,13 +111,21 @@ class SignupAPI(AuthSignupHome):
                 template.email_from = outgoing_server_name
                 template.email_to = email
                 template.body_html = f"""<![CDATA[
-                <p>Dear {name},
-                <br/><br/>
-                Your Signup OTP is {otp}
-                <br/><br/>
-                Thanks and Regards<br/>
-                Pando Store
-                </p>"""
+                                            <div class="container-fluid">
+                <div class="row" style="background: #5297F8; height: 50px;"><img src="/odoo-rest-api-master/static/src/image/Vector.png"/></div>
+                <div>
+                <p>Dear {name}</p>
+                <br />
+                <h2>Your Signup OTP is {otp}</h2>
+                <br />
+                <p><strong> Please note:-</strong>This OTP has also been sent to your chosen email id. Please se do not share this OTP with anyone for security reasons.</p>
+                <br />
+                <p><strong> In case you have not requested this action, please contact us. </strong></p>
+                <p><strong>Phone number :-</strong> +65 6589 8807</p>
+                </div>
+                <br />
+                <div style="text-align: center; background: #EEF5FF; padding: 15px;"><a href="https://pandostores.com/"> https://pandostores.com </a></div>
+                </div>"""
                 template.sudo().send_mail(3, force_send=True)
                 vals = {'email': email, 'otp': otp}
                 data = request.env['email.verification'].sudo().create(vals)
