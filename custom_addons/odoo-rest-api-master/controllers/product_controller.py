@@ -17,10 +17,15 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view(self, **params):
         try:
+            domain = [('is_published', '=', True)]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
+
+        if "country_id" in params and params.get('country_id'):
+            domain.append(('country_id','=',int(params.get('country_id'))))
+
         if "query" in params:
             query = params["query"]
         else:
@@ -40,8 +45,9 @@ class OdooAPI(http.Controller):
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
-        record_count = request.env[model].sudo().search_count([('is_published', '=', True)])
-        records = request.env[model].sudo().search([('is_published', '=', True)], order=search, limit=limit, offset=offset)
+
+        record_count = request.env[model].sudo().search_count(domain)
+        records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -270,6 +276,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/categ/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view_by_categ(self, **params):
         try:
+            domain = [('is_published', '=', True)]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
@@ -290,22 +297,19 @@ class OdooAPI(http.Controller):
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
+
         if "search" in params:
             search_data = params["search"]
-            record_count = request.env[model].sudo().search_count([('is_published', '=', True), ('name', 'ilike', search_data)])
-            records = request.env[model].sudo().search(
-                [('is_published', '=', True), ('name', 'ilike', search_data)], order=search, limit=limit,
-                offset=offset)
-        elif "category" not in params:
-            record_count = request.env[model].sudo().search_count([('is_published', '=', True)])
-            records = request.env[model].sudo().search(
-                [('is_published', '=', True)], order=search, limit=limit,
-                offset=offset)
-        else:
-            record_count = request.env[model].sudo().search_count(
-                [('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])])
-            records = request.env[model].sudo().search([('is_published', '=', True), ('public_categ_ids', 'in', [int(params["category"])])], order=search, limit=limit,
-                offset=offset)
+            domain.append(('name', 'ilike', search_data))
+
+        if "category" in params and params.get('category'):
+            domain.append(('public_categ_ids', 'in', [int(params["category"])]))
+
+        if "country_id" in params and params.get('country_id'):
+            domain.append(('country_id', '=', int(params.get('country_id'))))
+
+        record_count = request.env[model].sudo().search_count(domain)
+        records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -471,14 +475,35 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.search', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_search(self, **params):
         try:
-            domain = []
-            if 'search' in params and 'categ_id' in params:
-                domain = ['&', ('is_published', '=', True), '|', ('name', 'ilike', params['search']),
-                          ('public_categ_ids', 'in', [int(params['categ_id'])])]
-            if 'search' in params and 'categ_id' not in params:
-                domain = [('is_published', '=', True), ('name', 'ilike', params['search'])]
-            if 'search' not in params and 'categ_id' in params:
-                domain = [('is_published', '=', True), ('public_categ_ids', 'in', [int(params['categ_id'])])]
+            domain = [('is_published', '=', True)]
+            categ_id = []
+            if 'search' in params:
+                model = 'product.public.category'
+                try:
+                    categ_id = request.env[model].sudo().search([('name', 'ilike', params['search'])]).ids
+                    country_id = int(params['country_id']) if "country_id" in params and params['country_id'] else False
+                    if categ_id:
+                        if country_id:
+                            domain = ['&', ('is_published', '=', True), '&',
+                                      ('country_id', '=', country_id), '|',
+                                      ('name', 'ilike', params['search']),
+                                      ('public_categ_ids', 'in', categ_id)]
+                        else:
+                            domain = ['&', ('is_published', '=', True), '|', ('name', 'ilike', params['search']),
+                                      ('public_categ_ids', 'in', categ_id)]
+                    else:
+                        if country_id:
+                            domain = [('is_published', '=', True), ('country_id', '=', country_id),
+                                      ('name', 'ilike', params['search'])]
+                        else:
+                            domain = [('is_published', '=', True), ('name', 'ilike', params['search'])]
+
+                except KeyError as e:
+                    msg = "The model `%s` does not exist." % model
+                    return error_response(e, msg)
+            else:
+                error = {"message": "Something Went Wrong", "status": 400}
+                return return_Response_error(error)
             model = 'product.product'
             record = request.env[model].sudo().search(domain)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -554,7 +579,7 @@ class OdooAPI(http.Controller):
                                  "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                                  "write_name": i.write_uid.name if i.write_uid.name != False else '',
                                  "variants": variant,
-                                 "stock": i.sales_count,
+                                 "stock": i.qty_available,
                                  "sm_pictures": image,
                                  "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                                  "seller_ids": sellers,
@@ -562,7 +587,7 @@ class OdooAPI(http.Controller):
                                  "top": True if i.website_ribbon_id.html == 'Trending' else None,
                                  "new": True if i.website_ribbon_id.html == 'New' else None,
                                  "author": "Pando-Stores",
-                                 "sold": 10,
+                                 "sold": i.sales_count,
                                  "review": 2,
                                  "rating": 3,
                                  "additional_info": i.additional_info if i.additional_info else '',
