@@ -112,7 +112,7 @@ class SignupAPI(AuthSignupHome):
                 template.email_to = email
                 template.body_html = f"""<![CDATA[
                                             <div class="container-fluid">
-                <div class="row" style="background: #5297F8; height: 50px;"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/images/Vector.png"/></div>
+                <div class="row" style="background: #5297F8; height: 50px;"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/image/Pando_logo.svg"/></div>
                 <div>
                 <p>Dear {name}</p>
                 <br />
