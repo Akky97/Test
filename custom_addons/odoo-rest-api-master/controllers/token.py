@@ -255,13 +255,13 @@ class AccessToken(http.Controller):
 
         # Login in odoo database:
         try:
-            request.session.logout()
+            # request.session.logout()
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:
             # Invalid database:
             error = 'invalid_database'
-            info = "The database name is not valid {}".format((e))
+            info = "E-mail or Password is not valid"
             _logger.error(info)
             return invalid_response(error, info)
 
