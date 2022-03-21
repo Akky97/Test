@@ -4,6 +4,7 @@ import logging
 import requests
 import ast
 from odoo import http, _, exceptions, fields
+from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
 from odoo.http import request
 from .serializers import Serializer
@@ -11,6 +12,29 @@ from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 
 _logger = logging.getLogger(__name__)
+
+
+def _compute_sales_count(self):
+    r = {}
+    self.sales_count = 0
+    date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+                                                                  time.min))
+
+    done_states = self.env['sale.report']._get_done_states()
+
+    domain = [
+        ('state', 'in', done_states),
+        ('product_id', 'in', self.ids),
+        ('date', '>=', date_from),
+    ]
+    for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
+        r[group['product_id'][0]] = group['product_uom_qty']
+    for product in self:
+        if not product.id:
+            product.sales_count = 0.0
+            continue
+        product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
+    return r
 
 
 class OdooAPI(http.Controller):
@@ -38,16 +62,20 @@ class OdooAPI(http.Controller):
             elif orders == 'new':
                 search = 'create_date DESC'
             elif orders == 'featured':
-                search = ''
+                search = 'sale_count_pando DESC'
         limit = 0
         offset = 0
         if "page" in params:
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
-
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        if "orderBy" in params and params['orderBy'] == 'featured':
+            for res in records:
+                _compute_sales_count(self=res)
+                res.sale_count_pando = res.sales_count
+            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -290,7 +318,7 @@ class OdooAPI(http.Controller):
             elif orders == 'new':
                 search = 'create_date DESC'
             elif orders == 'featured':
-                search = ''
+                search = 'sale_count_pando DESC'
         limit = 0
         offset = 0
         if "page" in params:
@@ -310,6 +338,11 @@ class OdooAPI(http.Controller):
 
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        if "orderBy" in params and params['orderBy'] == 'featured':
+            for res in records:
+                _compute_sales_count(self=res)
+                res.sale_count_pando = res.sales_count
+            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
