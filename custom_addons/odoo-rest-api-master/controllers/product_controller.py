@@ -493,8 +493,9 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
-                dom = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True)]
-                domain = dom.append(('country_id', '=', country_id)) if country_id else dom
+                domain = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True)]
+                if country_id:
+                    domain.append(('country_id', '=', country_id))
                 search_count = request.env['product.product'].sudo().search_count(domain)
                 temp.append({"id": i.id, "name": i.name,
                              "image": base_url.value + '/web/image/product.public.category/' + str(i.id) + "/image_1920",
