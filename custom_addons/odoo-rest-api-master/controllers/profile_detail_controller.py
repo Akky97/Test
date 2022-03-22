@@ -20,7 +20,7 @@ class OdooAPI(http.Controller):
     def profile_detail_view(self, id=None,**params):
         try:
             if not id:
-                error = {"message": "id is not present in the request", "status": 400}
+                error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
             model = 'res.partner'
             records = request.env[model].sudo().search([('id', '=', id)])
@@ -80,7 +80,7 @@ class OdooAPI(http.Controller):
     def profile_detail_update(self, id=None, **params):
         try:
             if not id:
-                error = {"message": "id is not present in the request", "status": 400}
+                error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
             model = 'res.partner'
             records = request.env[model].sudo().search([('id', '=', id)])
@@ -136,7 +136,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
-    @validate_token
+    # @validate_token
     @http.route('/api/v1/c/get_country_state', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_country_state(self, **params):
         try:

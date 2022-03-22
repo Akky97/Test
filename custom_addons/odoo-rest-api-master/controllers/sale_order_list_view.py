@@ -229,7 +229,7 @@ class SaleOrderController(http.Controller):
         model = 'sale.order'
         try:
             if not partner_id:
-                error = {"message": "partner_id is not present in the request", "status": 400}
+                error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
             records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))])
         except KeyError as e:
@@ -333,7 +333,7 @@ class WebsiteSale(WebsiteSale):
                 )
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {"result": 'Updated cart Successfully', "status": 200}
+        res = {"result": 'Updated Cart Successfully', "status": 200}
         return return_Response(res)
 
     @validate_token
@@ -417,7 +417,7 @@ class WebsiteSale(WebsiteSale):
         try:
             wishList = []
             if "partner_id" not in params:
-                error = {"message": "Partner Id is not present in request", "status": 400}
+                error = {"message": "Partner id is not present in request", "status": 400}
                 return return_Response_error(error)
             partner_id = int(params["partner_id"])
             model = 'product.wishlist'

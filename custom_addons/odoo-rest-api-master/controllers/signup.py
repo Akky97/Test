@@ -40,7 +40,7 @@ class SignupAPI(AuthSignupHome):
             except:
                 jdata = {}
             if not jdata.get('email') or not jdata.get('name') or not jdata.get('password') or not jdata.get('otp'):
-                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                msg = {"message": "Something Went Wrong", "status_code": 400}
                 return return_Response_error(msg)
             email = jdata.get('email')
             name = jdata.get('name')
@@ -53,7 +53,7 @@ class SignupAPI(AuthSignupHome):
             if email_veri and int(email_veri.otp) == int(otp):
                 pass
             else:
-                msg = {"message": "OTP not verified!!", "status_code": 400}
+                msg = {"message": "OTP not verified", "status_code": 400}
                 return return_Response_error(msg)
             if not qcontext.get('token') and not qcontext.get('signup_enabled'):
                 raise werkzeug.exceptions.NotFound()
@@ -81,13 +81,13 @@ class SignupAPI(AuthSignupHome):
                 except (SignupError, AssertionError) as e:
                     user = request.env["res.users"].sudo().search([("login", "=", qcontext.get('login'))])
                     if user:
-                        msg = {"message": "Another user is already registered using this email address.","status_code":400}
+                        msg = {"message": "Another user is already registered using this email address", "status_code": 400}
                         return return_Response_error(msg)
                     else:
-                        msg = {"message": "Could not create a new account.","status_code":400}
+                        msg = {"message": "Could not create a new account", "status_code": 400}
                         return return_Response_error(msg)
         except Exception as e:
-            msg = {"message": "Something Went Wrong.","status_code":400}
+            msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
 
     @http.route('/api/v1/c/customer/sendotp', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
@@ -106,7 +106,7 @@ class SignupAPI(AuthSignupHome):
             if outgoing_server_name:
                 email_check = request.env['res.users'].sudo().search([('login', '=', email)])
                 if email_check:
-                    msg = {"message": "User already exist!!", "status_code": 400}
+                    msg = {"message": "User already exist", "status_code": 400}
                     return return_Response_error(msg)
                 template.email_from = outgoing_server_name
                 template.email_to = email
@@ -214,10 +214,10 @@ class SignupAPI(AuthSignupHome):
                 if user and email_otp:
                     if int(otp) == int(email_otp.otp):
                         user.sudo().write({'password': psw})
-                        msg = {"message": "Password has been Changed Successfully", "status_code": 200}
+                        msg = {"message": "Password has been changed successfully", "status_code": 200}
                         return return_Response(msg)
                     else:
-                        msg = {"message": "OTP Is Incorrect", "status_code": 200}
+                        msg = {"message": "OTP is Incorrect", "status_code": 200}
                         return return_Response(msg)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}

@@ -48,7 +48,7 @@ class OdooAPI(http.Controller):
             return error_response(e, msg)
 
         if "country_id" in params and params.get('country_id'):
-            domain.append(('country_id','=',int(params.get('country_id'))))
+            domain.append(('country_id', '=', int(params.get('country_id'))))
 
         if "query" in params:
             query = params["query"]
@@ -63,6 +63,9 @@ class OdooAPI(http.Controller):
                 search = 'create_date DESC'
             elif orders == 'featured':
                 search = 'sale_count_pando DESC'
+            elif orders == 'sale':
+                search = 'sale_count_pando DESC'
+                domain.append(('website_ribbon_id.html', '=', 'Sale'))
         limit = 0
         offset = 0
         if "page" in params:
@@ -71,7 +74,7 @@ class OdooAPI(http.Controller):
             offset = (page - 1) * 12
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
-        if "orderBy" in params and params['orderBy'] == 'featured':
+        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
                 _compute_sales_count(self=res)
                 res.sale_count_pando = res.sales_count
@@ -188,7 +191,7 @@ class OdooAPI(http.Controller):
         model = 'product.product'
         try:
             if not product_id:
-                error = {"message": "product_id is not present in the request", "status": 400}
+                error = {"message": "Product id is not present in the request", "status": 400}
                 return return_Response_error(error)
             records = request.env[model].sudo().search([('id', '=', int(product_id))])
         except KeyError as e:
@@ -454,6 +457,7 @@ class OdooAPI(http.Controller):
 
     @http.route('/api/v1/c/product.category.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_category_view(self, **params):
+        country_id = False
         try:
             model = 'product.public.category'
             records = request.env[model].sudo().search([])
@@ -476,6 +480,9 @@ class OdooAPI(http.Controller):
             offset = int(params["offset"])
         else:
             offset = ""
+        if "country_id" in params and params.get('country_id'):
+            country_id = int(params.get('country_id'))
+
         records = request.env[model].sudo().search([], order=orders, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -486,8 +493,9 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
-                search_count = request.env['product.product'].sudo().search_count([('public_categ_ids', 'in', [i.id]),
-                                                                                   ('is_published', '=', True)])
+                dom = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True)]
+                domain = dom.append(('country_id', '=', country_id)) if country_id else dom
+                search_count = request.env['product.product'].sudo().search_count(domain)
                 temp.append({"id": i.id, "name": i.name,
                              "image": base_url.value + '/web/image/product.public.category/' + str(i.id) + "/image_1920",
                              'parent_id': i.parent_id.id if i.parent_id.id != False else '',
