@@ -87,7 +87,7 @@ def get_address(id):
     return address
 
 
-def sale_get_order(self, force_create=False, code=None, update_pricelist=False, force_pricelist=False, partner_id=False):
+def sale_get_order(self, force_create=False, code=None, update_pricelist=False, force_pricelist=False, partner_id=False, website=False):
         """ Return the current sales order after mofications specified by params.
         :param bool force_create: Create sales order if not already existing
         :param str code: Code to force a pricelist (promo code)
@@ -99,6 +99,11 @@ def sale_get_order(self, force_create=False, code=None, update_pricelist=False, 
         # self.ensure_one()
         # partner = self.env.user.partner_id
         partner = request.env['res.partner'].sudo().search([('id', '=', partner_id)])
+        order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+                                                         ('partner_id', '=', partner.id),
+                                                         ('website_id', '=', website)],
+                                                        order='write_date DESC', limit=1)
+        request.session['sale_order_id'] = order.id
         sale_order_id = request.session.get('sale_order_id')
         check_fpos = False
         if not sale_order_id and not self.env.user._is_public():
@@ -312,6 +317,7 @@ class WebsiteSale(WebsiteSale):
     @http.route('/api/v1/c/cart_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*', website=True)
     def cart_update(self, **params):
         try:
+            website = request.website.id
             jdata = json.loads(request.httprequest.stream.read())
             if not jdata.get('product_id') or not jdata.get('add_qty'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
@@ -319,10 +325,10 @@ class WebsiteSale(WebsiteSale):
             product_id = int(jdata.get('product_id')) or False
             set_qty = int(jdata.get('set_qty')) if jdata.get('set_qty') else 0
             add_qty = int(jdata.get('add_qty')) if jdata.get('add_qty') else 1
-            sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id)
+            sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id, website=website)
             if sale_order.state != 'draft':
                 request.session['sale_order_id'] = None
-                sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id, force_create=True)
+                sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id, force_create=True, website=website)
             if product_id:
                 sale_order._cart_update(
                     product_id=int(product_id),
