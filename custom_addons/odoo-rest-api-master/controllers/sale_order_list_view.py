@@ -21,6 +21,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
     if order_line_id:
         solObject = solObject.search([('order_id','=',order_id)])
     if solObject:
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         for rec in solObject:
             saleOrderLine.append({
                 'id': rec.id if rec.id != False else "",
@@ -34,7 +35,8 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'tax_id': [{i.id:i.name} for i in rec.tax_id],
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else "",
                 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
-                'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
+                'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else "",
+                "image": base_url.value + '/web/image/product.product/' + str(rec.id) + "/image_1920",
             })
             count += rec.product_uom_qty
         request.session['count'] = count
