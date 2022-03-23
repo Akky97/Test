@@ -36,11 +36,10 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else "",
                 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else "",
-                "image": base_url.value + '/web/image/product.product/' + str(rec.id) + "/image_1920",
+                "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
             })
             count += rec.product_uom_qty
         request.session['count'] = count
-    print('sale order line details', saleOrderLine)
     return saleOrderLine
 
 
