@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 
 def get_sale_order_line(order_id=None, order_line_id = None):
-    saleOrderLine = {}
+    saleOrderLine = []
     count = 0
     solObject = request.env['sale.order.line'].sudo()
     if order_id:
@@ -22,7 +22,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
         solObject = solObject.search([('order_id','=',order_id)])
     if solObject:
         for rec in solObject:
-            saleOrderLine[rec.id] = {
+            saleOrderLine.append({
                 'id': rec.id if rec.id != False else "",
                 'name': rec.name if rec.name != False else "",
                 'product_id': rec.product_id.id if rec.product_id.id != False else "",
@@ -35,9 +35,9 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else "",
                 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
-            }
-            count += saleOrderLine[rec.id]['quantity']
-        saleOrderLine['count'] = count
+            })
+            count += rec.product_uom_qty
+        request.session['count'] = count
     print('sale order line details', saleOrderLine)
     return saleOrderLine
 
@@ -282,23 +282,23 @@ class WebsiteSale(WebsiteSale):
                 website=True)
     def get_cart(self, **params):
         try:
-            sale_order = {}
+            sale_order = []
             website = request.website
             partner = request.env.user.partner_id
-            # order = sale_get_order(self=request.website, partner_id=partner.id)
             order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
             if order and order.order_line:
-                sale_order = {
+                sale_order.append({
                     'id': order.id,
                     'order_line': get_sale_order_line(order_id=order.id),
                     'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else "",
                     'amount_tax': order.amount_tax if order.amount_tax != False else "",
                     'amount_total': order.amount_total if order.amount_total != False else "",
-                    'symbol': order.currency_id.symbol if order.currency_id.symbol != False else ""
-                }
+                    'symbol': order.currency_id.symbol if order.currency_id.symbol != False else "",
+                    'count': request.session.get('count') or 0
+                })
             else:
                 message = {"message": "Cart is Empty", "status": 200}
                 return return_Response(message)

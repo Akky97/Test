@@ -78,11 +78,11 @@ class OdooAPI(http.Controller):
     @http.route(['/api/v1/c/res.partner.view/', '/api/v1/c/res.partner.view/<id>/'], type='http', auth='public',
                 methods=['PUT'], csrf=False, cors='*')
     def profile_detail_update(self, id=None, **params):
+        model = 'res.partner'
         try:
             if not id:
                 error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            model = 'res.partner'
             records = request.env[model].sudo().search([('id', '=', id)])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
