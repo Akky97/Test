@@ -107,7 +107,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 "write_uid": rec.write_uid.id if rec.write_uid.id != False else '',
                 "write_name": rec.write_uid.name if rec.write_uid.name != False else '',
                 "variants": variant,
-                "stock": rec.product_id.qty_avail,
+                "stock": rec.product_id.qty_available,
                 'type': rec.product_id.type, 'sale_price': rec.product_id.list_price, "price": rec.product_id.standard_price,
                 'description': rec.product_id.description if rec.product_id.description != False else '',
                 'short_desc': rec.product_id.description_sale if rec.product_id.description_sale != False else '',
