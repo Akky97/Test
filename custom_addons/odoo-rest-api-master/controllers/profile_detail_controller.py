@@ -81,18 +81,26 @@ class OdooAPI(http.Controller):
         model = 'res.partner'
         try:
             if not id:
-                error = {"message": "Partner id is not present in the request", "status": 400}
+                error = {"message": "id is not present in the request", "status": 400}
                 return return_Response_error(error)
             records = request.env[model].sudo().search([('id', '=', id)])
+
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
         try:
+            dict = {}
             res_id = request.env['ir.attachment'].sudo()
             res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                            ('res_field', '=', 'image_1920'),
                                            ('res_id', 'in', [id])])
             res_id.sudo().write({"public": True})
+            if records:
+                for rec in records:
+                    sale = request.env['sale.order'].sudo().search([('partner_id','=',rec.id),('partner_invoice_id','=',rec.id),('partner_shipping_id','=',rec.id)])
+                    if sale:
+                        msg = {"message": "Can not Update Your address Because it's in use.", "status_code": 400}
+                        return return_Response_error(msg)
 
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             try:
@@ -109,30 +117,72 @@ class OdooAPI(http.Controller):
                         'datas': image,
                         'type': 'binary'
                     })
+                dict['name'] = jdata.get('name') or ''
+                dict['email'] = jdata.get('email') or ''
+                dict['mobile'] = jdata.get('mobile') or ''
+                dict['phone'] = jdata.get('phone') or ''
+                dict['street'] = jdata.get('street') or ''
+                dict['street2'] = jdata.get('street2') or ''
+                dict['city'] = jdata.get('city') or ''
+                if jdata.get('state_id'):
+                    dict['state_id'] = int(jdata.get('state_id'))
+                if jdata.get('country_id'):
+                    dict['country_id'] = int(jdata.get('country_id'))
+                dict['zip'] = jdata.get('zip') or ''
                 for rec in records:
                     if jdata.get('country_id'):
-                        country_id = request.env['res.country'].sudo().search([('id', '=', jdata.get('country_id'))])
+                        country_id = request.env['res.country'].sudo().search([('id', '=', int(jdata.get('country_id')))])
                     else:
                         country_id = rec.country_id
 
-                    if jdata.get('mobile'):
-                        my_number = phonenumbers.parse(str(jdata.get('mobile')), country_id.code)
+                    if dict.get('mobile'):
+                        my_number = phonenumbers.parse(str(dict.get('mobile')), country_id.code)
                         if not phonenumbers.is_valid_number(my_number):
                             error = {"message": "Please Enter Correct Mobile Number", "status": 400}
                             return return_Response_error(error)
-                    if jdata.get('phone'):
-                        my_number = phonenumbers.parse(str(jdata.get('phone')), country_id.code)
+                    if dict.get('phone'):
+                        my_number = phonenumbers.parse(str(dict.get('phone')), country_id.code)
                         if not phonenumbers.is_valid_number(my_number):
                             error = {"message": "Please Enter Correct Phone Number", "status": 400}
                             return return_Response_error(error)
 
-                    rec.sudo().write(jdata)
+                    rec.sudo().write(dict)
             # End here
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
             "result": "Record Updated Successfully", "status": 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route(['/api/v1/c/res.partner.view/', '/api/v1/c/res.partner.view/<id>/'], type='http', auth='public',
+                methods=['DELETE'], csrf=False, cors='*')
+    def profile_detail_delete(self, id=None, **params):
+        model = 'res.partner'
+        try:
+            if not id:
+                error = {"message": "id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            records = request.env[model].sudo().search([('id', '=', id)])
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            if records:
+                order = request.env['sale.order'].sudo().search([('partner_id', '=', id)])
+                if order:
+                    error = {"message": "You cannot delete this address", "status": 400}
+                    return return_Response_error(error)
+                records.sudo().unlink()
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": "Record Deleted Successfully", "status": 200
         }
         return return_Response(res)
 
