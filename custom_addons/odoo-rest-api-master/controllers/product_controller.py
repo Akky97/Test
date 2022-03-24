@@ -483,6 +483,20 @@ class OdooAPI(http.Controller):
         if "country_id" in params and params.get('country_id'):
             country_id = int(params.get('country_id'))
 
+        if "type" in params and params['type'] == 'popularCategory':
+            rec = request.env[model].sudo().search([])
+            for j in rec:
+                total_count = 0
+                dom = [('public_categ_ids', 'in', [j.id]), ('is_published', '=', True)]
+                domain = dom.append(('country_id', '=', country_id)) if country_id else dom
+                search_product = request.env['product.product'].sudo().search(domain)
+                for res in search_product:
+                    _compute_sales_count(self=res)
+                    res.sale_count_pando = res.sales_count
+                    total_count += res.sale_count_pando
+                j.total_sold_count = total_count
+            orders = 'total_sold_count DESC'
+            limit = 6
         records = request.env[model].sudo().search([], order=orders, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -501,7 +515,7 @@ class OdooAPI(http.Controller):
                              "image": base_url.value + '/web/image/product.public.category/' + str(i.id) + "/image_1920",
                              'parent_id': i.parent_id.id if i.parent_id.id != False else '',
                              'parent_name': i.parent_id.name if i.parent_id.name != False else '',
-                             "product_count": search_count})
+                             "product_count": search_count, 'total_product_sale_count': i.total_sold_count})
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
