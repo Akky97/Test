@@ -3,6 +3,7 @@ import math
 import logging
 import requests
 import ast
+import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
 from .serializers import Serializer
@@ -304,6 +305,29 @@ def sale_get_order(self, force_create=False, code=None, update_pricelist=False, 
                     sale_order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
 
         return sale_order
+
+
+def create_new_address(params):
+    value = {}
+    partnerObj = request.env['res.partner'].sudo()
+    if all(item in params.keys() for item in ["name", "street", "city", "country_id", "state_id", "zip"]):
+        country_id = request.env['res.country'].sudo().search([('id','=',int(params['country_id']))])
+        if country_id:
+            if "mobile" in params and "email" in params:
+                res = partnerObj.search([('mobile', '=', params['mobile']),('email', '=', params['email'])])
+                if res:
+                    value["message"] = "Email Or Mobile Number Already Exists"
+                else:
+                    my_number = phonenumbers.parse(str(params['mobile']), country_id.code)
+                    if not phonenumbers.is_valid_number(my_number):
+                        value["message"] = "Please Enter Correct Mobile Number"
+        if 'message' not in value:
+            rec = partnerObj.create(params)
+            if rec:
+                value['id'] = rec.id
+    else:
+        value["message"] = "Some Required Fields Are Empty"
+    return value
 
 
 class SaleOrderController(http.Controller):
@@ -608,6 +632,64 @@ class WebsiteSale(WebsiteSale):
         res = {
             "count": len(temp),
             "result": temp
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route(['/api/v1/c/add_address'], type='http', auth='public', methods=['POST'], csrf=False, cors='*',
+                website=True)
+    def add_address(self, **params):
+        try:
+            dict = {}
+            website = request.website
+            partner = request.env.user.partner_id
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+                                                             ('partner_id', '=', partner.id),
+                                                             ('website_id', '=', website.id)],
+                                                            order='write_date DESC', limit=1)
+
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('name') or not jdata.get('street') or not jdata.get('city') or not jdata.get(
+                        'country_id') or not jdata.get('state_id') or not jdata.get('zip'):
+                    msg = {"message": "Some Required Fields are Empty.", "status_code": 200}
+                    return return_Response(msg)
+                dict['name'] = jdata.get('name') or ''
+                dict['email'] = jdata.get('email') or ''
+                dict['mobile'] = jdata.get('mobile') or ''
+                dict['street'] = jdata.get('street') or ''
+                dict['street2'] = jdata.get('street2') or ''
+                dict['city'] = jdata.get('city') or ''
+                if 'state_id' in jdata and jdata.get('state_id'):
+                    dict['state_id'] = int(jdata.get('state_id'))
+                if 'country_id' in jdata and jdata.get('country_id'):
+                    dict['country_id'] = int(jdata.get('country_id'))
+                dict['zip'] = jdata.get('zip')
+                dict['type'] = jdata.get('type') or 'delivery'
+            if order:
+                if order.partner_id.id != request.website.user_id.sudo().partner_id.id:
+                    dict['parent_id'] = order.partner_id.id
+                    rec = create_new_address(dict)
+                    if 'id' in rec:
+                        order.sudo().write({'partner_shipping_id': rec['id']})
+                    if 'message' in rec:
+                        message = {"message": rec['message'], "status": 200}
+                        return return_Response(message)
+            else:
+                if request.env.user.partner_id.id != request.website.user_id.sudo().partner_id.id:
+                    dict['parent_id'] = request.env.user.partner_id.id
+                    rec = create_new_address(dict)
+                    if 'message' in rec:
+                        message = {"message": rec['message'], "status": 200}
+                        return return_Response(message)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": 'New Address Created Successfully', 'status': 200
         }
         return return_Response(res)
 
