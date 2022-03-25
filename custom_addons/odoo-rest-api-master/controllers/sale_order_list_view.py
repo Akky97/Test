@@ -636,9 +636,9 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route(['/api/v1/c/add_address'], type='http', auth='public', methods=['POST'], csrf=False, cors='*',
+    @http.route(['/api/v1/c/add_shipping_address'], type='http', auth='public', methods=['POST'], csrf=False, cors='*',
                 website=True)
-    def add_address(self, **params):
+    def add_shipping_address(self, **params):
         try:
             dict = {}
             website = request.website
@@ -669,6 +669,12 @@ class WebsiteSale(WebsiteSale):
                     dict['country_id'] = int(jdata.get('country_id'))
                 dict['zip'] = jdata.get('zip')
                 dict['type'] = jdata.get('type') or 'delivery'
+            else:
+                res = {
+                    "message": "Parameter's are Empty.", "status": 400
+                }
+                return return_Response_error(res)
+
             if order:
                 if order.partner_id.id != request.website.user_id.sudo().partner_id.id:
                     dict['parent_id'] = order.partner_id.id
@@ -678,13 +684,70 @@ class WebsiteSale(WebsiteSale):
                     if 'message' in rec:
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
+                else:
+                    res = {
+                        "message": "Please Login First.", "status": 400
+                    }
+                    return return_Response_error(res)
+
             else:
+                res = {
+                    "message": "something Went Wrong.", "status": 400
+                }
+                return return_Response_error(res)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": 'New Address Created Successfully', 'status': 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route(['/api/v1/c/add_address'], type='http', auth='public', methods=['POST'], csrf=False, cors='*',
+                website=True)
+    def add_address(self, **params):
+        try:
+            dict = {}
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('name') or not jdata.get('street') or not jdata.get('city') or not jdata.get(
+                        'country_id') or not jdata.get('state_id') or not jdata.get('zip'):
+                    msg = {"message": "Some Required Fields are Empty.", "status_code": 200}
+                    return return_Response(msg)
+                dict['name'] = jdata.get('name') or ''
+                dict['email'] = jdata.get('email') or ''
+                dict['mobile'] = jdata.get('mobile') or ''
+                dict['street'] = jdata.get('street') or ''
+                dict['street2'] = jdata.get('street2') or ''
+                dict['city'] = jdata.get('city') or ''
+                if 'state_id' in jdata and jdata.get('state_id'):
+                    dict['state_id'] = int(jdata.get('state_id'))
+                if 'country_id' in jdata and jdata.get('country_id'):
+                    dict['country_id'] = int(jdata.get('country_id'))
+                dict['zip'] = jdata.get('zip')
+                dict['type'] = jdata.get('type') or 'delivery'
+
                 if request.env.user.partner_id.id != request.website.user_id.sudo().partner_id.id:
                     dict['parent_id'] = request.env.user.partner_id.id
                     rec = create_new_address(dict)
                     if 'message' in rec:
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
+                else:
+                    res = {
+                        "message": "Please Login First.", "status": 400
+                    }
+                    return return_Response_error(res)
+
+            else:
+                res = {
+                    "message": "Parameter's are Empty.", "status": 400
+                }
+                return return_Response_error(res)
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)

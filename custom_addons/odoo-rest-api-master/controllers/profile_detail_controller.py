@@ -170,13 +170,13 @@ class OdooAPI(http.Controller):
             if not id:
                 error = {"message": "id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            records = request.env[model].sudo().search([('id', '=', id)])
+            records = request.env[model].sudo().search([('id', '=', int(id))])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
         try:
             if records:
-                order = request.env['sale.order'].sudo().search(['|', '|', ('partner_id', '=', id), ('partner_invoice_id', '=', id), ('partner_shipping_id', '=', id)])
+                order = request.env['sale.order'].sudo().search(['|', '|', ('partner_id', '=', int(id)), ('partner_invoice_id', '=', int(id)), ('partner_shipping_id', '=', int(id))])
                 if order:
                     error = {"message": "You cannot delete this address", "status": 400}
                     return return_Response_error(error)
