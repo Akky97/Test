@@ -699,7 +699,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'New Address Created Successfully', 'status': 200
+            "message": 'New Address Created Successfully', 'status': 200
         }
         return return_Response(res)
 
@@ -752,7 +752,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'New Address Created Successfully', 'status': 200
+            "message": 'New Address Created Successfully', 'status': 200
         }
         return return_Response(res)
 
