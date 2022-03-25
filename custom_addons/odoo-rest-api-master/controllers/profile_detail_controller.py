@@ -122,21 +122,22 @@ class OdooAPI(http.Controller):
                         'datas': image,
                         'type': 'binary'
                     })
-                dict['name'] = jdata.get('name') or ''
-                dict['email'] = jdata.get('email') or ''
-                dict['mobile'] = jdata.get('mobile') or ''
-                dict['phone'] = jdata.get('phone') or ''
-                dict['street'] = jdata.get('street') or ''
-                dict['street2'] = jdata.get('street2') or ''
-                dict['city'] = jdata.get('city') or ''
+                dict['name'] = jdata.get('name') or records.name or ''
+                dict['email'] = jdata.get('email') or records.email or ''
+                dict['mobile'] = jdata.get('mobile') or records.mobile or ''
+                dict['phone'] = jdata.get('phone') or records.phone or ''
+                dict['street'] = jdata.get('street') or records.street or ''
+                dict['street2'] = jdata.get('street2') or records.street2 or ''
+                dict['city'] = jdata.get('city') or records.city or ''
                 if jdata.get('state_id'):
                     dict['state_id'] = int(jdata.get('state_id'))
                 if jdata.get('country_id'):
                     dict['country_id'] = int(jdata.get('country_id'))
-                dict['zip'] = jdata.get('zip') or ''
+                dict['zip'] = jdata.get('zip') or records.zip or ''
                 for rec in records:
                     if jdata.get('country_id'):
-                        country_id = request.env['res.country'].sudo().search([('id', '=', int(jdata.get('country_id')))])
+                        country_id = request.env['res.country'].sudo().search(
+                            [('id', '=', int(jdata.get('country_id')))])
                     else:
                         country_id = rec.country_id
 
