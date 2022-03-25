@@ -176,7 +176,7 @@ class OdooAPI(http.Controller):
             return error_response(e, msg)
         try:
             if records:
-                order = request.env['sale.order'].sudo().search(['|', ('partner_id', '=', id), '|', ('partner_invoice_id', '=', id), ('partner_shipping_id', '=', id)])
+                order = request.env['sale.order'].sudo().search(['|', '|', ('partner_id', '=', id), ('partner_invoice_id', '=', id), ('partner_shipping_id', '=', id)])
                 if order:
                     error = {"message": "You cannot delete this address", "status": 400}
                     return return_Response_error(error)
