@@ -12,3 +12,4 @@ from . import sale_order_list_view
 from . import pando_banner
 from . import website_category
 from . import payment_controllers
+from . import apis_for_apk

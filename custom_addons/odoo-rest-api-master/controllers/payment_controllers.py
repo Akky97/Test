@@ -5,11 +5,37 @@ from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 import datetime
+import base64
 from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
 import stripe
 SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tHoDtKICnLlNEc6GEpGdXVFw3QBetvkGW00rsDPcDUV'
 stripe.api_key = SECRET_KEY
+
+
+def create_checkout_session(jdata):
+    checkout_session = {}
+    if jdata:
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        if 'amount' in jdata and jdata.get('amount'):
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': jdata.get('currency') or 'usd',
+                            'product_data': {
+                                'name': jdata.get('reference') or 'Test Product'
+                            },
+                            'unit_amount': int(jdata.get('amount')) * 100,
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                success_url=base_url.value + '/success.html',
+                cancel_url=base_url.value + '/cancel.html',
+            )
+    return checkout_session
 
 
 def payment_validate(transaction_id,order):
@@ -80,37 +106,26 @@ def create_transaction(acquirer_id):
 
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
-    invoice = order._create_invoices(final=True)
-    if invoice:
-        res = invoice.action_post()
-        lang = request.env.user.lang
-        template = request.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
-        if template:
-            lang = template._render_lang(invoice.ids)[invoice.id]
-
-        if res:
-            ctx = dict(
-                default_model='account.move',
-                default_res_id=invoice.id,
-                default_res_model='account.move',
-                default_use_template=bool(template),
-                default_template_id=template and template.id or False,
-                default_composition_mode='comment',
-                mark_invoice_as_sent=True,
-                custom_layout="mail.mail_notification_paynow",
-                model_description=request.with_context(lang=lang).type_name,
-                force_email=True
-            )
-            result = request.env['account.invoice.send'].sudo().with_context(context=ctx).create()
-            result.send_and_print_action()
-        # res = request.env['account.payment.register'].with_context(active_ids=invoice.ids,active_model='account.move').create({
-        #     'journal_id': invoice.journal_id.id,
-        #     'amount': invoice.amount_total,
-        #     'payment_date': datetime.datetime.now().date()
-        # })
-        # # res = invoice.action_register_payment()
-        # print(res)
-        # res.action_create_payments()
+    if res:
+        invoice = order._create_invoices(final=True)
+        if invoice:
+            res = invoice.action_post()
+            template = request.env.ref('odoo-rest-api-master.email_template_edi_invoice_extra')
+            data, data_format = request.env.ref('account.account_invoices').sudo()._render_qweb_pdf([invoice.id])
+            data_record = base64.b64encode(data)
+            if template:
+                ir_values = {
+                    'name': "Invoice Report",
+                    'type': 'binary',
+                    'datas': data_record,
+                    'store_fname': data_record,
+                    'mimetype': 'application/pdf',
+                    'res_model': 'account.move',
+                    'res_id': invoice.id,
+                }
+                data_id = request.env['ir.attachment'].create(ir_values)
+                template.attachment_ids = [(6,0, data_id.ids)]
+                template.sudo().send_mail(invoice.id, force_send=True)
 
 def updatePriceList(pricelist, order):
     if order and pricelist:
@@ -133,7 +148,6 @@ def checkout_redirection(order, tx):
     # if tx and tx.state != 'draft':
     #     redirectUrl = f'/shop/payment/confirmation/{order.id}'
     return redirectUrl
-
 
 def _get_mandatory_billing_fields(country_id=False):
     fields = ["name", "email", "street", "city", "country_id"]
@@ -387,11 +401,12 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/pay_now', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
+    @http.route('/api/v1/c/pay_now', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
                 website=True)
     def pay_now(self, **params):
         try:
-            payTransferData ={}
+            result={}
+            finalResult = {}
             try:
                 jdata = json.loads(request.httprequest.stream.read())
             except:
@@ -400,6 +415,12 @@ class WebsiteSale(WebsiteSale):
                 acquirer_id = jdata.get('acquirer_id') or False
                 if acquirer_id:
                     payTransferData = create_transaction(acquirer_id)
+                    finalResult['transactionId'] = payTransferData['id']
+                    if payTransferData:
+                        finalResult['transactionId'] = payTransferData.get('id')
+                        result = create_checkout_session(payTransferData)
+                        if result:
+                            finalResult['url'] = result.url
                 else:
                     msg = {"message": "Payment Method Is Missing", "status_code": 400}
                     return return_Response_error(msg)
@@ -409,58 +430,58 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": payTransferData, 'status':200
+            "result": finalResult, 'status':200
         }
         return return_Response(res)
 
-    @validate_token
-    @http.route('/api/v1/c/create_checkout_session', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
-                website=True)
-    def create_checkout_session(self, **params):
-        try:
-            checkout_session = {}
-            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-            try:
-                jdata = json.loads(request.httprequest.stream.read())
-            except:
-                jdata = {}
-            if jdata:
-                if 'amount' in jdata and jdata.get('amount'):
-                    checkout_session = stripe.checkout.Session.create(
-                        line_items=[
-                            {
-                                'price_data':{
-                                    'currency': jdata.get('currency') or 'usd',
-                                    'product_data':{
-                                        'name': jdata.get('reference') or 'Test Product'
-                                    },
-                                    'unit_amount': int(jdata.get('amount'))*100,
-                                },
-                                'quantity': 1,
-                            },
-                        ],
-                        mode='payment',
-                        success_url=base_url.value + '/success.html',
-                        cancel_url=base_url.value + '/cancel.html',
-                    )
-            else:
-                msg = {"message": "Something Went Wrong.", "status_code": 400}
-                return return_Response_error(msg)
-            if checkout_session:
-                res = {
-                    "redirectUrl": checkout_session.url,"data": checkout_session, 'status': 200
-                }
-                return return_Response(res)
-            else:
-                msg = {"message": "Something Went Wrong.", "status_code": 400}
-                return return_Response_error(msg)
-
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
-        # res = {
-        #     "message": 'Success', 'status': 200
-        # }
-        # return return_Response(res)
+    # @validate_token
+    # @http.route('/api/v1/c/create_checkout_session', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
+    #             website=True)
+    # def create_checkout_session(self, **params):
+    #     try:
+    #         checkout_session = {}
+    #         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+    #         try:
+    #             jdata = json.loads(request.httprequest.stream.read())
+    #         except:
+    #             jdata = {}
+    #         if jdata:
+    #             if 'amount' in jdata and jdata.get('amount'):
+    #                 checkout_session = stripe.checkout.Session.create(
+    #                     line_items=[
+    #                         {
+    #                             'price_data':{
+    #                                 'currency': jdata.get('currency') or 'usd',
+    #                                 'product_data':{
+    #                                     'name': jdata.get('reference') or 'Test Product'
+    #                                 },
+    #                                 'unit_amount': int(jdata.get('amount'))*100,
+    #                             },
+    #                             'quantity': 1,
+    #                         },
+    #                     ],
+    #                     mode='payment',
+    #                     success_url=base_url.value + '/success.html',
+    #                     cancel_url=base_url.value + '/cancel.html',
+    #                 )
+    #         else:
+    #             msg = {"message": "Something Went Wrong.", "status_code": 400}
+    #             return return_Response_error(msg)
+    #         if checkout_session:
+    #             res = {
+    #                 "redirectUrl": checkout_session.url,"data": checkout_session, 'status': 200
+    #             }
+    #             return return_Response(res)
+    #         else:
+    #             msg = {"message": "Something Went Wrong.", "status_code": 400}
+    #             return return_Response_error(msg)
+    #
+    #     except (SyntaxError, QueryFormatError) as e:
+    #         return error_response(e, e.msg)
+    #     # res = {
+    #     #     "message": 'Success', 'status': 200
+    #     # }
+    #     # return return_Response(res)
 
     @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
                 website=True)
