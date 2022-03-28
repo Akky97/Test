@@ -499,7 +499,10 @@ class WebsiteSale(WebsiteSale):
                 jdata = {}
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
-                    create_invoice(int(jdata.get('transaction_id')), order)
+                    invoice = create_invoice(int(jdata.get('transaction_id')), order)
+                    print("invoice: ", invoice)
+                    res = {"message": 'Success', 'status': 200}
+                    return return_Response(res)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
