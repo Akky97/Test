@@ -124,7 +124,7 @@ def create_invoice(transaction_id, order):
                     'res_model': 'account.move',
                     'res_id': invoice.id,
                 }
-                data_id = request.env['ir.attachment'].create(ir_values)
+                data_id = request.env['ir.attachment'].sudo().create(ir_values)
                 template.attachment_ids = [(6,0, data_id.ids)]
                 outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).smtp_user
                 template.email_from = outgoing_server_name
