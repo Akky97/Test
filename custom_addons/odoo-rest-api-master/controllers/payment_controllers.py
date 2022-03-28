@@ -485,10 +485,9 @@ class WebsiteSale(WebsiteSale):
 
     @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
                 website=True)
-    def confirm_order(self, **params):
+    def confirm_order_send_mail(self, **params):
         try:
             website = request.env['website'].sudo().browse(1)
-            # website = request.website
             partner = request.env.user.partner_id
             order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
@@ -498,16 +497,12 @@ class WebsiteSale(WebsiteSale):
                 jdata = json.loads(request.httprequest.stream.read())
             except:
                 jdata = {}
-            if jdata:
+            if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
-                    create_invoice(jdata.get('transaction_id'), order)
+                    create_invoice(int(jdata.get('transaction_id')), order)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        # res = {
-        #     "message": 'success', 'status':200
-        # }
-        # return return_Response(res)
 
