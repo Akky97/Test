@@ -32,8 +32,8 @@ def create_checkout_session(jdata):
                     },
                 ],
                 mode='payment',
-                success_url='http://localhost:4400/shop/success',
-                cancel_url='http://localhost:4400/shop/cancel',
+                success_url='https://pandostores/shop/success',
+                cancel_url='https://pandostores/shop/cancel',
             )
     return checkout_session
 
