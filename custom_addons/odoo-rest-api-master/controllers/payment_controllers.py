@@ -488,20 +488,26 @@ class WebsiteSale(WebsiteSale):
     #     # }
     #     # return return_Response(res)
 
+    @validate_token
     @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
                 website=True)
     def confirm_order_send_mail(self, **params):
         try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        try:
             website = request.env['website'].sudo().browse(1)
-            partner = request.env.user.partner_id
+            if 'partner_id' in jdata:
+                partner = request.env['res.partner'].sudo().search([('id', '=', int(jdata.get('partner_id')))])
+            else:
+                partner = request.env.user.partner_id
+            print("request.env.user.partner_id-------", request.env.user.partner_id)
+            print("partner", partner)
             order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
-            try:
-                jdata = json.loads(request.httprequest.stream.read())
-            except:
-                jdata = {}
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
                     invoice = create_invoice(int(jdata.get('transaction_id')), order)
