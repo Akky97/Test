@@ -24,11 +24,11 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'name': rec.name if rec.name != False else "",
                 'product_id': rec.product_id.id if rec.product_id.id != False else "",
                 'product_name': rec.product_id.name if rec.product_id.name != False else "",
-                'price_unit': rec.price_unit if rec.price_unit != False else "",
-                'price_subtotal': rec.price_subtotal if rec.price_subtotal != False else "",
-                'price_tax': rec.price_tax if rec.price_tax != False else "",
-                'price_total': rec.price_total if rec.price_total != False else "",
-                'quantity': rec.product_uom_qty if rec.product_uom_qty != False else "",
+                'price_unit': rec.price_unit if rec.price_unit != False else 0.0,
+                'price_subtotal': rec.price_subtotal if rec.price_subtotal != False else 0.0,
+                'price_tax': rec.price_tax if rec.price_tax != False else 0.0,
+                'price_total': rec.price_total if rec.price_total != False else 0.0,
+                'quantity': rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
                 "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 # 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
@@ -58,11 +58,11 @@ class WebsiteSale(WebsiteSale):
                 sale_order.append({
                     'id': order.id,
                     'order_line': get_sale_order_line(order_id=order.id),
-                    'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else "",
-                    'amount_tax': order.amount_tax if order.amount_tax != False else "",
-                    'amount_total': order.amount_total if order.amount_total != False else "",
+                    'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else 0.0,
+                    'amount_tax': order.amount_tax if order.amount_tax != False else 0.0,
+                    'amount_total': order.amount_total if order.amount_total != False else 0.0,
                     'symbol': order.currency_id.symbol if order.currency_id.symbol != False else "",
-                    'count': request.session.get('count')
+                    'count': int(request.session.get('count'))
                 })
             else:
                 message = {"message": "Cart is Empty", "status": 200}
@@ -109,7 +109,6 @@ class WebsiteSale(WebsiteSale):
                                  'categ_id': i.categ_id.id if i.categ_id.id != False else '',
                                  'categ_name': i.categ_id.name if i.categ_id.name != False else '',
                                  "category": category}
-
                                 )
 
         except (SyntaxError, QueryFormatError) as e:
