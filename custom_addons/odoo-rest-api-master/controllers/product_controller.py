@@ -41,7 +41,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view(self, **params):
         try:
-            domain = [('is_published', '=', True)]
+            domain = [('is_published', '=', True),('type','=','product')]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
@@ -307,7 +307,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/categ/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view_by_categ(self, **params):
         try:
-            domain = [('is_published', '=', True)]
+            domain = [('is_published', '=', True),('type','=','product')]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
@@ -487,7 +487,7 @@ class OdooAPI(http.Controller):
             rec = request.env[model].sudo().search([])
             for j in rec:
                 total_count = 0
-                dom = [('public_categ_ids', 'in', [j.id]), ('is_published', '=', True)]
+                dom = [('public_categ_ids', 'in', [j.id]), ('is_published', '=', True), ('type', '=', 'product')]
                 domain = dom.append(('country_id', '=', country_id)) if country_id else dom
                 search_product = request.env['product.product'].sudo().search(domain)
                 for res in search_product:
@@ -507,7 +507,7 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
-                domain = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True)]
+                domain = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True), ('type', '=', 'product')]
                 if country_id:
                     domain.append(('country_id', '=', country_id))
                 search_count = request.env['product.product'].sudo().search_count(domain)
@@ -531,7 +531,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.search', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_search(self, **params):
         try:
-            domain = [('is_published', '=', True)]
+            domain = [('is_published', '=', True), ('type', '=', 'product')]
             categ_id = []
             if 'search' in params:
                 model = 'product.public.category'
@@ -543,16 +543,16 @@ class OdooAPI(http.Controller):
                             domain = ['&', ('is_published', '=', True), '&',
                                       ('country_id', '=', country_id), '|',
                                       ('name', 'ilike', params['search']),
-                                      ('public_categ_ids', 'in', categ_id)]
+                                      ('public_categ_ids', 'in', categ_id), ('type', '=', 'product')]
                         else:
                             domain = ['&', ('is_published', '=', True), '|', ('name', 'ilike', params['search']),
-                                      ('public_categ_ids', 'in', categ_id)]
+                                      ('public_categ_ids', 'in', categ_id), ('type', '=', 'product')]
                     else:
                         if country_id:
                             domain = [('is_published', '=', True), ('country_id', '=', country_id),
-                                      ('name', 'ilike', params['search'])]
+                                      ('name', 'ilike', params['search']), ('type', '=', 'product')]
                         else:
-                            domain = [('is_published', '=', True), ('name', 'ilike', params['search'])]
+                            domain = [('is_published', '=', True), ('name', 'ilike', params['search']), ('type', '=', 'product')]
 
                 except KeyError as e:
                     msg = "The model `%s` does not exist." % model

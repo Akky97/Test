@@ -307,7 +307,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "redirect": 'success',"status":200
+            "redirect": 'success', "status": 200
         }
         return return_Response(res)
 

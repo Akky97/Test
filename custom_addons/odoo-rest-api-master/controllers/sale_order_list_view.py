@@ -12,6 +12,17 @@ from .error_or_response_parser import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 _logger = logging.getLogger(__name__)
 
+def check_product_availablity(order, product_id, qty):
+    avQty = 0
+    message = False
+    product_id = request.env['product.product'].sudo().search([('id','=',int(product_id))])
+    if product_id.type == 'product':
+        virtual_qty = product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
+        if qty > virtual_qty:
+            avQty = virtual_qty - qty
+        if avQty < 0:
+            message = f'You ask for {qty} products but only {virtual_qty} is available'
+    return message
 
 def get_sale_order_line(order_id=None, order_line_id = None):
     saleOrderLine = []
@@ -433,6 +444,15 @@ class WebsiteSale(WebsiteSale):
                 request.session['sale_order_id'] = None
                 sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id, force_create=True, website=website)
             if product_id:
+                if set_qty > 0:
+                    qty = set_qty
+                else:
+                    qty = add_qty
+                stockMessage = check_product_availablity(sale_order,product_id,qty)
+                if stockMessage:
+                    error = {"message": stockMessage, "status": 400}
+                    return return_Response_error(error)
+
                 sale_order._cart_update(
                     product_id=int(product_id),
                     add_qty=add_qty,
