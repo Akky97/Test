@@ -10,6 +10,8 @@ def get_sale_order_line(order_id=None, order_line_id = None):
 
     saleOrderLine = []
     count = 0
+    base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+
     solObject = request.env['sale.order.line'].sudo()
     if order_id:
         solObject = solObject.search([('order_id','=',order_id)])
@@ -27,6 +29,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'price_tax': rec.price_tax if rec.price_tax != False else "",
                 'price_total': rec.price_total if rec.price_total != False else "",
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else "",
+                "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 # 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
             })
@@ -70,3 +73,49 @@ class WebsiteSale(WebsiteSale):
         res = {"result": sale_order}
         return return_Response(res)
 
+    @validate_token
+    @http.route('/api/v1/apk/product.wishlist', type='http', auth='public', methods=['GET'], csrf=False, cors='*', website=True)
+    def get_wishlistlist_apk(self, **params):
+        try:
+            wishList = []
+            if "partner_id" not in params:
+                error = {"message": "Partner id is not present in request", "status": 400}
+                return return_Response_error(error)
+            partner_id = int(params["partner_id"])
+            model = 'product.wishlist'
+            records = request.env[model].sudo().search([('partner_id', '=', partner_id)])
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        try:
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            temp = []
+            category = []
+            if records:
+                for rec in records:
+                    i = request.env['product.product'].sudo().search([('id', '=', rec.product_id.id)])
+                    for z in i.public_categ_ids:
+                        category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
+                                         "image": base_url.value + '/web/image/product.public.category/' + str(
+                                             z.id) + "/image_1920", })
+
+                    temp.append({"id": i.id, "name": i.name,
+                                 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                 'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
+                                 'description': i.description if i.description != False else '',
+                                 "stock": i.qty_available,
+                                 "sold": i.sales_count,
+                                 "review": 2,
+                                 "rating": 3,
+                                 'categ_id': i.categ_id.id if i.categ_id.id != False else '',
+                                 'categ_name': i.categ_id.name if i.categ_id.name != False else '',
+                                 "category": category}
+
+                                )
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "result": temp
+        }
+        return return_Response(res)
