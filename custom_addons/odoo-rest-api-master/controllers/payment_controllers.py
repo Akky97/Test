@@ -104,9 +104,18 @@ def create_transaction(acquirer_id):
     }
     return value
 
+def dispatch_order(order):
+    stockPicking = request.env['stock.picking'].sudo().search([('sale_id','=', order.id)], limit=1)
+    if stockPicking:
+        # stockMove = request.env['stock.move'].sudo().search([('picking_id','=',stockPicking.id)])
+        stockMoveLine = request.env['stock.move.line'].sudo().search([('picking_id','=',stockPicking.id)])
+        for rec in stockMoveLine:
+            rec.sudo().write({'qty_done':rec.product_uom_qty})
+        stockPicking.button_validate()
 
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
+    result = dispatch_order(order)
     if res:
         invoice = order._create_invoices(final=True)
         if invoice:
@@ -502,8 +511,6 @@ class WebsiteSale(WebsiteSale):
                 partner = request.env['res.partner'].sudo().search([('id', '=', int(jdata.get('partner_id')))])
             else:
                 partner = request.env.user.partner_id
-            print("request.env.user.partner_id-------", request.env.user.partner_id)
-            print("partner", partner)
             order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
@@ -511,7 +518,6 @@ class WebsiteSale(WebsiteSale):
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
                     invoice = create_invoice(int(jdata.get('transaction_id')), order)
-                    print("invoice: ", invoice)
                     res = {"message": 'Success', 'status': 200}
                     return return_Response(res)
             else:
