@@ -118,3 +118,50 @@ class WebsiteSale(WebsiteSale):
             "result": temp
         }
         return return_Response(res)
+
+    @validate_token
+    @http.route(['/api/v1/apk/get_address_apk','/api/v1/apk/get_address_apk/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*',
+                website=True)
+    def get_address_apk(self, id, **params):
+        model = 'res.partner'
+        temp = []
+        try:
+            if not id:
+                error = {"message": "Partner id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            model = 'res.partner'
+            records = request.env[model].sudo().search([('id', '=', id)])
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            res_id = request.env['ir.attachment'].sudo()
+            res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                           ('res_field', '=', 'image_1920'),
+                                           ('res_id', 'in', [id])])
+            res_id.sudo().write({"public": True})
+
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            for i in records:
+                temp.append({"id": i.id, "name": i.name, "phone": i.phone if i.phone != False else "",
+                             "mobile": i.mobile if i.mobile != False else "",
+                             "email": i.email if i.email != False else "",
+                             "street": i.street if i.street != False else "",
+                             "street2": i.street2 if i.street2 != False else "",
+                             "city": i.city if i.city != False else "",
+                             "state_id": i.state_id.id if i.state_id.id != False else "",
+                             "state_name": i.state_id.name if i.state_id.name != False else "",
+                             "zip": i.zip if i.zip != False else "",
+                             "country_id": i.country_id.id if i.country_id.id != False else "",
+                             "country_name": i.country_id.name if i.country_id.name != False else "",
+                             "image": base_url.value + '/web/image/' + str(res_id.id),
+                             "type": i.type,
+                             "website": i.website if i.website != False else ""})
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "result": temp
+        }
+        return return_Response(res)
+
