@@ -6,8 +6,7 @@ from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
 
 
-def get_sale_order_line(order_id=None, order_line_id = None):
-
+def get_sale_order_line(order_id=None, order_line_id=None):
     saleOrderLine = []
     count = 0
     base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -33,11 +32,12 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 # 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
             })
-            count += rec.product_uom_qty
+            count += 1
         request.session['count'] = count
         # saleOrderLine['count'] = count
     print('sale order line details', saleOrderLine)
     return saleOrderLine
+
 
 class WebsiteSale(WebsiteSale):
 
