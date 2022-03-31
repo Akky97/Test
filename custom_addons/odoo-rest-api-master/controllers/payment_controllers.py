@@ -31,9 +31,10 @@ def create_checkout_session(jdata):
                         'quantity': 1,
                     },
                 ],
+                customer_email=request.env.user.login,
                 mode='payment',
                 success_url='https://pandostores.com/shop/success',
-                cancel_url='https://pandostores.com/shop/cancel',
+                cancel_url='https://pandostores.com/shop/payment',
             )
     return checkout_session
 
