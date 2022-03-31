@@ -85,6 +85,10 @@ class OdooAPI(http.Controller):
         current_page = 1
 
         try:
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
+
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
@@ -157,7 +161,8 @@ class OdooAPI(http.Controller):
                              "write_uid":i.write_uid.id if i.write_uid.id != False else '',
                              "write_name":i.write_uid.name if i.write_uid.name != False else '',
                              "variants":variant,
-                             "stock":i.qty_available,
+                             # "stock":i.qty_available,
+                             "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(warehouse=warehouse.id).virtual_available>0 else 0.0,
                              "sm_pictures": image,
                              "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids":sellers,
@@ -203,6 +208,9 @@ class OdooAPI(http.Controller):
         current_page = 1
 
         try:
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
@@ -275,7 +283,8 @@ class OdooAPI(http.Controller):
                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
                              "variants": variant,
-                             "stock": i.qty_available,
+                             # "stock": i.qty_available,
+                             "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(warehouse=warehouse.id).virtual_available>0 else 0.0,
                              "sm_pictures": image,
                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids": sellers,
@@ -352,6 +361,9 @@ class OdooAPI(http.Controller):
         current_page = 1
 
         try:
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
@@ -424,7 +436,8 @@ class OdooAPI(http.Controller):
                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
                              "variants": variant,
-                             "stock": i.qty_available,
+                             # "stock": i.qty_available,
+                             "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(warehouse=warehouse.id).virtual_available>0 else 0.0,
                              "sm_pictures": image,
                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                              "seller_ids": sellers,
@@ -563,6 +576,9 @@ class OdooAPI(http.Controller):
             model = 'product.product'
             record = request.env[model].sudo().search(domain)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
             temp = []
             for i in record:
                     image = []
@@ -635,7 +651,9 @@ class OdooAPI(http.Controller):
                                  "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                                  "write_name": i.write_uid.name if i.write_uid.name != False else '',
                                  "variants": variant,
-                                 "stock": i.qty_available,
+                                 # "stock": i.qty_available,
+                                 "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
+                                     warehouse=warehouse.id).virtual_available > 0 else 0.0,
                                  "sm_pictures": image,
                                  "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                                  "seller_ids": sellers,
