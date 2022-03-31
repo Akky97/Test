@@ -321,23 +321,20 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route(['/api/v1/c/update_shipping_address', '/api/v1/c/update_shipping_address/<id>/'], type='http',
-                auth='public', methods=['PUT'], csrf=False, cors='*',
-                website=True)
+    @http.route(['/api/v1/c/update_shipping_address', '/api/v1/c/update_shipping_address/<id>'], type='http',
+                auth='none', methods=['PUT'], csrf=False, cors='*')
     def update_shipping_address(self, id=None, **params):
         try:
             if not id:
                 error = {"message": "id is not present in the request", "status": 400}
                 return return_Response_error(error)
             website = request.env['website'].sudo().browse(1)
-            # website = request.website
             partner = request.env.user.partner_id
             order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
 
-            # order = request.website.sale_get_order()
             if order:
                 order.sudo().write({'partner_shipping_id': int(id)})
             else:
