@@ -323,7 +323,7 @@ class WebsiteSale(WebsiteSale):
 
     @validate_token
     @http.route(['/api/v1/c/update_shipping_address', '/api/v1/c/update_shipping_address/<id>'], type='http',
-                auth='none', methods=['GET'], csrf=False, cors='*')
+                auth='none', methods=['POST'], csrf=False, cors='*')
     def update_shipping_address(self, id=None, **params):
         try:
             if not id:
