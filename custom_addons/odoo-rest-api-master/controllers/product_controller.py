@@ -692,12 +692,14 @@ class OdooAPI(http.Controller):
                 for i in valueRecord:
                     vals = {
                         'id': i.id,
-                        'name': i.name
+                        'name': i.name,
+                        'html_color': i.html_color
                     }
                     temp.append(vals)
                 vals = {
                     'attribute_id': rec.id,
                     'attribute_name':rec.name,
+                    'type': rec.display_type,
                     'value': temp
                 }
                 attr.append(vals)
