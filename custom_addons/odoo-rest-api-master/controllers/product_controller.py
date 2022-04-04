@@ -728,7 +728,7 @@ class OdooAPI(http.Controller):
                 return record
         return record
 
-    @http.route('/api/v1/c/product.attribute.filter', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route('/api/v1/c/product.attribute.filter', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def product_attribute_filter(self, **params):
         try:
             record = []
