@@ -15,13 +15,22 @@ _logger = logging.getLogger(__name__)
 def check_product_availablity(order, product_id, qty):
     avQty = 0
     message = False
-    product_id = request.env['product.product'].sudo().search([('id','=',int(product_id))])
-    if product_id.type == 'product':
-        virtual_qty = product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
-        if qty > virtual_qty:
-            avQty = virtual_qty - qty
-        if avQty < 0:
-            message = f'You ask for {qty} products but only {virtual_qty} is available'
+    orderLine = request.env['sale.order.line'].sudo().search([('product_id','=',int(product_id)),('order_id','=',order.id)])
+    if orderLine and orderLine.product_id.type == 'product':
+        cart_qty = int(orderLine.product_uom_qty) + int(qty)
+        avl_qty = orderLine.product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
+        if cart_qty > avl_qty:
+            available_qty = avl_qty if avl_qty > 0 else 0
+            message = f'You ask for {cart_qty} products but only {available_qty} is available'
+    else:
+        product_id = request.env['product.product'].sudo().search([('id','=',int(product_id))])
+
+        if product_id.type == 'product':
+            virtual_qty = product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
+            if qty > virtual_qty:
+                avQty = virtual_qty - qty
+            if avQty < 0:
+                message = f'You ask for {qty} products but only {virtual_qty} is available'
     return message
 
 def get_sale_order_line(order_id=None, order_line_id = None):
@@ -431,35 +440,43 @@ class WebsiteSale(WebsiteSale):
     @http.route('/api/v1/c/cart_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*', website=True)
     def cart_update(self, **params):
         try:
-            website = request.website.id
-            jdata = json.loads(request.httprequest.stream.read())
-            if not jdata.get('product_id') or not jdata.get('add_qty'):
-                msg = {"message": "Something Went Wrong.", "status_code": 400}
-                return return_Response_error(msg)
-            product_id = int(jdata.get('product_id')) or False
-            set_qty = int(jdata.get('set_qty')) if jdata.get('set_qty') else 0
-            add_qty = int(jdata.get('add_qty')) if jdata.get('add_qty') else 1
-            sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id, website=website)
-            if sale_order.state != 'draft':
-                request.session['sale_order_id'] = None
-                sale_order = sale_get_order(self=request.website, partner_id=request.env.user.partner_id.id, force_create=True, website=website)
-            if product_id:
-                if set_qty > 0:
-                    qty = set_qty
-                else:
-                    qty = add_qty
-                stockMessage = check_product_availablity(sale_order,product_id,qty)
-                if stockMessage:
-                    error = {"message": stockMessage, "status": 400}
-                    return return_Response_error(error)
+            website = request.env['website'].sudo().browse(1)
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata={}
+            if jdata:
+                if not jdata.get('product_id') or not jdata.get('add_qty'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                product_id = int(jdata.get('product_id')) or False
+                set_qty = int(jdata.get('set_qty')) if jdata.get('set_qty') else 0
+                add_qty = int(jdata.get('add_qty')) if jdata.get('add_qty') else 1
+                sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, website=website.id)
+                if sale_order.state != 'draft':
+                    request.session['sale_order_id'] = None
+                    sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
+                if product_id:
+                    if set_qty > 0:
+                        qty = set_qty
+                    else:
+                        qty = add_qty
+                    if qty and set_qty != -1:
+                        stockMessage = check_product_availablity(sale_order,product_id,qty)
+                        if stockMessage:
+                            error = {"message": stockMessage, "status": 400}
+                            return return_Response_error(error)
 
-                sale_order._cart_update(
-                    product_id=int(product_id),
-                    add_qty=add_qty,
-                    set_qty=set_qty,
-                    product_custom_attribute_values=None,
-                    no_variant_attribute_values=None
-                )
+                    sale_order._cart_update(
+                        product_id=int(product_id),
+                        add_qty=add_qty,
+                        set_qty=set_qty,
+                        product_custom_attribute_values=None,
+                        no_variant_attribute_values=None
+                    )
+            else:
+                error = {"message": "Parameters Should not Empty", "status": 400}
+                return return_Response_error(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {"result": 'Updated Cart Successfully', "status": 200}

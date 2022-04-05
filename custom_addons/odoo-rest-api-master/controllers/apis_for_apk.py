@@ -1,5 +1,6 @@
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
+from .payment_controllers import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
@@ -38,6 +39,47 @@ def get_sale_order_line(order_id=None, order_line_id=None):
     print('sale order line details', saleOrderLine)
     return saleOrderLine
 
+def updatePriceListAPK(pricelist, order):
+    if order and pricelist:
+        request.session['website_sale_current_pl'] = pricelist
+        values = {'pricelist_id': pricelist}
+        order.write(values)
+        for line in order.order_line:
+            if line.exists():
+                order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
+
+
+
+def checkout_data_apk(order):
+    shippingAddress = []
+    Partner = False
+    if order.partner_id != request.website.user_id.sudo().partner_id:
+        Partner = order.partner_id.with_context(show_address=1).sudo()
+        shippings = Partner.search([
+            ("id", "child_of", order.partner_id.commercial_partner_id.ids),
+            '|', ("type", "in", ["delivery", "other"]), ("id", "=", order.partner_id.commercial_partner_id.id)
+        ], order='id desc')
+        if shippings:
+            shippingAddress = []
+            for i in shippings:
+                shippingAddress.append(get_address(i))
+    sale_order= {
+        'id': order.id,
+        'name': order.name if order.name != False else "",
+        'order_line': get_sale_order_line(order_id=order.id),
+        'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else "",
+        'amount_tax': order.amount_tax if order.amount_tax != False else "",
+        'amount_total': order.amount_total if order.amount_total != False else "",
+        'symbol': order.currency_id.symbol if order.currency_id.symbol != False else ""
+    }
+    values = [{
+        'order': sale_order,
+        'shippingAddress': shippingAddress,
+        'invoiceAddress': get_address(Partner) if Partner else [],
+        'only_services': order and order.only_services or False,
+        'express': False
+    }]
+    return values
 
 class WebsiteSale(WebsiteSale):
 
@@ -162,6 +204,55 @@ class WebsiteSale(WebsiteSale):
         res = {
             "count": len(temp),
             "result": temp
+        }
+        return return_Response(res)
+
+
+    @validate_token
+    @http.route('/api/v1/c/comfirm_order_apk', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
+                website=True)
+    def confirm_order_apk(self, **params):
+        try:
+            redirectUrl = ''
+            transactionId = False
+            result = {}
+            website = request.env['website'].sudo().browse(1)
+            partner = request.env.user.partner_id
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+                                                             ('partner_id', '=', partner.id),
+                                                             ('website_id', '=', website.id)],
+                                                            order='write_date DESC', limit=1)
+            redirectUrl = checkout_redirection(order, request.env.context.get(
+                'website_sale_transaction')) or checkout_check_address(order)
+            paymentAcquirer = request.env['payment.acquirer'].sudo().search([('state', 'in', ['enabled', 'test'])], limit=1)
+            if not redirectUrl:
+                order.onchange_partner_shipping_id()
+                order.order_line._compute_tax_id()
+                request.session['sale_last_order_id'] = order.id
+                pricelist_id = request.session.get('website_sale_current_pl') or website.get_current_pricelist().id
+                updatePriceListAPK(pricelist_id, order)
+                if paymentAcquirer:
+                    payTransferData = create_transaction(paymentAcquirer.id)
+                    if payTransferData:
+                        if 'message' in payTransferData and payTransferData.get('message'):
+                            msg = {"message": payTransferData.get('message'), "status_code": 400}
+                            return return_Response_error(msg)
+                        if 'id' in payTransferData and payTransferData.get('id'):
+                            transactionId = payTransferData.get('id')
+                        result = create_checkout_session(payTransferData)
+
+            else:
+                res = {
+                    "message": f"Something Went Wrong. Please Go To {redirectUrl} ","status":400
+                }
+                return return_Response_error(res)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "transactionId": transactionId if transactionId else False,
+            "url": result.url if result else False,
+            "redirect": 'success', "status": 200
         }
         return return_Response(res)
 

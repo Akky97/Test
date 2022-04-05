@@ -73,7 +73,7 @@ def create_transaction(acquirer_id):
     # Check Product Quantity
     values = {}
     for line in order.order_line:
-        if line.product_id.type == 'product' and line.product_id.inventory_availability in ['always', 'threshold']:
+        if line.product_id.type == 'product':
             cart_qty = sum(
                 order.order_line.filtered(lambda p: p.product_id.id == line.product_id.id).mapped('product_uom_qty'))
             avl_qty = line.product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
@@ -81,7 +81,7 @@ def create_transaction(acquirer_id):
                 available_qty = avl_qty if avl_qty > 0 else 0
                 message = f'You ask for {cart_qty} products but only {available_qty} is available'
                 values['message']=message
-                return message
+                return values
     # # Delivery Method Check
     # if not order.is_all_service and not order.delivery_set:
     #     message = 'There is an issue with your delivery method. Please refresh the page and try again.'
@@ -429,6 +429,9 @@ class WebsiteSale(WebsiteSale):
                     payTransferData = create_transaction(acquirer_id)
                     finalResult['transactionId'] = payTransferData['id']
                     if payTransferData:
+                        if 'message' in payTransferData and payTransferData.get('message'):
+                            msg = {"message": payTransferData.get('message'), "status_code": 400}
+                            return return_Response_error(msg)
                         finalResult['transactionId'] = payTransferData.get('id')
                         result = create_checkout_session(payTransferData)
                         if result:
