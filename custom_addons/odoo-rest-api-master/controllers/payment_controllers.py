@@ -33,7 +33,8 @@ def create_checkout_session(jdata):
                 ],
                 customer_email=request.env.user.login,
                 mode='payment',
-                success_url='https://pandostores.com/shop/success',
+                success_url='https://pandostores.com/callback',
+                # success_url='https://pandostores.com/shop/success',
                 cancel_url='https://pandostores.com/shop/cart',
             )
     return checkout_session
@@ -448,55 +449,6 @@ class WebsiteSale(WebsiteSale):
             "result": finalResult, 'status':200
         }
         return return_Response(res)
-
-    # @validate_token
-    # @http.route('/api/v1/c/create_checkout_session', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
-    #             website=True)
-    # def create_checkout_session(self, **params):
-    #     try:
-    #         checkout_session = {}
-    #         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-    #         try:
-    #             jdata = json.loads(request.httprequest.stream.read())
-    #         except:
-    #             jdata = {}
-    #         if jdata:
-    #             if 'amount' in jdata and jdata.get('amount'):
-    #                 checkout_session = stripe.checkout.Session.create(
-    #                     line_items=[
-    #                         {
-    #                             'price_data':{
-    #                                 'currency': jdata.get('currency') or 'usd',
-    #                                 'product_data':{
-    #                                     'name': jdata.get('reference') or 'Test Product'
-    #                                 },
-    #                                 'unit_amount': int(jdata.get('amount'))*100,
-    #                             },
-    #                             'quantity': 1,
-    #                         },
-    #                     ],
-    #                     mode='payment',
-    #                     success_url=base_url.value + '/success.html',
-    #                     cancel_url=base_url.value + '/cancel.html',
-    #                 )
-    #         else:
-    #             msg = {"message": "Something Went Wrong.", "status_code": 400}
-    #             return return_Response_error(msg)
-    #         if checkout_session:
-    #             res = {
-    #                 "redirectUrl": checkout_session.url,"data": checkout_session, 'status': 200
-    #             }
-    #             return return_Response(res)
-    #         else:
-    #             msg = {"message": "Something Went Wrong.", "status_code": 400}
-    #             return return_Response_error(msg)
-    #
-    #     except (SyntaxError, QueryFormatError) as e:
-    #         return error_response(e, e.msg)
-    #     # res = {
-    #     #     "message": 'Success', 'status': 200
-    #     # }
-    #     # return return_Response(res)
 
     @validate_token
     @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
