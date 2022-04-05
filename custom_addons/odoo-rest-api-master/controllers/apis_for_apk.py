@@ -6,6 +6,30 @@ import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
 
+def create_checkout_session_apk(jdata):
+    checkout_session = {}
+    if jdata:
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        if 'amount' in jdata and jdata.get('amount'):
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': jdata.get('currency') or 'usd',
+                            'product_data': {
+                                'name': jdata.get('reference') or 'Test Product'
+                            },
+                            'unit_amount': int(jdata.get('amount')) * 100,
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                customer_email=request.env.user.login,
+                mode='payment',
+                success_url='Get.to(()=>TabScreen())',
+                cancel_url='Get.to(()=>TabScreen())',
+            )
+    return checkout_session
 
 def get_sale_order_line(order_id=None, order_line_id=None):
     saleOrderLine = []
@@ -239,7 +263,7 @@ class WebsiteSale(WebsiteSale):
                             return return_Response_error(msg)
                         if 'id' in payTransferData and payTransferData.get('id'):
                             transactionId = payTransferData.get('id')
-                        result = create_checkout_session(payTransferData)
+                        result = create_checkout_session_apk(payTransferData)
 
             else:
                 res = {
