@@ -12,6 +12,40 @@
                         </tree>
                     </field>
                 </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page name="OtherInfo" string="other Information">
+                        <group >
+                            <field name="user_type"/>
+                        </group>
+                        <group string="Bank Details" attrs="{'invisible': [('user_type', '=', 'customer')]}">
+                            <field name="gst_number"/>
+                            <field name="account_name"/>
+                            <field name="ifsc_code"/>
+                        </group>
+                        <group string="Supplier Details" attrs="{'invisible': [('user_type', '=', 'customer')]}">
+                            <field name="owner_name"/>
+                            <field name="business_name"/>
+                            <field name="supplier_address"/>
+                            <field name="supplier_phone"/>
+                            <field name="supplier_city"/>
+                            <field name="supplier_state_id"/>
+                            <field name="supplier_country_id"/>
+                        </group>
+                        <group string="Pickup Details" attrs="{'invisible': [('user_type', '=', 'customer')]}">
+                            <field name="pickup_address_line" widget="section_and_note_one2many"
+                                   mode="tree,kanban">
+                                <tree string="Sales Order Lines" editable="bottom">
+                                    <field name="address"/>
+                                    <field name="city"/>
+                                    <field name="state_id"/>
+                                    <field name="country_id"/>
+                                </tree>
+                            </field>
+
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
     </data>

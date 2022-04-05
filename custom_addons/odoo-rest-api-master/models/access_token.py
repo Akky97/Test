@@ -80,3 +80,27 @@ class Users(models.Model):
     _inherit = 'res.users'
     token_ids = fields.One2many('api.access_token', 'user_id',
                                 string="Access Tokens")
+
+    gst_number = fields.Char(string="GST Number")
+    account_name = fields.Char(string="Account Number")
+    ifsc_code = fields.Char(string="IFSC CODE")
+    user_type = fields.Selection([('customer', 'Customer'),
+                                     ('vendor', 'Vendor')])
+    owner_name = fields.Char(string="Owner name")
+    business_name = fields.Char(string="Business name")
+    supplier_country_id = fields.Many2one('res.country', string="Country")
+    supplier_address = fields.Char('Street Address')
+    supplier_city = fields.Char('City')
+    supplier_state_id = fields.Many2one('res.country.state', 'State')
+    supplier_phone = fields.Char(string="Phone")
+    pickup_address_line = fields.One2many('pickup.address', 'user_id', string='Pickup Address Lines')
+
+
+class PickupAddress(models.Model):
+    _name = 'pickup.address'
+
+    user_id = fields.Many2one('res.users', string='User Reference')
+    country_id = fields.Many2one('res.country', string="Country")
+    address = fields.Char('Street Address')
+    city = fields.Char('City')
+    state_id = fields.Many2one('res.country.state', 'State')
