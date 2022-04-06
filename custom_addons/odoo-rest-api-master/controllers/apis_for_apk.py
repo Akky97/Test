@@ -5,36 +5,6 @@ from odoo.addons.website_sale.controllers.main import WebsiteSale
 import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
-import stripe
-SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tHoDtKICnLlNEc6GEpGdXVFw3QBetvkGW00rsDPcDUV'
-stripe.api_key = SECRET_KEY
-
-
-
-def generate_card_token(cardnumber,expmonth,expyear,cvv):
-    data= stripe.Token.create(
-                card={
-                    "number": cardnumber,
-                    "exp_month": expmonth,
-                    "exp_year": expyear,
-                    "cvc": cvv,
-                    })
-    card_token = data['id']
-    return card_token
-
-def create_payment_charge(tokenid, amount, reference, currency):
-    payment = stripe.Charge.create(
-    amount= int(amount)*100, # convert amount to cents
-    currency=currency or 'usd',
-    # customer=request.env.user.partner_id.name,
-    metadata= {"order": reference},
-    description= reference,
-    source=tokenid,
-    )
-    print(payment)
-    payment_check = payment['paid'] # return True for successfull payment
-    return payment_check
-
 
 def get_sale_order_line(order_id=None, order_line_id=None):
     saleOrderLine = []
@@ -267,22 +237,11 @@ class WebsiteSale(WebsiteSale):
                             msg = {"message": payTransferData.get('message'), "status_code": 400}
                             return return_Response_error(msg)
                         if 'id' in payTransferData and payTransferData.get('id'):
-                            transactionId = payTransferData.get('id')
-                            token = generate_card_token(4242424242424242, 12, 23,123)
-                            if token and 'amount' in payTransferData and 'reference' in payTransferData and 'currency' in payTransferData:
-                                result = create_payment_charge(token, payTransferData.get('amount'), payTransferData.get('reference'), payTransferData.get('currency'))
-                                if result:
-                                    res = {
-                                        "transactionId": transactionId if transactionId else False,
-                                        "paymentStatus": result,
-                                        "redirect": 'success', "status": 200
-                                    }
-                                    return return_Response(res)
-                            else:
-                                res = {
-                                    "message": "Something Went Wrong. Payment Failed", "status": 400
-                                }
-                                return return_Response_error(res)
+                            res = {
+                                "transactionId": payTransferData.get('id'),
+                                "redirect": 'success', "status": 200
+                            }
+                            return return_Response(res)
                         else:
                             res = {
                                 "message": "Something Went Wrong. Transaction is not created", "status": 400
