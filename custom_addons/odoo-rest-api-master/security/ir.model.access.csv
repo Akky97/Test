@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 pando_banner,pando.banner,model_pando_banner,,1,1,1,1
 email_verification,email.verification,model_email_verification,,1,1,1,1
 access_account_move_line_pando,account.move.line,account.model_account_move_line,,1,1,1,0
+pickup_address,pickup.address,model_pickup_address,,1,1,1,1
