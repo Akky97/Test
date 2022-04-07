@@ -572,6 +572,9 @@ class WebsiteSale(WebsiteSale):
             return error_response(e, e.msg)
         try:
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
             temp = []
             if records:
                 for rec in records:
@@ -645,7 +648,9 @@ class WebsiteSale(WebsiteSale):
                                  "write_uid": i.write_uid.id if i.write_uid.id != False else '',
                                  "write_name": i.write_uid.name if i.write_uid.name != False else '',
                                  "variants": variant,
-                                 "stock": i.qty_available,
+                                 # "stock": i.qty_available,
+                                 "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
+                                     warehouse=warehouse.id).virtual_available > 0 else 0.0,
                                  "sm_pictures": image,
                                  "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
                                  "seller_ids": sellers,

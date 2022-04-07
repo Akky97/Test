@@ -129,6 +129,9 @@ class WebsiteSale(WebsiteSale):
             return error_response(e, e.msg)
         try:
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
             temp = []
             category = []
             if records:
@@ -143,7 +146,9 @@ class WebsiteSale(WebsiteSale):
                                  'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
                                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                                  'description': i.description if i.description != False else '',
-                                 "stock": i.qty_available,
+                                 # "stock": i.qty_available,
+                                 "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
+                                     warehouse=warehouse.id).virtual_available > 0 else 0.0,
                                  "sold": i.sales_count,
                                  "review": 2,
                                  "rating": 3,
