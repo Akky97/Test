@@ -13,3 +13,4 @@ from . import pando_banner
 from . import website_category
 from . import payment_controllers
 from . import apis_for_apk
+from . import vendor_profile_detail_controller
