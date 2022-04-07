@@ -82,7 +82,8 @@ class Users(models.Model):
                                 string="Access Tokens")
 
     gst_number = fields.Char(string="GST Number")
-    account_name = fields.Char(string="Account Number")
+    account_name = fields.Char(string="Account Name")
+    account_number = fields.Char(string="Account Number")
     ifsc_code = fields.Char(string="IFSC CODE")
     user_type = fields.Selection([('customer', 'Customer'),
                                      ('vendor', 'Vendor')])

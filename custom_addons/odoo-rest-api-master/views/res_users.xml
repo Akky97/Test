@@ -21,6 +21,7 @@
                         <group string="Bank Details" attrs="{'invisible': [('user_type', '=', 'customer')]}">
                             <field name="gst_number"/>
                             <field name="account_name"/>
+                            <field name="account_number"/>
                             <field name="ifsc_code"/>
                         </group>
                         <group string="Supplier Details" attrs="{'invisible': [('user_type', '=', 'customer')]}">
@@ -28,7 +29,7 @@
                             <field name="business_name"/>
                             <field name="supplier_phone"/>
                             <field name="supplier_country_id"/>
-                            <field name="supplier_state_id"/>
+                            <field name="supplier_state_id" domain="[('country_id','=',supplier_country_id)]"/>
                             <field name="supplier_city"/>
                             <field name="supplier_address"/>
                         </group>
@@ -37,7 +38,7 @@
                                    mode="tree,kanban">
                                 <tree string="Sales Order Lines" editable="bottom">
                                     <field name="country_id"/>
-                                    <field name="state_id"/>
+                                    <field name="state_id" domain="[('country_id','=',country_id)]"/>
                                     <field name="city"/>
                                     <field name="address"/>
                                 </tree>
