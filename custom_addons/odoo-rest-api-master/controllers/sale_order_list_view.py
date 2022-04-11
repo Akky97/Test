@@ -356,6 +356,46 @@ def create_new_address(params):
 
 
 class SaleOrderController(http.Controller):
+
+    @validate_token
+    @http.route('/api/v1/c/sale_order_details/<order_id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def sale_order_details(self, order_id=None, **params):
+        model = 'sale.order'
+        value = {}
+        try:
+            if not order_id:
+                error = {"message": "order id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            records = request.env[model].sudo().search([('id', '=', int(order_id))], limit=1)
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            if records:
+                value = {
+                    'id': records.id,
+                    'name': records.name if records.name != False else "",
+                    'order_line': get_sale_order_line(order_id=records.id),
+                    'partner_id': get_address(records.partner_id),
+                    'partner_shipping_id': get_address(records.partner_shipping_id),
+                    'date_order': str(records.date_order) if str(records.date_order) != False else "",
+                    'state': records.state if records.state != False else "",
+                    'amount_untaxed': records.amount_untaxed if records.amount_untaxed != False else 0.0,
+                    'amount_tax': records.amount_tax if records.amount_tax != False else 0.0,
+                    'amount_total': records.amount_total if records.amount_total != False else 0.0,
+                    'invoice_status': records.invoice_status if records.invoice_status != False else ""
+                }
+            else:
+                error = {"message": "Order List Is Empty", "status": 400}
+                return return_Response_error(error)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": value,
+            "status":200
+        }
+        return return_Response(res)
+
     @validate_token
     @http.route('/api/v1/c/sale_orders/<partner_id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def sale_order_list_view(self, partner_id=None, **params):
@@ -364,7 +404,7 @@ class SaleOrderController(http.Controller):
             if not partner_id:
                 error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))])
+            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id)),('state','not in',['draft'])])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -374,29 +414,9 @@ class SaleOrderController(http.Controller):
                 value = {
                     'id': i.id,
                     'name': i.name if i.name != False else "",
-                    'order_line': get_sale_order_line(order_id=i.id),
-                    'partner_id': get_address(i.partner_id),
-                    'partner_invoice_id': get_address(i.partner_invoice_id),
-                    'partner_shipping_id': get_address(i.partner_shipping_id),
                     'date_order': str(i.date_order) if str(i.date_order) != False else "",
-                    'currency_id': i.currency_id.id if i.currency_id.id != False else "",
-                    'currency_name': i.currency_id.name if i.currency_id.name != False else "",
-                    'company_id': i.company_id.id if i.company_id.id != False else "",
-                    'company_name': i.company_id.name if i.company_id.name != False else "",
-                    'pricelist_id': i.pricelist_id.id if i.pricelist_id.id != False else "",
-                    'pricelist_name': i.pricelist_id.name if i.pricelist_id.name != False else "",
                     'state': i.state if i.state != False else "",
-                    'user_id': i.user_id.id if i.user_id.id != False else "",
-                    'user_name': i.user_id.name if i.user_id.name != False else "",
-                    'amount_untaxed': i.amount_untaxed if i.amount_untaxed != False else 0.0,
-                    'amount_tax': i.amount_tax if i.amount_tax != False else 0.0,
-                    'amount_total': i.amount_total if i.amount_total != False else 0.0,
-                    'picking_policy': i.picking_policy if i.picking_policy != False else "",
-                    'warehouse_id': i.warehouse_id.id if i.warehouse_id.id != False else "",
-                    'warehouse_name': i.warehouse_id.name if i.warehouse_id.name != False else "",
-                    'optional_products': optional_products(i.id),
-                    'invoice_status': i.invoice_status if i.invoice_status != False else "",
-                    'fiscal_position_id': i.fiscal_position_id.id if i.fiscal_position_id.id != False else ""
+                    'amount_total': i.amount_total if i.amount_total != False else 0.0
                 }
                 sale_order_data.append(value)
 
