@@ -66,9 +66,9 @@ def checkout_data_apk(order):
         'id': order.id,
         'name': order.name if order.name != False else "",
         'order_line': get_sale_order_line(order_id=order.id),
-        'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else "",
-        'amount_tax': order.amount_tax if order.amount_tax != False else "",
-        'amount_total': order.amount_total if order.amount_total != False else "",
+        'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else 0.0,
+        'amount_tax': order.amount_tax if order.amount_tax != False else 0.0,
+        'amount_total': order.amount_total if order.amount_total != False else 0.0,
         'symbol': order.currency_id.symbol if order.currency_id.symbol != False else ""
     }
     values = [{

@@ -43,6 +43,9 @@ def get_sale_order_line(order_id=None, order_line_id = None):
         solObject = solObject.search([('order_id','=',order_id)])
     if solObject:
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        website = request.env['website'].sudo().browse(1)
+        warehouse = request.env['stock.warehouse'].sudo().search(
+            [('company_id', '=', website.company_id.id)], limit=1)
         for rec in solObject:
             image = []
             category = []
@@ -105,14 +108,14 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'name': rec.name if rec.name != False else "",
                 'product_id': rec.product_id.id if rec.product_id.id != False else "",
                 'product_name': rec.product_id.name if rec.product_id.name != False else "",
-                'price_unit': rec.price_unit if rec.price_unit != False else "",
-                'price_subtotal': rec.price_subtotal if rec.price_subtotal != False else "",
-                'price_tax': rec.price_tax if rec.price_tax != False else "",
-                'price_total': rec.price_total if rec.price_total != False else "",
+                'price_unit': rec.price_unit if rec.price_unit != False else 0.0,
+                'price_subtotal': rec.price_subtotal if rec.price_subtotal != False else 0.0,
+                'price_tax': rec.price_tax if rec.price_tax != False else 0.0,
+                'price_total': rec.price_total if rec.price_total != False else 0.0,
                 'tax_id': [{i.id:i.name} for i in rec.tax_id],
-                'quantity': rec.product_uom_qty if rec.product_uom_qty != False else "",
-                'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
-                'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else "",
+                'quantity': rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
+                'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else 0.0,
+                'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else 0.0,
                 "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
                 "sm_pictures": image,
                 "featured": rec.product_id.website_ribbon_id.html if rec.product_id.website_ribbon_id.html != False else '',
@@ -128,7 +131,9 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 "write_uid": rec.write_uid.id if rec.write_uid.id != False else '',
                 "write_name": rec.write_uid.name if rec.write_uid.name != False else '',
                 "variants": variant,
-                "stock": rec.product_id.qty_available,
+                # "stock": rec.product_id.qty_available,
+                "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
+                    warehouse=warehouse.id).virtual_available > 0 else 0.0,
                 'type': rec.product_id.type, 'sale_price': rec.product_id.list_price, "price": rec.product_id.standard_price,
                 'description': rec.product_id.description if rec.product_id.description != False else '',
                 'short_desc': rec.product_id.description_sale if rec.product_id.description_sale != False else '',
@@ -383,9 +388,9 @@ class SaleOrderController(http.Controller):
                     'state': i.state if i.state != False else "",
                     'user_id': i.user_id.id if i.user_id.id != False else "",
                     'user_name': i.user_id.name if i.user_id.name != False else "",
-                    'amount_untaxed': i.amount_untaxed if i.amount_untaxed != False else "",
-                    'amount_tax': i.amount_tax if i.amount_tax != False else "",
-                    'amount_total': i.amount_total if i.amount_total != False else "",
+                    'amount_untaxed': i.amount_untaxed if i.amount_untaxed != False else 0.0,
+                    'amount_tax': i.amount_tax if i.amount_tax != False else 0.0,
+                    'amount_total': i.amount_total if i.amount_total != False else 0.0,
                     'picking_policy': i.picking_policy if i.picking_policy != False else "",
                     'warehouse_id': i.warehouse_id.id if i.warehouse_id.id != False else "",
                     'warehouse_name': i.warehouse_id.name if i.warehouse_id.name != False else "",
@@ -421,9 +426,9 @@ class WebsiteSale(WebsiteSale):
                 sale_order.append({
                     'id': order.id,
                     'order_line': get_sale_order_line(order_id=order.id),
-                    'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else "",
-                    'amount_tax': order.amount_tax if order.amount_tax != False else "",
-                    'amount_total': order.amount_total if order.amount_total != False else "",
+                    'amount_untaxed': order.amount_untaxed if order.amount_untaxed != False else 0.0,
+                    'amount_tax': order.amount_tax if order.amount_tax != False else 0.0,
+                    'amount_total': order.amount_total if order.amount_total != False else 0.0,
                     'symbol': order.currency_id.symbol if order.currency_id.symbol != False else "",
                     'count': request.session.get('count') or 0
                 })

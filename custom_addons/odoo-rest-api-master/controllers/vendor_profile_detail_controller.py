@@ -95,3 +95,140 @@ class OdooAPI(http.Controller):
             }
         return return_Response(res)
 
+    @http.route('/api/v1/v/product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def get_category_list(self, **params):
+        model = 'product.category'
+        records=request.env[model].sudo()
+        try:
+            records = request.env[model].sudo().search([])
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            temp = []
+            if records:
+                for rec in records:
+                    temp.append({
+                        'id':rec.id,
+                        'name':rec.name,
+                        'complete_name': rec.complete_name
+                    })
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count":len(temp),
+            "record":temp,
+            "status": 200
+        }
+        return return_Response(res)
+
+    @http.route('/api/v1/v/get_uom_list', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def get_uom_list(self, **params):
+        model = 'uom.uom'
+        records = request.env[model].sudo()
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                records = request.env[model].sudo().search([])
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            temp = []
+            if records:
+                for rec in records:
+                    temp.append({
+                        'id': rec.id,
+                        'name': rec.name,
+                        'factor': rec.factor,
+                        'uom_type': rec.uom_type,
+                        'category_id': rec.category_id.id,
+                        'category_name': rec.category_id.name
+                    })
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "record": temp,
+            "status": 200
+        }
+        return return_Response(res)
+
+    @http.route(['/api/v1/v/attribute_value','/api/v1/v/attribute_value/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def get_attribute_value(self, id=None,**params):
+        try:
+            temp = []
+            if id:
+                record = request.env['product.attribute.value'].sudo().search([('attribute_id', '=', int(id))])
+            else:
+                record = request.env['product.attribute'].sudo().search([])
+            if record:
+                for i in record:
+                    vals = {
+                        'id': i.id,
+                        'name': i.name
+                    }
+                    temp.append(vals)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "result": temp
+        }
+        return return_Response(res)
+
+    @http.route('/api/v1/v/product_product', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def create_product(self, **params):
+        try:
+            resId = request.env['product.template'].sudo()
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                website = request.env['website'].sudo().browse(1)
+                if not jdata.get('name') or not jdata.get('type') or not jdata.get('categ_id')or not jdata.get('list_price') or not jdata.get('tracking') or not jdata.get('country_id'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                dict = {
+                    "name": jdata.get('name'),
+                    "sequence": 1,
+                    "type": jdata.get('type'),
+                    "categ_id": jdata.get('categ_id'),
+                    "list_price": jdata.get('list_price'),
+                    "sale_ok": jdata.get('sale_ok') or True,
+                    "purchase_ok": jdata.get('purchase_ok') or True,
+                    "uom_id": 1,
+                    "uom_po_id": 1,
+                    "company_id": website.company_id.id,
+                    "active": True,
+                    "invoice_policy": "order",
+                    "tracking": jdata.get('tracking') or 'none',
+                    "is_published": False,
+                    "country_id": int(jdata.get('country_id'))
+                }
+                if 'variant' in jdata:
+                    lst=[]
+                    for i in jdata.get('variant').keys():
+                        if i:
+                            value = [[6, False,jdata.get('variant')[i]]]
+                            lst.append([0, 0,{'attribute_id':int(i),'value_ids':value}])
+                    dict["attribute_line_ids"]= lst
+                    resId = request.env['product.template'].sudo().create(dict)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            'message': "Product created Successfully",
+            'productId': resId.id if resId else False,
+            'status': 200
+        }
+        return return_Response(res)
