@@ -10,6 +10,8 @@ from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.addons.portal.controllers.portal import CustomerPortal
+
 _logger = logging.getLogger(__name__)
 
 def check_product_availablity(order, product_id, qty):
@@ -822,4 +824,27 @@ class WebsiteSale(WebsiteSale):
             "message": 'New Address Created Successfully', 'status': 200
         }
         return return_Response(res)
+
+
+class CustomerPortal(CustomerPortal):
+    @validate_token
+    @http.route('/api/v1/c/print_invoice_report/<id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
+                website=True)
+    def print_invoice_report(self, id=None, **params):
+        try:
+            if not id:
+                error = {"message": "Order id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            order = request.env['sale.order'].sudo().browse(int(id))
+            if order and order.invoice_ids:
+                return self._show_report(model=order.invoice_ids[0], report_type='pdf', report_ref='account.account_invoices',
+                                     download=True)
+            else:
+                res = {
+                    "message": "No Data Found.", "status": 400
+                }
+                return return_Response_error(res)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
 
