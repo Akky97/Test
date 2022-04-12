@@ -413,19 +413,29 @@ class SaleOrderController(http.Controller):
             if not partner_id:
                 error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id)),('state','not in',['draft'])])
+            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
         try:
             sale_order_data = []
             for i in records:
+                base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+                url = ''
+                if i.invoice_ids:
+                    if not i.invoice_ids[0].access_token:
+                        i.invoice_ids[0].sudo().write({'access_token': str(uuid.uuid4())})
+                    url = base_url.value + '/my/invoices/' + str(i.invoice_ids[0].id) + '?access_token=' + \
+                      i.invoice_ids[0].access_token + '&report_type=pdf&download=true'
+
                 value = {
                     'id': i.id,
                     'name': i.name if i.name != False else "",
                     'date_order': str(i.date_order) if str(i.date_order) != False else "",
                     'state': i.state if i.state != False else "",
-                    'amount_total': i.amount_total if i.amount_total != False else 0.0
+                    'amount_total': i.amount_total if i.amount_total != False else 0.0,
+                    'invoice_status': i.invoice_status if i.invoice_status != False else "",
+                    'url':url
                 }
                 sale_order_data.append(value)
 
