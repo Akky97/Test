@@ -3,6 +3,7 @@ import math
 import logging
 import requests
 import ast
+import uuid
 import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
@@ -374,6 +375,11 @@ class SaleOrderController(http.Controller):
             return error_response(e, msg)
         try:
             if records:
+                base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+                if not records.invoice_ids[0].access_token:
+                    records.invoice_ids[0].sudo().write({'access_token': str(uuid.uuid4())})
+                url = base_url.value +'/my/invoices/'+str(records.invoice_ids[0].id)+'?access_token='+records.invoice_ids[0].access_token+'&report_type=pdf&download=true'
+
                 value = {
                     'id': records.id,
                     'name': records.name if records.name != False else "",
@@ -385,7 +391,8 @@ class SaleOrderController(http.Controller):
                     'amount_untaxed': records.amount_untaxed if records.amount_untaxed != False else 0.0,
                     'amount_tax': records.amount_tax if records.amount_tax != False else 0.0,
                     'amount_total': records.amount_total if records.amount_total != False else 0.0,
-                    'invoice_status': records.invoice_status if records.invoice_status != False else ""
+                    'invoice_status': records.invoice_status if records.invoice_status != False else "",
+                    'url': url
                 }
             else:
                 error = {"message": "Order List Is Empty", "status": 400}
