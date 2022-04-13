@@ -313,7 +313,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
-    @http.route('/api/v1/c/categ/product.template.view', type='http', auth='public', methods=['GET'], csrf=False,
+    @http.route('/api/v1/c/categ/product.template.view', type='http', auth='public', methods=['GET', 'POST'], csrf=False,
                 cors='*')
     def product_template_view_by_categ(self, **params):
         try:
@@ -476,7 +476,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
-    @http.route('/api/v1/c/product.category.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route('/api/v1/c/product.category.view', type='http', auth='public', methods=['GET', 'POST'], csrf=False, cors='*')
     def product_category_view(self, **params):
         country_id = False
         try:
