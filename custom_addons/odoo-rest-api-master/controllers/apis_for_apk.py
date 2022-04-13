@@ -106,7 +106,7 @@ class WebsiteSale(WebsiteSale):
                     'count': int(request.session.get('count'))
                 })
             else:
-                message = {"message": "Cart is Empty", "status": 200}
+                message = {"message": "Cart is Empty", "result": 0, "status": 200}
                 return return_Response(message)
 
         except (SyntaxError, QueryFormatError) as e:
