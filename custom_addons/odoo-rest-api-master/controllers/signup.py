@@ -75,32 +75,6 @@ class SignupAPI(AuthSignupHome):
                     res = {"message": "Account Successfully Created", "status_code": 200}
                     email_get = request.env['email.verification'].sudo().search([('email', '=', email)],order='create_date desc',limit=1)
                     email_get.sudo().unlink()
-                    # aakash aman code for vendor user creation
-                    user = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
-                    if user:
-                        userVals = {}
-                        partnerVals = {}
-                        if user_type == 'vendor':
-                            res['email'] = email
-                            grp_internal = request.env.ref('base.group_user').id
-                            grp_stock_user = request.env.ref('stock.group_stock_user').id
-                            userVals = {
-                                'user_type': 'vendor',
-                                'groups_id': [(6, 0, [grp_internal, grp_stock_user])]
-                            }
-                            partnerVals = {'supplier_rank': 1, 'customer_rank': 0}
-                        else:
-                            userVals = {
-                                'user_type': 'customer'
-                            }
-                            partnerVals = {'supplier_rank': 0, 'customer_rank': 1}
-                        if userVals and partnerVals:
-                            user.sudo().write(userVals)
-                            user.partner_id.sudo().write(partnerVals)
-                        if user_type == 'vendor':
-                            request.session.logout(keep_db=True)
-                            request.env.cr.execute(f"update res_users set active='f' where login='{email}'")
-                    #     End here
                     return return_Response(res)
                 except KeyError as e:
                     msg = e.args[0]

@@ -6,6 +6,10 @@ from odoo.http import request
 from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
+from odoo.addons.website.controllers.main import Website
+from odoo.addons.auth_signup.models.res_users import SignupError
+from odoo.exceptions import UserError
+import werkzeug
 _logger = logging.getLogger(__name__)
 
 
@@ -30,6 +34,92 @@ def check_gst_number(gst, state_id):
         return vals
 
     return vals
+
+
+
+
+class AuthSignupHome(Website):
+    @http.route('/api/v1/v/vendor_signup', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def vendor_signup(self):
+        try:
+            qcontext = self.get_auth_signup_qcontext()
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if not jdata.get('email') or not jdata.get('name') or not jdata.get('password') or not jdata.get('otp'):
+                msg = {"message": "Something Went Wrong", "status_code": 400}
+                return return_Response_error(msg)
+            email = jdata.get('email')
+            name = jdata.get('name')
+            password = jdata.get('password')
+            otp = jdata.get('otp')
+            confirm_password = jdata.get('confirm_password')
+            user_type = jdata.get('user_type')
+            country_id = jdata.get('country_id')
+            qcontext.update({"login": email, "name": name, "password": password,
+                             "confirm_password": confirm_password, "user_type": user_type, "country_id": int(country_id)})
+            email_veri = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1,
+                                                                         order='create_date desc')
+            if email_veri and int(email_veri.otp) == int(otp):
+                pass
+            else:
+                msg = {"message": "OTP not verified", "status_code": 400}
+                return return_Response_error(msg)
+
+            if not qcontext.get('token') and not qcontext.get('signup_enabled'):
+                raise werkzeug.exceptions.NotFound()
+
+            if 'error' not in qcontext and request.httprequest.method == 'POST':
+                try:
+                    self.do_signup(qcontext)
+                    if qcontext.get('token'):
+                        User = request.env['res.users']
+                        user_sudo = User.sudo().search(
+                            User._get_login_domain(qcontext.get('login')), order=User._get_login_order(), limit=1
+                        )
+                        template = request.env.ref('auth_signup.mail_template_user_signup_account_created',
+                                                   raise_if_not_found=False)
+                        if user_sudo and template:
+                            template.sudo().send_mail(user_sudo.id, force_send=True)
+
+                    user = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
+                    if user:
+                        grp_internal = request.env.ref('base.group_user').id
+                        grp_stock_user = request.env.ref('stock.group_stock_user').id
+                        grp_marketplace = request.env.ref('odoo_marketplace.marketplace_draft_seller_group').id
+                        website = request.env['website'].sudo().browse(1)
+                        warehouse = request.env['stock.warehouse'].sudo().search(
+                            [('company_id', '=', website.company_id.id)], limit=1)
+
+                        userVals = {
+                            'user_type': 'vendor',
+                            'groups_id': [(6, 0, [grp_internal, grp_stock_user, grp_marketplace])]
+                        }
+                        partnerVals = {'supplier_rank': 1,'country_id':country_id, 'customer_rank': 0,
+                                       'url_handler': user.partner_id.name,'seller':True,'warehouse_id':warehouse.id}
+                        user.sudo().write(userVals)
+                        user.partner_id.sudo().write(partnerVals)
+                        user.partner_id.set_to_pending()
+                        res = {"message": "Account Successfully Created", "status_code": 200}
+                        email_get = request.env['email.verification'].sudo().search([('email', '=', email)], order='create_date desc', limit=1)
+                        email_get.sudo().unlink()
+                        return return_Response(res)
+                except UserError as e:
+                    qcontext['error'] = e.name or e.value
+                    return error_response(e)
+                except (SignupError, AssertionError) as e:
+                    user = request.env["res.users"].sudo().search([("login", "=", qcontext.get("login"))])
+                    if user:
+                        msg = {"message": "Another user is already registered using this email address",
+                               "status_code": 400}
+                        return return_Response_error(msg)
+                    else:
+                        msg = {"message": "Could not create a new account", "status_code": 400}
+                        return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
 
 
 class OdooAPI(http.Controller):
@@ -76,11 +166,12 @@ class OdooAPI(http.Controller):
                 request.env.cr.execute(f"select * from res_users where login='{jdata.get('email')}'")
                 result = request.env.cr.dictfetchall()
                 if result and result[0]['id']:
+                    request.env.cr.execute(f"update res_partner set country_id='{jdata.get('supplier_country_id')}', state_id='{jdata.get('supplier_state_id')}', city='{jdata.get('supplier_city')}', street='{jdata.get('supplier_address')}', phone='{jdata.get('supplier_phone')}', mobile='{jdata.get('supplier_phone')}'")
                     # create pickup address
                     pickupQuery = f" INSERT INTO pickup_address(user_id,country_id,address,city,state_id) VALUES({result[0]['id']},{jdata.get('country_id')}, '{jdata.get('address')}', '{jdata.get('city')}', {jdata.get('state_id')})"
                     request.env.cr.execute(pickupQuery)
                     # update supplier address and bank details
-                    query += f" active='f' where login='{jdata.get('email')}'"
+                    query += f" active='t' where login='{jdata.get('email')}'"
                     request.env.cr.execute(query)
                 else:
                     msg = {"message": "User Does not Exists", "status_code": 400}
@@ -186,6 +277,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+
     @http.route('/api/v1/v/product_product', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def create_product(self, **params):
         try:
@@ -196,6 +288,7 @@ class OdooAPI(http.Controller):
                 jdata = {}
             if jdata:
                 website = request.env['website'].sudo().browse(1)
+
                 if not jdata.get('name') or not jdata.get('type') or not jdata.get('categ_id')or not jdata.get('list_price') or not jdata.get('tracking') or not jdata.get('country_id'):
                     msg = {"message": "Something Went Wrong.", "status_code": 400}
                     return return_Response_error(msg)
@@ -205,8 +298,8 @@ class OdooAPI(http.Controller):
                     "type": jdata.get('type'),
                     "categ_id": jdata.get('categ_id'),
                     "list_price": jdata.get('list_price'),
-                    "sale_ok": jdata.get('sale_ok') or True,
-                    "purchase_ok": jdata.get('purchase_ok') or True,
+                    "sale_ok": jdata.get('sale_ok') or False,
+                    "purchase_ok": jdata.get('purchase_ok') or False,
                     "uom_id": 1,
                     "uom_po_id": 1,
                     "company_id": website.company_id.id,
@@ -214,7 +307,8 @@ class OdooAPI(http.Controller):
                     "invoice_policy": "order",
                     "tracking": jdata.get('tracking') or 'none',
                     "is_published": False,
-                    "country_id": int(jdata.get('country_id'))
+                    "country_id": int(jdata.get('country_id')),
+                    "public_categ_ids":[[6, False,[int(jdata.get('public_categ_ids'))]]]
                 }
                 if 'variant' in jdata:
                     lst=[]
@@ -223,12 +317,19 @@ class OdooAPI(http.Controller):
                             value = [[6, False,jdata.get('variant')[i]]]
                             lst.append([0, 0,{'attribute_id':int(i),'value_ids':value}])
                     dict["attribute_line_ids"]= lst
-                    resId = request.env['product.template'].sudo().create(dict)
+                resId = request.env['product.template'].sudo().create(dict)
+                if resId:
+                    res = {
+                        'message': "Product created Successfully",
+                        'productId': resId.id,
+                        'status': 200
+                    }
+                    return return_Response(res)
+                else:
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {
-            'message': "Product created Successfully",
-            'productId': resId.id if resId else False,
-            'status': 200
-        }
-        return return_Response(res)
