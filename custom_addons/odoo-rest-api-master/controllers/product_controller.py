@@ -83,9 +83,8 @@ class OdooAPI(http.Controller):
         next_page = None
         total_page_number = 1
         current_page = 1
-
+        website = request.env['website'].sudo().browse(1)
         try:
-            website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
                 [('company_id', '=', website.company_id.id)], limit=1)
 
@@ -186,7 +185,8 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
-            "products": temp
+            "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
 
         return return_Response(res)
@@ -206,9 +206,8 @@ class OdooAPI(http.Controller):
         next_page = None
         total_page_number = 1
         current_page = 1
-
+        website = request.env['website'].sudo().browse(1)
         try:
-            website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
                 [('company_id', '=', website.company_id.id)], limit=1)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -309,7 +308,8 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
-            "products": temp
+            "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
         return return_Response(res)
 
@@ -317,7 +317,7 @@ class OdooAPI(http.Controller):
                 cors='*')
     def product_template_view_by_categ(self, **params):
         try:
-            domain = [('is_published', '=', True), ('type', '=', 'product')]
+            domain = [('is_published', '=', True),('type','=','product')]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
@@ -353,7 +353,6 @@ class OdooAPI(http.Controller):
         except:
             jdata = {}
         if jdata and 'attr' in jdata:
-            lst = jdata.get('attr')
             domain.append(('product_template_attribute_value_ids.product_attribute_value_id', 'in', jdata.get('attr')))
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
@@ -366,9 +365,8 @@ class OdooAPI(http.Controller):
         next_page = None
         total_page_number = 1
         current_page = 1
-
+        website = request.env['website'].sudo().browse(1)
         try:
-            website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
                 [('company_id', '=', website.company_id.id)], limit=1)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -472,7 +470,8 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
-            "products": temp
+            "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
         return return_Response(res)
 
@@ -565,6 +564,7 @@ class OdooAPI(http.Controller):
 
     @http.route('/api/v1/c/product.template.search', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_search(self, **params):
+        website = request.env['website'].sudo().browse(1)
         try:
             domain = [('is_published', '=', True), ('type', '=', 'product')]
             categ_id = []
@@ -599,7 +599,6 @@ class OdooAPI(http.Controller):
             model = 'product.product'
             record = request.env[model].sudo().search(domain)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-            website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
                 [('company_id', '=', website.company_id.id)], limit=1)
             temp = []
@@ -699,7 +698,8 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         res = {
             "count": len(temp),
-            "products": temp
+            "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
         return return_Response(res)
 

@@ -392,7 +392,8 @@ class SaleOrderController(http.Controller):
                     'amount_tax': records.amount_tax if records.amount_tax != False else 0.0,
                     'amount_total': records.amount_total if records.amount_total != False else 0.0,
                     'invoice_status': records.invoice_status if records.invoice_status != False else "",
-                    'url': url
+                    'url': url,
+                    'symbol': records.currency_id.symbol if records.currency_id.symbol != False else "",
                 }
             else:
                 error = {"message": "Order List Is Empty", "status": 400}
@@ -435,7 +436,8 @@ class SaleOrderController(http.Controller):
                     'state': i.state if i.state != False else "",
                     'amount_total': i.amount_total if i.amount_total != False else 0.0,
                     'invoice_status': i.invoice_status if i.invoice_status != False else "",
-                    'url':url
+                    'url':url,
+                    'symbol': i.currency_id.symbol if i.currency_id.symbol != False else "",
                 }
                 sale_order_data.append(value)
 

@@ -50,15 +50,29 @@ class AuthSignupHome(Website):
             if not jdata.get('email') or not jdata.get('name') or not jdata.get('password') or not jdata.get('otp'):
                 msg = {"message": "Something Went Wrong", "status_code": 400}
                 return return_Response_error(msg)
+
+            if not jdata.get('account_number') or not jdata.get('account_name') or not jdata.get('ifsc_code'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+
+            if not jdata.get('owner_name') or not jdata.get('business_name') or not jdata.get(
+                    'supplier_country_id') or not jdata.get('supplier_address') or not jdata.get(
+                    'supplier_city') or not jdata.get('supplier_state_id') or not jdata.get('supplier_phone'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+
+            if not jdata.get('country_id') or not jdata.get('state_id') or not jdata.get('city') or not jdata.get(
+                    'address') or not jdata.get('email'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+
             email = jdata.get('email')
             name = jdata.get('name')
             password = jdata.get('password')
             otp = jdata.get('otp')
             confirm_password = jdata.get('confirm_password')
-            user_type = jdata.get('user_type')
-            country_id = jdata.get('country_id')
             qcontext.update({"login": email, "name": name, "password": password,
-                             "confirm_password": confirm_password, "user_type": user_type, "country_id": int(country_id)})
+                             "confirm_password": confirm_password})
             email_veri = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1,
                                                                          order='create_date desc')
             if email_veri and int(email_veri.otp) == int(otp):
@@ -85,19 +99,56 @@ class AuthSignupHome(Website):
 
                     user = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
                     if user:
-                        grp_internal = request.env.ref('base.group_user').id
-                        grp_stock_user = request.env.ref('stock.group_stock_user').id
-                        grp_marketplace = request.env.ref('odoo_marketplace.marketplace_draft_seller_group').id
                         website = request.env['website'].sudo().browse(1)
                         warehouse = request.env['stock.warehouse'].sudo().search(
                             [('company_id', '=', website.company_id.id)], limit=1)
+                        grp_internal = request.env.ref('base.group_user').id
+                        grp_stock_user = request.env.ref('stock.group_stock_user').id
+                        grp_marketplace = request.env.ref('odoo_marketplace.marketplace_draft_seller_group').id
 
                         userVals = {
+                            'account_number': jdata.get('account_number'),
+                            'account_name': jdata.get('account_name'),
+                            'ifsc_code': jdata.get('ifsc_code'),
+                            'owner_name': jdata.get('owner_name'),
+                            'business_name': jdata.get('business_name'),
+                            'supplier_country_id': int(jdata.get('supplier_country_id')),
+                            'supplier_state_id': jdata.get('supplier_state_id'),
+                            'supplier_phone': jdata.get('supplier_phone'),
+                            'supplier_city': jdata.get('supplier_city'),
+                            'supplier_address': jdata.get('supplier_address'),
                             'user_type': 'vendor',
-                            'groups_id': [(6, 0, [grp_internal, grp_stock_user, grp_marketplace])]
+                            'groups_id': [(6, 0, [grp_internal, grp_stock_user, grp_marketplace])],
+                            'pickup_address_line': [(0, 0, {
+                                'country_id': jdata.get('country_id'),
+                                'address': jdata.get('address'),
+                                'city': jdata.get('city'),
+                                'state_id': jdata.get('state_id')
+                            })]
                         }
-                        partnerVals = {'supplier_rank': 1,'country_id':country_id, 'customer_rank': 0,
-                                       'url_handler': user.partner_id.name,'seller':True,'warehouse_id':warehouse.id}
+                        gst_number = jdata.get('gst_number')
+                        if gst_number:
+                            rec = check_gst_number(gst_number, jdata.get('supplier_state_id'))
+                            if 'message' not in rec:
+                                userVals['gst_number'] = jdata.get('gst_number')
+                            else:
+                                msg = {"message": rec['message'], "status_code": 400}
+                                return return_Response_error(msg)
+
+                        partnerVals ={
+                            'supplier_rank': 1,
+                            'country_id':int(jdata.get('supplier_country_id')),
+                            'customer_rank': 0,
+                            'url_handler': user.partner_id.name,
+                            'seller':True,
+                            'warehouse_id':warehouse.id,
+                            'location_id':warehouse.lot_stock_id.id,
+                            'state_id': int(jdata.get('supplier_state_id')),
+                            'phone': jdata.get('supplier_phone'),
+                            'mobile': jdata.get('supplier_phone'),
+                            'city': jdata.get('supplier_city'),
+                            'street': jdata.get('supplier_address')
+                        }
                         user.sudo().write(userVals)
                         user.partner_id.sudo().write(partnerVals)
                         user.partner_id.set_to_pending()
@@ -123,69 +174,6 @@ class AuthSignupHome(Website):
 
 
 class OdooAPI(http.Controller):
-    @http.route('/api/v1/v/res.users', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def vendor_profile_detail_view(self, **params):
-        model = 'res.users'
-        try:
-            query = 'update res_users set'
-            pickupQuery = ''
-            website = request.env['website'].sudo().browse(1)
-            try:
-                jdata = json.loads(request.httprequest.stream.read())
-            except:
-                jdata = {}
-            if jdata:
-                if not jdata.get('account_number') or not jdata.get('account_name') or not jdata.get('ifsc_code'):
-                    msg = {"message": "Something Went Wrong.", "status_code": 400}
-                    return return_Response_error(msg)
-
-                if not jdata.get('owner_name') or not jdata.get('business_name') or not jdata.get('supplier_country_id') or not jdata.get('supplier_address') or not jdata.get('supplier_city') or not jdata.get('supplier_state_id') or not jdata.get('supplier_phone'):
-                    msg = {"message": "Something Went Wrong.", "status_code": 400}
-                    return return_Response_error(msg)
-
-                if not jdata.get('country_id') or not jdata.get('state_id') or not jdata.get('city') or not jdata.get('address') or not jdata.get('email'):
-                    msg = {"message": "Something Went Wrong.", "status_code": 400}
-                    return return_Response_error(msg)
-                # prepare data for supplier details
-                gst_number = jdata.get('gst_number')
-                if gst_number:
-                    rec = check_gst_number(gst_number, jdata.get('supplier_state_id'))
-                    if 'message' not in rec:
-                        query += f" gst_number='{jdata.get('gst_number')}',"
-                    else:
-                        msg = {"message": rec['message'], "status_code": 400}
-                        return return_Response_error(msg)
-                query += f" account_name='{jdata.get('account_name')}', " \
-                         f"account_number='{jdata.get('account_number')}', " \
-                         f"ifsc_code='{jdata.get('ifsc_code')}', " \
-                         f"owner_name='{jdata.get('owner_name')}', business_name='{jdata.get('business_name')}'," \
-                         f" supplier_country_id='{jdata.get('supplier_country_id')}', supplier_state_id='{jdata.get('supplier_state_id')}'," \
-                         f" supplier_address='{jdata.get('supplier_address')}', supplier_city='{jdata.get('supplier_city')}', " \
-                         f"supplier_phone='{jdata.get('supplier_phone')}',"
-
-                request.env.cr.execute(f"select * from res_users where login='{jdata.get('email')}'")
-                result = request.env.cr.dictfetchall()
-                if result and result[0]['id']:
-                    request.env.cr.execute(f"update res_partner set country_id='{jdata.get('supplier_country_id')}', state_id='{jdata.get('supplier_state_id')}', city='{jdata.get('supplier_city')}', street='{jdata.get('supplier_address')}', phone='{jdata.get('supplier_phone')}', mobile='{jdata.get('supplier_phone')}'")
-                    # create pickup address
-                    pickupQuery = f" INSERT INTO pickup_address(user_id,country_id,address,city,state_id) VALUES({result[0]['id']},{jdata.get('country_id')}, '{jdata.get('address')}', '{jdata.get('city')}', {jdata.get('state_id')})"
-                    request.env.cr.execute(pickupQuery)
-                    # update supplier address and bank details
-                    query += f" active='t' where login='{jdata.get('email')}'"
-                    request.env.cr.execute(query)
-                else:
-                    msg = {"message": "User Does not Exists", "status_code": 400}
-                    return return_Response_error(msg)
-            else:
-                msg = {"message": "Parameter is Empty", "status_code": 400}
-                return return_Response_error(msg)
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
-        res = {
-            "message":"Profile Updated Successfully", "status":200
-            }
-        return return_Response(res)
-
     @http.route('/api/v1/v/product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_category_list(self, **params):
         model = 'product.category'
@@ -298,10 +286,10 @@ class OdooAPI(http.Controller):
                     "type": jdata.get('type'),
                     "categ_id": jdata.get('categ_id'),
                     "list_price": jdata.get('list_price'),
-                    "sale_ok": jdata.get('sale_ok') or False,
-                    "purchase_ok": jdata.get('purchase_ok') or False,
-                    "uom_id": 1,
-                    "uom_po_id": 1,
+                    "sale_ok": True,
+                    "purchase_ok": False,
+                    "uom_id": jdata.get('uom') or 1,
+                    "uom_po_id": jdata.get('uom_po_id') or 1,
                     "company_id": website.company_id.id,
                     "active": True,
                     "invoice_policy": "order",
@@ -318,6 +306,7 @@ class OdooAPI(http.Controller):
                             lst.append([0, 0,{'attribute_id':int(i),'value_ids':value}])
                     dict["attribute_line_ids"]= lst
                 resId = request.env['product.template'].sudo().create(dict)
+                resId.set_pending()
                 if resId:
                     res = {
                         'message': "Product created Successfully",
