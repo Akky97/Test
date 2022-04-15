@@ -13,6 +13,21 @@ SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tH
 stripe.api_key = SECRET_KEY
 
 
+def check_transaction_status(transaction_id):
+    transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
+    if transaction:
+        res = stripe.PaymentIntent.retrieve(
+            transaction.payment_intent,
+        )
+        transaction.sudo().write({'payment_data': res})
+        if res.status == 'succeeded':
+            return True
+        else:
+            stripe.Refund.create(payment_intent=transaction.payment_intent)
+            return False
+    return False
+
+
 def create_checkout_session(jdata):
     checkout_session = {}
     if jdata:
@@ -36,6 +51,12 @@ def create_checkout_session(jdata):
                 success_url='https://pandostores.com/shop/success',
                 cancel_url='https://pandostores.com/shop/cart',
             )
+            if checkout_session and checkout_session.payment_intent and jdata.get('id'):
+                transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('id')))])
+                transaction.write({
+                    'payment_intent':checkout_session.payment_intent
+                })
+
     return checkout_session
 
 
@@ -44,10 +65,11 @@ def payment_validate(transaction_id,order):
     transaction = request.env['payment.transaction'].sudo().search([('id','=',transaction_id)])
     if transaction:
         res = transaction.sudo().write({
-            'state':'done'
+            'state':'done',
+            'date':datetime.datetime.now()
         })
         if res:
-            res = order.with_context(send_email=True).action_confirm()
+            res = order.action_confirm()
     return res
 
 
@@ -113,6 +135,7 @@ def dispatch_order(order):
         for rec in stockMoveLine:
             rec.sudo().write({'qty_done':rec.product_uom_qty})
         stockPicking.button_validate()
+
 
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
@@ -413,8 +436,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/pay_now', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
-                website=True)
+    @http.route('/api/v1/c/pay_now', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def pay_now(self, **params):
         try:
             result={}
@@ -469,9 +491,14 @@ class WebsiteSale(WebsiteSale):
                                                             order='write_date DESC', limit=1)
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
-                    invoice = create_invoice(int(jdata.get('transaction_id')), order)
-                    res = {"message": 'Success', 'status': 200}
-                    return return_Response(res)
+                    check = check_transaction_status(int(jdata.get('transaction_id')))
+                    if check:
+                        invoice = create_invoice(int(jdata.get('transaction_id')), order)
+                        res = {"message": 'Success', 'status': 200}
+                        return return_Response(res)
+                    else:
+                        msg = {"message": "Something Went Wrong.", "status_code": 400}
+                        return return_Response_error(msg)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)

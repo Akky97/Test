@@ -13,3 +13,10 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     sale_count_pando = fields.Float(string='Product Sale Count')
+
+
+class PaymentTransaction(models.Model):
+    _inherit = 'payment.transaction'
+
+    payment_intent = fields.Char('Payment Intent Id')
+    payment_data = fields.Char('Payment Data')
