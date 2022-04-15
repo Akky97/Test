@@ -15,6 +15,7 @@ import requests
 from odoo.http import Response
 from odoo.tools import date_utils
 from odoo.addons.web.controllers.main import Session
+from .error_or_response_parser import *
 
 _logger = logging.getLogger(__name__)
 
@@ -256,6 +257,94 @@ class AccessToken(http.Controller):
         # Login in odoo database:
         try:
             # request.session.logout()
+            request.session.authenticate(db, login, password)
+            r = request.env['ir.http'].session_info()
+        except Exception as e:
+            # Invalid database:
+            error = 'invalid_database'
+            info = "E-mail or Password is not valid"
+            _logger.error(info)
+            return invalid_response(error, info)
+
+        uid = request.session.uid
+        res_id = request.env['ir.attachment'].sudo()
+        res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                       ('res_field', '=', 'image_1920'),
+                                       ('res_id', 'in', [request.env.user.partner_id.id])])
+        res_id.sudo().write({"public": True})
+        # odoo login failed:
+        if not uid:
+            error = 'authentication failed'
+            info = 'authentication failed'
+            _logger.error(info)
+            return invalid_response(error, info)
+        # Generate tokens
+        access_token = request.env['api.access_token'].sudo().find_one_or_create_token(
+            user_id=uid, create=True)
+        # Successful response:
+        print(request.httprequest.headers, ":fg")
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        return token_response({
+            'uid': uid,
+            'user_context': request.session.get_context(),
+            'company_id': request.env.user.company_id.id,
+            'email': request.env.user.partner_id.email,
+            'name': request.env.user.name,
+            "image": base_url.value + '/web/image/' + str(res_id.id),
+            'access_token': access_token,
+            'expires_in': request.env.ref(expires_in).sudo().value,
+            'session_id': request.session.sid,
+            'partner_id': request.env.user.partner_id.id,
+            "r": r
+        })
+
+    @http.route('/api/vendor/auth/token', methods=['POST'], type='http', auth='none', csrf=False, cors='*')
+    def vendor_token(self, **kwargs):
+        """The token URL to be used for getting the access_token:
+        Args:
+            **post must contain login and password.
+        Returns:
+            returns https response code 404 if failed error message in the body in json format
+            and status code 202 if successful with the access_token.
+        Example:
+           import requests
+           headers = {'content-type': 'text/plain', 'charset':'utf-8'}
+           data = {
+               'login': 'admin',
+               'password': 'admin',
+               'db': 'galago.ng'
+            }
+           base_url = 'http://odoo.ng'
+           req = requests.post(
+               '{}/api/auth/token'.format(base_url), data=data, headers=headers)
+           content = json.loads(req.content.decode('utf-8'))
+           headers.update(access-token=content.get('access_token'))
+        """
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        db = jdata.get('db')
+        login = jdata.get('login')
+        password = jdata.get('password')
+        try:
+            db, username, password = db, login, password
+        except Exception as e:
+            # Invalid database:
+            error = 'missing'
+            info = 'either of the following are missing [db, username,password]'
+            status = 403
+            _logger.error(info)
+            return invalid_response(error, info, status)
+
+        # Login in odoo database:
+        try:
+            # request.session.logout()
+            user = request.env['res.users'].sudo().search([('login', '=', login)])
+            vendor = user.partner_id
+            if vendor.state == 'pending':
+                error = {"message": "Your request is not approved yet", "status": 400}
+                return return_Response_error(error)
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:
