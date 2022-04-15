@@ -16,6 +16,7 @@ from odoo.http import Response
 from odoo.tools import date_utils
 from odoo.addons.web.controllers.main import Session
 from .error_or_response_parser import *
+from .exceptions import QueryFormatError
 
 _logger = logging.getLogger(__name__)
 
@@ -386,22 +387,28 @@ class AccessToken(http.Controller):
             "r": r
         })
 
-    @http.route('/api/auth/token', methods=['DELETE'], type='http', auth='none', csrf=False)
-    def delete(self, **kwargs):
+    @http.route('/api/logout/auth/token', methods=['POST'], type='http', auth='none', csrf=False, cors='*')
+    def delete(self, **params):
         """."""
-        request_token = request.httprequest.headers.get('access_token')
-        access_token = request.env['api.access_token'].sudo().search([('token', '=', request_token)])
-        if not access_token:
-            error = 'no_access_token'
-            info = 'No access token was provided in request!'
-            _logger.error(info)
-            return invalid_response(error, info, 400)
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if not jdata.get('access_token'):
+                msg = {"message": "Please provide access token", "status_code": 400}
+                return return_Response_error(msg)
+            request_token = jdata.get('access_token')
+            access_token = request.env['api.access_token'].sudo().search([('token', '=', request_token)])
 
-        for token in access_token:
-            token.unlink()
+            for token in access_token:
+                token.unlink()
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
 
         # Successful response:
-        return valid_response({
-            'desc': 'token successfully deleted',
-            'delete': True
-        })
+        res = {
+            "result": "Access Token Deleted Successfully", "status": 200
+        }
+        return return_Response(res)
+
