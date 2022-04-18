@@ -271,3 +271,36 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
+    @validate_token
+    @http.route('/api/v1/apk/save_transaction_details', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def save_transaction_details(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if jdata.get('transaction_id') and jdata.get('payment_intent'):
+                    transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
+                    transaction.write({
+                        'payment_intent': jdata.get('payment_intent')
+                    })
+                    res = {
+                        "message": 'success', "status": 200
+                    }
+                    return return_Response(res)
+                else:
+                    res = {
+                        "message": "Something Went Wrong.", "status": 400
+                    }
+                    return return_Response_error(res)
+
+            else:
+                res = {
+                    "message": "Something Went Wrong.","status":400
+                }
+                return return_Response_error(res)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
