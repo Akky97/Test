@@ -176,8 +176,8 @@ class AuthSignupHome(Website):
 class OdooAPI(http.Controller):
     @http.route('/api/v1/v/product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_category_list(self, **params):
-        model = 'product.category'
-        records=request.env[model].sudo()
+        model = 'product.public.category'
+        records = request.env[model].sudo()
         try:
             records = request.env[model].sudo().search([])
         except KeyError as e:
@@ -188,16 +188,17 @@ class OdooAPI(http.Controller):
             if records:
                 for rec in records:
                     temp.append({
-                        'id':rec.id,
-                        'name':rec.name,
-                        'complete_name': rec.complete_name
+                        'id': rec.id,
+                        'name': rec.name
                     })
-
+            else:
+                msg = {"message": "No result Found.", "status_code": 400}
+                return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "count":len(temp),
-            "record":temp,
+            "count": len(temp),
+            "record": temp,
             "status": 200
         }
         return return_Response(res)
