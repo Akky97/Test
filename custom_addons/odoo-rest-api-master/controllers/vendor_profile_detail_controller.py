@@ -9,10 +9,34 @@ from .error_or_response_parser import *
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.auth_signup.models.res_users import SignupError
 from odoo.exceptions import UserError
+from odoo import http, _, exceptions, fields
+from datetime import timedelta, time
+from odoo.tools.float_utils import float_round
 import werkzeug
 _logger = logging.getLogger(__name__)
 
 
+def _compute_sales_count(self):
+    r = {}
+    self.sales_count = 0
+    date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+                                                                  time.min))
+
+    done_states = self.env['sale.report']._get_done_states()
+
+    domain = [
+        ('state', 'in', done_states),
+        ('product_id', 'in', self.ids),
+        ('date', '>=', date_from),
+    ]
+    for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
+        r[group['product_id'][0]] = group['product_uom_qty']
+    for product in self:
+        if not product.id:
+            product.sales_count = 0.0
+            continue
+        product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
+    return r
 
 
 def check_gst_number(gst, state_id):
@@ -174,6 +198,37 @@ class AuthSignupHome(Website):
 
 
 class OdooAPI(http.Controller):
+    @validate_token
+    @http.route('/api/v1/v/get_product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def get_product_category_list(self, **params):
+        model = 'product.category'
+        records = request.env[model].sudo()
+        try:
+            records = request.env[model].sudo().search([])
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            temp = []
+            if records:
+                for rec in records:
+                    temp.append({
+                        'id': rec.id,
+                        'name': rec.name
+                    })
+            else:
+                msg = {"message": "No result Found.", "status_code": 400}
+                return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "record": temp,
+            "status": 200
+        }
+        return return_Response(res)
+
+    @validate_token
     @http.route('/api/v1/v/product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_category_list(self, **params):
         model = 'product.public.category'
@@ -203,20 +258,13 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+    @validate_token
     @http.route('/api/v1/v/get_uom_list', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_uom_list(self, **params):
         model = 'uom.uom'
         records = request.env[model].sudo()
         try:
-            try:
-                jdata = json.loads(request.httprequest.stream.read())
-            except:
-                jdata = {}
-            if jdata:
-                records = request.env[model].sudo().search([])
-            else:
-                msg = {"message": "Something Went Wrong.", "status_code": 400}
-                return return_Response_error(msg)
+            records = request.env[model].sudo().search([])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -242,6 +290,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+    @validate_token
     @http.route(['/api/v1/v/attribute_value','/api/v1/v/attribute_value/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_attribute_value(self, id=None,**params):
         try:
@@ -266,7 +315,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
-
+    @validate_token
     @http.route('/api/v1/v/product_product', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def create_product(self, **params):
         try:
@@ -298,7 +347,6 @@ class OdooAPI(http.Controller):
                             "country_id": int(rec.get('country_id')),
                             "public_categ_ids":[[6, False,[int(rec.get('public_categ_ids'))]]]
                         }
-                        # dict['image_1920'] = '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'
                         if 'variant' in rec:
                             lst=[]
                             for i in rec.get('variant').keys():
@@ -308,8 +356,166 @@ class OdooAPI(http.Controller):
                             dict["attribute_line_ids"]= lst
                         resId = request.env['product.template'].sudo().create(dict)
                         resId.set_pending()
+                else:
+                    msg = {"message": "No Data Found.", "status_code": 400}
+                    return return_Response_error(msg)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+        res = {
+            'message': "Product created Successfully",
+            'status': 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def product_template_view(self, **params):
+        try:
+            domain = [('is_published', '=', True),('type','=','product'),('marketplace_seller_id','=', request.env.user.partner_id.id)]
+            model = 'product.product'
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+
+        if "query" in params:
+            query = params["query"]
+        else:
+            query = "{*}"
+        search = ''
+        if "orderBy" in params:
+            orders = params["orderBy"]
+            if orders == 'rating':
+                pass
+            elif orders == 'new':
+                search = 'create_date DESC'
+            elif orders == 'featured':
+                search = 'sale_count_pando DESC'
+            elif orders == 'sale':
+                search = 'sale_count_pando DESC'
+                domain.append(('website_ribbon_id.html', '=', 'Sale'))
+        limit = 0
+        offset = 0
+        if "page" in params:
+            limit = 12
+            page = int(params["page"])
+            offset = (page - 1) * 12
+        record_count = request.env[model].sudo().search_count(domain)
+        records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
+            for res in records:
+                _compute_sales_count(self=res)
+                res.sale_count_pando = res.sales_count
+            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        prev_page = None
+        next_page = None
+        total_page_number = 1
+        current_page = 1
+        website = request.env['website'].sudo().browse(1)
+        try:
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
+
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            temp = []
+            for i in records:
+                image = []
+                category=[]
+                variant=[]
+                sellers=[]
+                for j in i.product_template_image_ids:
+                    image.append({"id": j.id, "name": j.name,
+                                  "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+                                  'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+                                  })
+                for z in i.public_categ_ids:
+                    category.append({"id": z.id, "name": z.name,"slug":z.name.lower().replace(" ","-"),
+                             "image": base_url.value + '/web/image/product.public.category/' + str(z.id) + "/image_1920",})
+                product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
+                for k in product_var:
+                    values = []
+                    attribute_name = ''
+                    id = []
+                    data = []
+                    for c in k.product_template_attribute_value_ids:
+                        id.append(c.attribute_id.id)
+                    for attr_id in list(set(id)):
+                        for b in k.product_template_attribute_value_ids:
+                            if attr_id == b.attribute_id.id:
+                                attribute_name = b.attribute_id.name
+                                if attribute_name.lower() == 'color':
+                                    values.append({"color": b.product_attribute_value_id.name,
+                                                   "color_name": b.product_attribute_value_id.html_color})
+                                else:
+                                    values.append({"id": b.id, "name": b.name, "slug": None,
+                                                   "pivot": {"components_variants_variant_id": k.id,
+                                                             "component_id": b.id}})
+                        data.append({attribute_name: values})
+                        values = []
+                    res_data = {"id": k.id, "price": k.list_price,
+                                "pivot": {"product_id": i.id, "component_id": k.id}}
+
+                    if len(data) != 0:
+                        for dic in data:
+                            res = list(dic.items())[0]
+
+                            # if len
+                            if res[0].lower() == 'color':
+                                res_data.update(
+                                    {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+                            else:
+                                res_data.update(dic)
+
+
+                        variant.append(res_data)
+                    else:
+                        pass
+
+                for n in i.seller_ids:
+                    sellers.append({"id": n.id, "vendor": n.name.name,"vendor_id": n.name.id})
+
+                temp.append({"id": i.id, "name": i.name,
+                             'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                             'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                             'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
+                             'description': i.description if i.description != False else '',
+                             'short_desc': i.description_sale if i.description_sale != False else '',
+                             'categ_id': i.categ_id.id if i.categ_id.id != False else '',
+                             'categ_name': i.categ_id.name if i.categ_id.name != False else '',
+                             "category":category,
+                             "create_uid":i.create_uid.id if i.create_uid.id != False else '',
+                             "create_name":i.create_uid.name if i.create_uid.name != False else '',
+                             "write_uid":i.write_uid.id if i.write_uid.id != False else '',
+                             "write_name":i.write_uid.name if i.write_uid.name != False else '',
+                             "variants":variant,
+                             "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(warehouse=warehouse.id).virtual_available>0 else 0.0,
+                             "sm_pictures": image,
+                             "featured":i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
+                             "seller_ids":sellers,
+                             "slug":i.id,
+                             "top": True if i.website_ribbon_id.html == 'Trending' else None,
+                             "new": True if i.website_ribbon_id.html == 'New' else None,
+                             "author":"Pando-Stores",
+                             "sold":i.sales_count,
+                             "review":2,
+                             "rating":3,
+                             "additional_info": i.additional_info if i.additional_info else '',
+                             "shipping_return": i.shipping_return if i.shipping_return else '',
+                             "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
+                             })
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "total_count": record_count,
+            "count": len(temp),
+            "prev": prev_page,
+            "current": current_page,
+            "next": next_page,
+            "total_pages": total_page_number,
+            "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
+        }
+
+        return return_Response(res)
