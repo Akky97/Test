@@ -522,7 +522,7 @@ class OdooAPI(http.Controller):
             rec = request.env[model].sudo().search([])
             for j in rec:
                 total_count = 0
-                dom = [('public_categ_ids', 'in', [j.id]), ('is_published', '=', True), ('type', '=', 'product')]
+                dom = [('public_categ_ids', 'in', [j.id]), ('is_published', '=', True), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
                 domain = dom.append(('country_id', '=', country_id)) if country_id else dom
                 if attr:
                     domain.append(attr)
