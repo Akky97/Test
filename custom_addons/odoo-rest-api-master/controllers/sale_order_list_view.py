@@ -376,9 +376,11 @@ class SaleOrderController(http.Controller):
         try:
             if records:
                 base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-                if not records.invoice_ids[0].access_token:
-                    records.invoice_ids[0].sudo().write({'access_token': str(uuid.uuid4())})
-                url = base_url.value +'/my/invoices/'+str(records.invoice_ids[0].id)+'?access_token='+records.invoice_ids[0].access_token+'&report_type=pdf&download=true'
+                url =''
+                if records.invoice_ids:
+                    if not records.invoice_ids[0].access_token:
+                        records.invoice_ids[0].sudo().write({'access_token': str(uuid.uuid4())})
+                    url = base_url.value +'/my/invoices/'+str(records.invoice_ids[0].id)+'?access_token='+records.invoice_ids[0].access_token+'&report_type=pdf&download=true'
 
                 value = {
                     'id': records.id,
