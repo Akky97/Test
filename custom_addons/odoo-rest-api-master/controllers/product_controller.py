@@ -41,7 +41,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/c/product.template.view', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_template_view(self, **params):
         try:
-            domain = [('is_published', '=', True),('type','=','product')]
+            domain = [('is_published', '=', True), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
@@ -95,6 +95,8 @@ class OdooAPI(http.Controller):
                 category=[]
                 variant=[]
                 sellers=[]
+                _compute_sales_count(self=i)
+                i.sale_count_pando = i.sales_count
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
@@ -169,7 +171,7 @@ class OdooAPI(http.Controller):
                              "top": True if i.website_ribbon_id.html == 'Trending' else None,
                              "new": True if i.website_ribbon_id.html == 'New' else None,
                              "author":"Pando-Stores",
-                             "sold":i.sales_count,
+                             "sold": i.sales_count,
                              "review":2,
                              "rating":3,
                              "additional_info": i.additional_info if i.additional_info else '',
@@ -217,6 +219,8 @@ class OdooAPI(http.Controller):
                 category = []
                 variant = []
                 sellers = []
+                _compute_sales_count(self=i)
+                i.sale_count_pando = i.sales_count
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
@@ -317,7 +321,7 @@ class OdooAPI(http.Controller):
                 cors='*')
     def product_template_view_by_categ(self, **params):
         try:
-            domain = [('is_published', '=', True),('type','=','product')]
+            domain = [('is_published', '=', True), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
             model = 'product.product'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
@@ -376,6 +380,8 @@ class OdooAPI(http.Controller):
                 category = []
                 variant = []
                 sellers = []
+                _compute_sales_count(self=i)
+                i.sale_count_pando = i.sales_count
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
@@ -566,7 +572,7 @@ class OdooAPI(http.Controller):
     def product_template_search(self, **params):
         website = request.env['website'].sudo().browse(1)
         try:
-            domain = [('is_published', '=', True), ('type', '=', 'product')]
+            domain = [('is_published', '=', True), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
             categ_id = []
             if 'search' in params:
                 model = 'product.public.category'
@@ -578,17 +584,17 @@ class OdooAPI(http.Controller):
                             domain = ['&', ('is_published', '=', True), '&',
                                       ('country_id', '=', country_id), '|',
                                       ('name', 'ilike', params['search']),
-                                      ('public_categ_ids', 'in', categ_id), ('type', '=', 'product')]
+                                      ('public_categ_ids', 'in', categ_id), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
                         else:
                             domain = ['&', ('is_published', '=', True), '|', ('name', 'ilike', params['search']),
-                                      ('public_categ_ids', 'in', categ_id), ('type', '=', 'product')]
+                                      ('public_categ_ids', 'in', categ_id), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
                     else:
                         if country_id:
                             domain = [('is_published', '=', True), ('country_id', '=', country_id),
-                                      ('name', 'ilike', params['search']), ('type', '=', 'product')]
+                                      ('name', 'ilike', params['search']), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
                         else:
                             domain = [('is_published', '=', True), ('name', 'ilike', params['search']),
-                                      ('type', '=', 'product')]
+                                      ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
 
                 except KeyError as e:
                     msg = "The model `%s` does not exist." % model
@@ -607,6 +613,8 @@ class OdooAPI(http.Controller):
                 category = []
                 variant = []
                 sellers = []
+                _compute_sales_count(self=i)
+                i.sale_count_pando = i.sales_count
                 for j in i.product_template_image_ids:
                     image.append({"id": j.id, "name": j.name,
                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
@@ -775,6 +783,8 @@ class OdooAPI(http.Controller):
                     category = []
                     variant = []
                     sellers = []
+                    _compute_sales_count(self=i)
+                    i.sale_count_pando = i.sales_count
                     for j in i.product_template_image_ids:
                         image.append({"id": j.id, "name": j.name,
                                       "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
