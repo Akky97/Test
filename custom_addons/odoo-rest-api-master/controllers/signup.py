@@ -102,7 +102,7 @@ class SignupAPI(AuthSignupHome):
             email = jdata.get('email')
             template = request.env.ref('odoo-rest-api-master.send_otp_email_template',
                                        raise_if_not_found=False)
-            outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).smtp_user
+            outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
             otp = random.randint(100000, 999999)
             if outgoing_server_name:
                 email_check = request.env['res.users'].sudo().search([('login', '=', email)])
@@ -151,7 +151,7 @@ class SignupAPI(AuthSignupHome):
                     name = user.partner_id.name
                     template = request.env.ref('odoo-rest-api-master.send_otp_email_template',
                                                raise_if_not_found=False)
-                    outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).smtp_user
+                    outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
                     otp = random.randint(100000, 999999)
                     if outgoing_server_name:
                         template.email_from = outgoing_server_name
