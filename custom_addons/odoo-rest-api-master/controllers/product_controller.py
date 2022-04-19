@@ -544,7 +544,7 @@ class OdooAPI(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
             for i in records:
-                domain = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True), ('type', '=', 'product')]
+                domain = [('public_categ_ids', 'in', [i.id]), ('is_published', '=', True), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
                 if country_id:
                     domain.append(('country_id', '=', country_id))
                 if attr:
