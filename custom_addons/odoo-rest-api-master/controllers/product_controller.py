@@ -174,6 +174,8 @@ class OdooAPI(http.Controller):
                              "sold": i.sales_count,
                              "review":2,
                              "rating":3,
+                             "marketplace_seller_id":i.marketplace_seller_id.id,
+                             "marketplace_seller_name": i.marketplace_seller_id.name,
                              "additional_info": i.additional_info if i.additional_info else '',
                              "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920","image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
@@ -298,6 +300,8 @@ class OdooAPI(http.Controller):
                              "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
+                             "marketplace_seller_id": i.marketplace_seller_id.id,
+                             "marketplace_seller_name": i.marketplace_seller_id.name,
                              "additional_info": i.additional_info if i.additional_info else '',
                              "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [
@@ -460,6 +464,8 @@ class OdooAPI(http.Controller):
                              "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
+                             "marketplace_seller_id": i.marketplace_seller_id.id,
+                             "marketplace_seller_name": i.marketplace_seller_id.name,
                              "additional_info": i.additional_info if i.additional_info else '',
                              "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [
@@ -694,6 +700,8 @@ class OdooAPI(http.Controller):
                              "sold": i.sales_count,
                              "review": 2,
                              "rating": 3,
+                             "marketplace_seller_id": i.marketplace_seller_id.id,
+                             "marketplace_seller_name": i.marketplace_seller_id.name,
                              "additional_info": i.additional_info if i.additional_info else '',
                              "shipping_return": i.shipping_return if i.shipping_return else '',
                              "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(

@@ -7,3 +7,4 @@ from . import product_template
 from . import pando_banners
 from . import email_verification
 from . import category
+from . import pando_images

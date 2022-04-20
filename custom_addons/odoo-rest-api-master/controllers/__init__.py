@@ -14,3 +14,4 @@ from . import website_category
 from . import payment_controllers
 from . import apis_for_apk
 from . import vendor_profile_detail_controller
+from . import image_upload_in_s3

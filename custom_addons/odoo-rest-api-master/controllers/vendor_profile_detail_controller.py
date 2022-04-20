@@ -155,6 +155,7 @@ def get_product_details(website, warehouse, base_url,records):
 
 
 class AuthSignupHome(Website):
+
     @http.route('/api/v1/v/vendor_signup', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def vendor_signup(self):
         try:
@@ -488,9 +489,9 @@ class OdooAPI(http.Controller):
         limit = 0
         offset = 0
         if "page" in params:
-            limit = 12
+            limit = 50
             page = int(params["page"])
-            offset = (page - 1) * 12
+            offset = (page - 1) * 50
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
@@ -531,13 +532,7 @@ class OdooAPI(http.Controller):
     def sale_order_list_view(self, **params):
         try:
             domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
-            # productList = request.env['product.product'].search([('is_published', '=', True),('type','=','product'),
-            #     ('sale_ok', '=', True),
-            #     ('status', '=', "approved"),
-            #     ("marketplace_seller_id", "=", request.env.user.partner_id.id)
-            # ]).ids
             model = 'sale.order.line'
-            # records = request.env[model].sudo().search([('product_id','in',productList)])
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -545,9 +540,9 @@ class OdooAPI(http.Controller):
         limit = 0
         offset = 0
         if "page" in params:
-            limit = 12
+            limit = 50
             page = int(params["page"])
-            offset = (page - 1) * 12
+            offset = (page - 1) * 50
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
         prev_page = None
@@ -594,3 +589,31 @@ class OdooAPI(http.Controller):
         }
 
         return return_Response(res)
+
+    @http.route('/api/v1/c/pando.images', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def pando_images(self, **kw):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('product_id') or not jdata.get('image') or not jdata.get('image_type'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                for image in jdata.get('image'):
+                    dict = {
+                        'image_url': image,
+                        'product_id': int(jdata.get('product_id')),
+                        'type': jdata.get('image_type'),
+                    }
+                    object = request.env['pando.images'].sudo().create(dict)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "message": "success",
+            "status": 200
+        }
+        return return_Response(res)
+

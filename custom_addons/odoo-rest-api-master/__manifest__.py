@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'website_sale', 'payment'],
+    'depends': ['base', 'product', 'website_sale', 'payment', 'odoo_marketplace'],
 
     # always loaded
     'data': [
@@ -30,6 +30,7 @@
         'views/res_users.xml',
         'data/ir_config_param.xml',
         'views/pando_banner.xml',
+        'views/pando_image_view.xml',
         'views/product_template.xml',
         'views/category_view.xml',
         'security/ir.model.access.csv',

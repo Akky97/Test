@@ -258,6 +258,10 @@ class AccessToken(http.Controller):
         # Login in odoo database:
         try:
             # request.session.logout()
+            user = request.env['res.users'].sudo().search([('login', '=', login)])
+            if user.user_type == 'vendor':
+                error = {"message": "You are not authorized to login here", "status": 400}
+                return return_Response_error(error)
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:
@@ -345,6 +349,9 @@ class AccessToken(http.Controller):
             vendor = user.partner_id
             if vendor.state == 'pending':
                 error = {"message": "Your request is not approved yet", "status": 400}
+                return return_Response_error(error)
+            if user.user_type != 'vendor':
+                error = {"message": "You are not authorized to login here", "status": 400}
                 return return_Response_error(error)
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
