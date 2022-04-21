@@ -25,8 +25,7 @@ ts = calendar.timegm(time.gmtime())
 
 
 bucket = 'pandomall'
-# path = '/home/aman/Downloads/project14new/custom_addons/odoo-rest-api-master/static/src/image/'
-path = '/home/aakash/Pando-Mall/custom_addons/odoo-rest-api-master/static/src/image/'
+path = '/home/aman/Downloads/project14new/custom_addons/odoo-rest-api-master/static/src/image/'
 
 class OdooAPI(http.Controller):
 
