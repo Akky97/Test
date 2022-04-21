@@ -662,6 +662,7 @@ class OdooAPI(http.Controller):
 
         return return_Response(res)
 
+    @validate_token
     @http.route('/api/v1/c/pando.images', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def pando_images(self, **kw):
         try:
@@ -690,6 +691,7 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+    @validate_token
     @http.route('/api/v1/c/pando.images.delete', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def pando_images_delete(self, **kw):
         try:

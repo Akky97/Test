@@ -25,7 +25,7 @@ ts = calendar.timegm(time.gmtime())
 
 
 bucket = 'pandomall'
-path = '/home/aman/Downloads/project14new/custom_addons/odoo-rest-api-master/static/src/image/'
+path = '/home/ubuntu/Pando-Mall/custom_addons/odoo-rest-api-master/static/src/image/'
 
 class OdooAPI(http.Controller):
 
@@ -56,6 +56,7 @@ class OdooAPI(http.Controller):
             return False
         return True
 
+    @validate_token
     @http.route('/api/v1/c/image_upload_s3', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def image_upload_in_s3(self, **kw):
         if not kw['file']:
@@ -77,6 +78,7 @@ class OdooAPI(http.Controller):
                 error = {"message": "Image is not uploaded", "status": 400}
                 return return_Response_error(error)
 
+    @validate_token
     @http.route('/api/v1/c/image_upload_s3_delete', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def image_upload_in_delete(self, **kw):
         try:
