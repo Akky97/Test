@@ -25,9 +25,9 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="odoo_marketplace.wk_seller_product_template_form_view"/>
             <field name="arch" type="xml">
-<!--                <xpath expr="//field[@name='hs_code']" position="after">-->
-<!--                    <field name="country_id"/>-->
-<!--                </xpath>-->
+                <xpath expr="//field[@name='hs_code']" position="after">
+                    <field name="country_id"/>
+                </xpath>
                 <xpath expr="//field[@name='image_1920']" position="replace">
                     <field name="img_attach" />
                 </xpath>
@@ -48,9 +48,9 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="odoo_marketplace.mp_product_product_form_view"/>
             <field name="arch" type="xml">
-<!--                <xpath expr="//field[@name='hs_code']" position="after">-->
-<!--                    <field name="country_id"/>-->
-<!--                </xpath>-->
+                <xpath expr="//field[@name='hs_code']" position="before">
+                    <field name="country_id"/>
+                </xpath>
                 <xpath expr="//field[@name='image_1920']" position="replace">
                     <field name="img_attach" />
                 </xpath>
