@@ -12,23 +12,28 @@ class ProductTemplate(models.Model):
     img_attach = fields.Html('Image', compute="_get_img_html")
     img_multi_attach = fields.Html('Image', compute="_get_multi_img_html")
     def _get_multi_img_html(self):
-        rec = self.env['pando.images'].sudo().search(
-            [('product_id.product_tmpl_id', '=', self.id), ('type', '=', 'multi_image')])
-        img_attach =''
-        for r in rec:
-            img_url = r.image_url
-            img_attach += '<img src="%s" style="height:100px;width: 100px;padding:10px;"/> ' % img_url
-        self.img_multi_attach = img_attach
+        for res in self:
+            rec = self.env['pando.images'].sudo().search(
+                [('product_id.product_tmpl_id', '=', res.id), ('type', '=', 'multi_image')])
+            img_attach =''
+            for r in rec:
+                img_url = r.image_url
+                img_attach += '<img src="%s" style="height:100px;width: 100px;padding:10px;"/> ' % img_url
+            res.img_multi_attach = img_attach
 
     def _get_img_url(self):
-        rec = self.env['pando.images'].sudo().search([('product_id.product_tmpl_id','=',self.id),('type','=','base_image')],limit=1)
-        self.image_url = rec.image_url
-        self.image_name = rec.image_name
+        for res in self:
+            rec = self.env['pando.images'].sudo().search([('product_id.product_tmpl_id','=',res.id),('type','=','base_image')],limit=1)
+            res.image_url = rec.image_url
+            res.image_name = rec.image_name
 
     def _get_img_html(self):
         for elem in self:
-            img_url = self.image_url
-            elem.img_attach = '<img src="%s" style="float:right !important;height:100px;width: 100px;"/>' % img_url
+            img_url = elem.image_url
+            if img_url:
+                elem.img_attach = '<img src="%s" style="float:right;height:70px;width: 100px;"/>' % img_url
+            else:
+                elem.img_attach = '<img src="%s" style="float:right;height:70px;width: 100px;"/>' % "https://pandomall.s3.ap-southeast-1.amazonaws.com/1650525013noimage.png"
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
