@@ -409,6 +409,50 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
     @validate_token
+    @http.route('/api/v1/v/account.tax', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def get_account_tax(self, **params):
+        try:
+            temp = []
+            record = request.env['account.tax'].sudo().search([])
+            if record:
+                for i in record:
+                    vals = {
+                        'id': i.id,
+                        'name': i.name
+                    }
+                    temp.append(vals)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "result": temp
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/product.ribbon', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def get_product_ribbon(self, **params):
+        try:
+            temp = []
+            record = request.env['product.ribbon'].sudo().search([])
+            if record:
+                for i in record:
+                    vals = {
+                        'id': i.id,
+                        'name': i.html
+                    }
+                    temp.append(vals)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "result": temp
+        }
+        return return_Response(res)
+
+    @validate_token
     @http.route('/api/v1/v/product_product', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def create_product(self, **params):
         try:
@@ -428,6 +472,7 @@ class OdooAPI(http.Controller):
                             "type": rec.get('type'),
                             "categ_id": rec.get('categ_id'),
                             "list_price": rec.get('list_price'),
+                            "standard_price": rec.get('standard_price'),
                             "sale_ok": True,
                             "purchase_ok": False,
                             "uom_id": rec.get('uom') or 1,
@@ -440,6 +485,10 @@ class OdooAPI(http.Controller):
                             "country_id": int(rec.get('country_id')),
                             "public_categ_ids":[[6, False,[int(rec.get('public_categ_ids'))]]]
                         }
+                        if 'tax' in rec and rec.get('tax'):
+                            dict['taxes_id'] = [[6, False,[int(rec.get('tax'))]]]
+                        if 'ribbon' in rec and rec.get('ribbon'):
+                            dict['website_ribbon_id'] = int(rec.get('ribbon'))
                         if 'variant' in rec and rec.get('variant'):
                             lst=[]
                             for i in rec.get('variant').keys():
@@ -489,9 +538,9 @@ class OdooAPI(http.Controller):
         limit = 0
         offset = 0
         if "page" in params:
-            limit = 50
+            limit = 10
             page = int(params["page"])
-            offset = (page - 1) * 50
+            offset = (page - 1) * 10
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
@@ -528,6 +577,32 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
     @validate_token
+    @http.route('/api/v1/v/vendor_dashboard', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def vendor_dashboard(self, **params):
+        try:
+            domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
+            model = 'sale.order.line'
+            records = request.env[model].sudo().search(domain)
+            total_sales_unit = 0
+            total_earning = 0
+            total_count = 0
+            total_return=0
+            for rec in records:
+                total_count +=1
+                total_sales_unit += rec.product_uom_qty
+                total_earning += rec.price_subtotal
+            res={
+                'total_count':total_count,
+                'total_sales_unit':total_sales_unit,
+                'total_earning':total_earning,
+                'total_return':total_return
+            }
+            return return_Response(res)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @validate_token
     @http.route('/api/v1/v/sale_order_list_view', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def sale_order_list_view(self, **params):
         try:
@@ -540,9 +615,9 @@ class OdooAPI(http.Controller):
         limit = 0
         offset = 0
         if "page" in params:
-            limit = 50
+            limit = 10
             page = int(params["page"])
-            offset = (page - 1) * 50
+            offset = (page - 1) * 10
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
         prev_page = None
@@ -555,8 +630,6 @@ class OdooAPI(http.Controller):
             [('company_id', '=', website.company_id.id)], limit=1)
         try:
             temp=[]
-            count = 0
-            earning = 0
             for rec in records:
                 vals={
                     "id":rec.id,
@@ -570,15 +643,11 @@ class OdooAPI(http.Controller):
                     "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
                     warehouse=warehouse.id).virtual_available > 0 else 0.0
                 }
-                count += vals['quantity']
-                earning += vals['price_subtotal']
                 temp.append(vals)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
             "total_order": record_count,
-            "total_sales_unit":count,
-            "total_earning": earning,
             "count": len(temp),
             "prev": prev_page,
             "current": current_page,
@@ -603,7 +672,8 @@ class OdooAPI(http.Controller):
                     return return_Response_error(msg)
                 for image in jdata.get('image'):
                     dict = {
-                        'image_url': image,
+                        'image_url': image.get('url'),
+                        'image_name':image.get('name'),
                         'product_id': int(jdata.get('product_id')),
                         'type': jdata.get('image_type'),
                     }
@@ -617,3 +687,24 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+    @http.route('/api/v1/c/pando.images.delete', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def pando_images_delete(self, **kw):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('product_id') or not jdata.get('image_name'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                object = request.env['pando.images'].sudo().search([('product_id','=',int(jdata.get('product_id'))),('image_name','in',jdata.get('image_name'))])
+                for obj in object:
+                    obj.sudo().unlink()
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "message": "success",
+            "status": 200
+        }
+        return return_Response(res)

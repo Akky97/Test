@@ -48,6 +48,15 @@ class OdooAPI(http.Controller):
             return False
         return True
 
+    def delete_image(self, bucket, file):
+        s3_client = boto3.client('s3')
+        try:
+            s3_client.delete_object(Bucket=bucket, Key=file)
+        except ClientError as e:
+            logging.error(e)
+            return False
+        return True
+
     @http.route('/api/v1/c/image_upload_s3', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def image_upload_in_s3(self, **kw):
         if not kw['file']:
@@ -69,4 +78,21 @@ class OdooAPI(http.Controller):
                 error = {"message": "Image is not uploaded", "status": 400}
                 return return_Response_error(error)
 
+    @http.route('/api/v1/c/image_upload_s3_delete', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def image_upload_in_delete(self, **kw):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        try:
+            file = jdata.get('filename')
+            res_data = self.delete_image(file)
+            if res_data is True:
+                res_data = {"message": "Successfully Delete"}
+                return return_Response(res_data)
+            if res_data is False:
+                res_data = {"message": "No image found"}
+                return return_Response(res_data)
 
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)

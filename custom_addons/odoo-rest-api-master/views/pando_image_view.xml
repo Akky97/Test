@@ -4,14 +4,25 @@
         <field name="model">pando.images</field>
         <field name="arch" type="xml">
             <form string="images">
-                <sheet>
                     <group>
                         <field name="product_id" />
                         <field name="type" widget="radio"/>
+                        <field name="img_attach" />
+                        <field name="image_name" />
                     </group>
-                    <field name="image_url" widget="image" class="oe_avatar" options="{'preview_image': 'image'}"/>
-                </sheet>
+                
             </form>
+        </field>
+    </record>
+    <record id="pando_images_tree" model="ir.ui.view">
+        <field name="name">pando.images.tree</field>
+        <field name="model">pando.images</field>
+        <field name="arch" type="xml">
+            <tree string="images">
+                <field name="product_id" />
+                <field name="type" widget="radio"/>
+                <field name="image_name"/>
+            </tree>
         </field>
     </record>
 
