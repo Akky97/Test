@@ -66,11 +66,25 @@ def get_product_details(website, warehouse, base_url,records):
         category = []
         variant = []
         sellers = []
-        for j in i.product_template_image_ids:
-            image.append({"id": j.id, "name": j.name,
-                          "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                          'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                          })
+        result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
+        if not result:
+            result = request.env['pando.images'].sudo().search(
+                [('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
+        base_image = {}
+        for j in result:
+            if j.type == 'multi_image':
+                image.append({"id": j.product_id.id,
+                              "image": j.image_url,
+                              "url": j.image_url,
+                              'name': j.image_name,
+                              })
+            else:
+                base_image = {
+                    "id": j.product_id.id,
+                    "image_url": j.image_url,
+                    'image_name': j.image_name
+                }
+
         for z in i.public_categ_ids:
             category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                              "image": base_url.value + '/web/image/product.public.category/' + str(
@@ -121,8 +135,9 @@ def get_product_details(website, warehouse, base_url,records):
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
         temp.append({"id": i.id, "name": i.name,
-                     'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                     'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                     'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                     'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                     'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
                      'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                      'description': i.description if i.description != False else '',
                      'short_desc': i.description_sale if i.description_sale != False else '',
@@ -151,8 +166,9 @@ def get_product_details(website, warehouse, base_url,records):
                      "shipping_return": i.shipping_return if i.shipping_return else '',
                      "status":i.marketplace_status,
                      "pictures": [
-                         {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                          "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
+                         {
+                            'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                            'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" }]
                      })
     return temp
 
@@ -621,6 +637,15 @@ class OdooAPI(http.Controller):
             limit = 10
             page = int(params["page"])
             offset = (page - 1) * 10
+        if "status" in params:
+            domain.append(('marketplace_state', 'in', [params['status']]))
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        if jdata and jdata.get('from_date') and jdata.get('to_date'):
+            domain.append(('order_id.date_order', '<=', jdata.get('from_date')))
+            domain.append(('order_id.date_order', '>=', jdata.get('to_date')))
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
         prev_page = None
@@ -641,10 +666,12 @@ class OdooAPI(http.Controller):
                     "product_name":rec.product_id.name,
                     "price_subtotal":rec.price_subtotal,
                     "date": str(rec.order_id.date_order),
+                    "create_date": str(rec.order_id.create_date),
                     "quantity": rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
                     "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
                     "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
-                    warehouse=warehouse.id).virtual_available > 0 else 0.0
+                    warehouse=warehouse.id).virtual_available > 0 else 0.0,
+                    "marketplace_state":rec.marketplace_state
                 }
                 temp.append(vals)
         except (SyntaxError, QueryFormatError) as e:
@@ -710,6 +737,33 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         res = {
             "message": "success",
+            "status": 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/pando.images.update', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def pando_images_update(self, **kw):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('product_id') or not jdata.get('image_name') or jdata.get('image'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+
+                object = request.env['pando.images'].sudo().search([('product_id','=',int(jdata.get('product_id'))),('image_name','=',jdata.get('image_name'))])
+                for obj in object:
+                    if jdata.get('image'):
+                        obj.sudo().write({'image_url': jdata.get('image').get('url'),
+                        'image_name':jdata.get('image').get('name')
+                        })
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "message": "Record Updated Successfully",
             "status": 200
         }
         return return_Response(res)

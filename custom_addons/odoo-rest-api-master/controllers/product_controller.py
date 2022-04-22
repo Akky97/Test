@@ -47,6 +47,8 @@ def get_product_details(warehouse, records):
         _compute_sales_count(self=i)
         i.sale_count_pando = i.sales_count
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
+        if not result:
+            result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
         base_image = {}
         for j in result:
             if j.type == 'multi_image':
@@ -66,8 +68,6 @@ def get_product_details(warehouse, records):
                              "image": base_url.value + '/web/image/product.public.category/' + str(
                                  z.id) + "/image_1920", })
         # product attribute_data created here
-        print(base_image,base_image.get('image_url'))
-        print(image)
         values = []
         attribute_name = ''
         id = []
@@ -144,8 +144,10 @@ def get_product_details(warehouse, records):
                      "marketplace_seller_name": i.marketplace_seller_id.name,
                      "additional_info": i.additional_info if i.additional_info else '',
                      "shipping_return": i.shipping_return if i.shipping_return else '',
-                     "pictures": [{'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                   "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
+                     "pictures": [
+                         {
+                            'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                            'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" }]
                      })
     return temp
 
