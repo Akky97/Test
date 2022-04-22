@@ -4,3 +4,4 @@ email_verification,email.verification,model_email_verification,,1,1,1,1
 access_account_move_line_pando,account.move.line,account.model_account_move_line,,1,1,1,0
 pickup_address,pickup.address,model_pickup_address,,1,1,1,1
 pando_images,pando.images,model_pando_images,,1,1,1,1
+notification_center,notification.center,model_notification_center,,1,1,1,1

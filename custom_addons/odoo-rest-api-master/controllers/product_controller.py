@@ -89,7 +89,7 @@ def get_product_details(warehouse, records):
                     variant_name += '('+b.name + ')'
 
             data.append({attribute_name: values})
-        values = []
+            values = []
         res_data = {"id": i.id, "price": i.list_price,
                     "pivot": {"product_id": i.id, "component_id": i.id}}
 

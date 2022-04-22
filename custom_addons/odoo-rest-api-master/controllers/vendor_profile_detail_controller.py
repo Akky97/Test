@@ -760,7 +760,7 @@ class OdooAPI(http.Controller):
 
     @validate_token
     @http.route('/api/v1/v/sale_order_line_details/<id>', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def sale_order_list_view(self, id=None, **params):
+    def sale_order_line_details(self, id=None, **params):
         try:
             if not id:
                 error = {"message": "id is not present in the request", "status": 400}

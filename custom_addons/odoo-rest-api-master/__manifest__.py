@@ -36,6 +36,7 @@
         'views/category_view.xml',
         'security/ir.model.access.csv',
         'views/email_template.xml',
+        'views/notification_center_view.xml',
         'data/pando_data.xml'
     ],
     # only loaded in demonstration mode

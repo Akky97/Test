@@ -9,3 +9,4 @@ from . import email_verification
 from . import category
 from . import pando_images
 from . import sale_order
+from . import notification_center
