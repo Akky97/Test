@@ -525,7 +525,6 @@ class OdooAPI(http.Controller):
 
                 if jdata.get('products'):
                     for rec in jdata.get('products'):
-                        print(rec['name'])
                         dict = {
                             "name": rec.get('name'),
                             "sequence": 1,

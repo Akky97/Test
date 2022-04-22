@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'website_sale', 'payment', 'odoo_marketplace'],
+    'depends': ['base', 'product', 'website_sale', 'project', 'sale_project', 'payment', 'odoo_marketplace'],
 
     # always loaded
     'data': [
@@ -31,10 +31,12 @@
         'data/ir_config_param.xml',
         'views/pando_banner.xml',
         'views/pando_image_view.xml',
+        'views/pando_project_task_inherit.xml',
         'views/product_template.xml',
         'views/category_view.xml',
         'security/ir.model.access.csv',
-        'views/email_template.xml'
+        'views/email_template.xml',
+        'data/pando_data.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

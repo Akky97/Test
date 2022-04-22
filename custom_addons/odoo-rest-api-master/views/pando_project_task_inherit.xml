@@ -1,0 +1,20 @@
+<odoo>
+    <data>
+        <record id="view_pando_project_inherit_form" model="ir.ui.view">
+            <field name="name">pando.project.task.view.inherit</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="sale_project.view_sale_project_inherit_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sale_line_id']" position="replace">
+                    <field name="sale_line_id_pando" string="Sales Order Item Pando"
+                           options='{"no_open": True}' readonly="0"
+                           context="{'create': False, 'edit': False, 'delete': False}"
+                           domain="[('is_stockable', '=', True), ('state', 'in', ['sale', 'done'])]"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="ticket_number"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

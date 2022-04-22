@@ -10,10 +10,11 @@
                         <field name="img_attach" />
                         <field name="image_name" />
                     </group>
-                
+
             </form>
         </field>
     </record>
+
     <record id="pando_images_tree" model="ir.ui.view">
         <field name="name">pando.images.tree</field>
         <field name="model">pando.images</field>
