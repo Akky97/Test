@@ -207,6 +207,11 @@ class SignupAPI(AuthSignupHome):
                 if not user:
                     msg = {"message": "User does not exist!!", "status_code": 400}
                     return return_Response_error(msg)
+                # aakash vishwakarma
+                if user.user_type == 'vendor':
+                    error = {"message": "You are not authorized to Change Password from here", "status": 400}
+                    return return_Response_error(error)
+                # End here
                 email_otp = request.env['forgot.password'].sudo().search([('email', '=', email)],
                                                                          order='create_date desc', limit=1)
                 if not email_otp:

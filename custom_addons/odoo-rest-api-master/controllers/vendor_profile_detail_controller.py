@@ -12,6 +12,7 @@ from odoo.exceptions import UserError
 from odoo import http, _, exceptions, fields
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
+from .sale_order_list_view import *
 import werkzeug
 _logger = logging.getLogger(__name__)
 
@@ -308,6 +309,46 @@ class AuthSignupHome(Website):
             msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
 
+    @http.route('/api/v1/v/vendor/forgot_password', type='http', auth='public', methods=['POST'], csrf=False,
+                cors='*')
+    def vendor_forgot_password(self):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata and jdata.get('email') and jdata.get('otp') and jdata.get('password'):
+                email = jdata.get('email')
+                otp = jdata.get('otp')
+                psw = jdata.get('password')
+                user = request.env['res.users'].sudo().search([('login', '=', email)])
+                if not user:
+                    msg = {"message": "User does not exist!!", "status_code": 400}
+                    return return_Response_error(msg)
+                # aakash vishwakarma
+                if user.user_type != 'vendor':
+                    error = {"message": "You are not authorized to Change Password from here", "status": 400}
+                    return return_Response_error(error)
+                # End here
+                email_otp = request.env['forgot.password'].sudo().search([('email', '=', email)],
+                                                                         order='create_date desc', limit=1)
+                if not email_otp:
+                    msg = {"message": "Please Resend OTP", "status_code": 400}
+                    return return_Response_error(msg)
+                if user and email_otp:
+                    if int(otp) == int(email_otp.otp):
+                        user.sudo().write({'password': psw})
+                        msg = {"message": "Password has been changed successfully", "status_code": 200}
+                        return return_Response(msg)
+                    else:
+                        msg = {"message": "OTP is Incorrect", "status_code": 200}
+                        return return_Response(msg)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": str(e), "status_code": 400}
+            return return_Response_error(msg)
 
 class OdooAPI(http.Controller):
     @validate_token
@@ -601,6 +642,13 @@ class OdooAPI(http.Controller):
         try:
             domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
             model = 'sale.order.line'
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata and jdata.get('from_date') and jdata.get('to_date'):
+                domain.append(('order_id.date_order', '<=', jdata.get('from_date')))
+                domain.append(('order_id.date_order', '>=', jdata.get('to_date')))
             records = request.env[model].sudo().search(domain)
             total_sales_unit = 0
             total_earning = 0
@@ -659,6 +707,26 @@ class OdooAPI(http.Controller):
         try:
             temp=[]
             for rec in records:
+                result = request.env['pando.images'].sudo().search([('product_id', '=', rec.product_id.id)])
+                if not result:
+                    result = request.env['pando.images'].sudo().search(
+                        [('product_id.product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)])
+                base_image = {}
+                image = []
+                for j in result:
+                    if j.type == 'multi_image':
+                        image.append({"id": j.product_id.id,
+                                      "image": j.image_url,
+                                      "url": j.image_url,
+                                      'name': j.image_name,
+                                      })
+                    else:
+                        base_image = {
+                            "id": j.product_id.id,
+                            "image_url": j.image_url,
+                            'image_name': j.image_name
+                        }
+
                 vals={
                     "id":rec.id,
                     "order_id":rec.order_id.name,
@@ -668,7 +736,9 @@ class OdooAPI(http.Controller):
                     "date": str(rec.order_id.date_order),
                     "create_date": str(rec.order_id.create_date),
                     "quantity": rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
-                    "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
+                    "image": base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                    "image_name": base_image.get('image_name') if 'image_name' in base_image else "",
+                    "multi_image": image,
                     "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
                     warehouse=warehouse.id).virtual_available > 0 else 0.0,
                     "marketplace_state":rec.marketplace_state
@@ -684,6 +754,45 @@ class OdooAPI(http.Controller):
             "next": next_page,
             "total_pages": total_page_number,
             "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
+        }
+
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/sale_order_line_details/<id>', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def sale_order_list_view(self, id=None, **params):
+        try:
+            if not id:
+                error = {"message": "id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            record = request.env['sale.order.line'].sudo().search([('id','=',int(id))])
+            website = request.env['website'].sudo().browse(1)
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
+            vals = {}
+            if record:
+                vals = {
+                    "id": record.id,
+                    "order_id": record.order_id.name,
+                    "product_id": record.product_id.id,
+                    "product_name": record.product_id.name,
+                    "price_subtotal": record.price_subtotal,
+                    "date": str(record.order_id.date_order),
+                    "create_date": str(record.order_id.create_date),
+                    "quantity": record.product_uom_qty if record.product_uom_qty != False else 0.0,
+                    "image": base_url.value + '/web/image/product.product/' + str(record.product_id.id) + "/image_1920",
+                    "stock": record.product_id.with_context(
+                        warehouse=warehouse.id).virtual_available if record.product_id.with_context(
+                        warehouse=warehouse.id).virtual_available > 0 else 0.0,
+                    "marketplace_state": record.marketplace_state,
+                    "customer_detail": get_address(record.order_id.partner_id)
+                }
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "products": vals,
             'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
 

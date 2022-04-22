@@ -86,10 +86,9 @@ def get_product_details(warehouse, records):
                         values.append({"id": b.id, "name": b.name, "slug": None,
                                        "pivot": {"components_variants_variant_id": i.id,
                                                  "component_id": b.id}})
-                variant_name += b.name + ' '
+                    variant_name += '('+b.name + ')'
 
-            data.append({attribute_name: values, 'variant_name': variant_name + ')'})
-            # data.append({attribute_name: values})
+            data.append({attribute_name: values})
         values = []
         res_data = {"id": i.id, "price": i.list_price,
                     "pivot": {"product_id": i.id, "component_id": i.id}}
@@ -113,7 +112,7 @@ def get_product_details(warehouse, records):
         for n in i.seller_ids:
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
-        temp.append({"id": i.id, "name": i.name,
+        temp.append({"id": i.id, "name": i.name+variant_name,
                      'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
@@ -918,3 +917,4 @@ class OdooAPI(http.Controller):
             "products": temp
         }
         return return_Response(res)
+
