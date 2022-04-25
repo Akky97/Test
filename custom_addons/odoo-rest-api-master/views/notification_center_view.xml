@@ -19,6 +19,7 @@
                     <group>
                         <field name="seller_id"/>
                         <field name="model"/>
+                        <field name="image_data" invisible="1"/>
                     </group>
                 </group>
 
