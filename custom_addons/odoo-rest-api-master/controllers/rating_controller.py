@@ -93,6 +93,7 @@ def _message_post_helper(res_model, res_id, message, token='', _hash=False, pid=
 
 class PortalChatter(PortalChatter):
 
+    @validate_token
     @http.route('/api/v1/c/product.rating', type='http', auth='public', methods=['POST'], csrf=False,
                 cors='*')
     def product_rating(self, **params):
@@ -154,6 +155,7 @@ class PortalChatter(PortalChatter):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
+    @validate_token
     @http.route('/api/v1/c/product.rating.display/<id>', type='http', auth='public', methods=['POST'], csrf=False,
                 cors='*')
     def product_rating_display(self, id=None, **params):

@@ -228,15 +228,25 @@ class WebsiteSale(WebsiteSale):
                                                             order='write_date DESC', limit=1)
             redirectUrl = checkout_redirection(order, request.env.context.get(
                 'website_sale_transaction')) or checkout_check_address(order)
-            paymentAcquirer = request.env['payment.acquirer'].sudo().search([('state', 'in', ['enabled', 'test'])], limit=1)
+            paymentAcquirer = request.env['payment.acquirer'].sudo().search([('state', 'in', ['enabled', 'test'])])
+            stripe = False
+            payAcquirer = False
+            for pa in paymentAcquirer:
+                if pa.name == 'Stripe':
+                    stripe= pa
+                else:
+                    payAcquirer=pa
+            if stripe:
+                payAcquirer = stripe
+
             if not redirectUrl:
                 order.onchange_partner_shipping_id()
                 order.order_line._compute_tax_id()
                 request.session['sale_last_order_id'] = order.id
                 pricelist_id = request.session.get('website_sale_current_pl') or website.get_current_pricelist().id
                 updatePriceListAPK(pricelist_id, order)
-                if paymentAcquirer:
-                    payTransferData = create_transaction(paymentAcquirer.id)
+                if payAcquirer:
+                    payTransferData = create_transaction(payAcquirer.id)
                     if payTransferData:
                         if 'message' in payTransferData and payTransferData.get('message'):
                             msg = {"message": payTransferData.get('message'), "status_code": 400}

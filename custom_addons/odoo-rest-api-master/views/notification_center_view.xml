@@ -13,7 +13,7 @@
                     <group>
                         <field name="product_id"/>
                         <field name="approve_by"/>
-                        <field name="is_read" widget="radio"/>
+                        <field name="is_read"/>
                         <field name="vendor_message"/>
                     </group>
                     <group>

@@ -395,12 +395,23 @@ class WebsiteSale(WebsiteSale):
                     'website_sale_transaction')) or checkout_check_address(order)
                 if not redirectUrl:
                     # Payment Acquirer List
+                    stripe = []
                     for pa in paymentAcquirer:
-                        val = {
-                            'id': pa.id,
-                            'name':pa.name
-                        }
-                        payAcquirer.append(val)
+                        if pa.name == 'Stripe':
+                            val = {
+                                'id': pa.id,
+                                'name': pa.name
+                            }
+                            stripe.append(val)
+                        else:
+                            val = {
+                                'id': pa.id,
+                                'name': pa.name
+                            }
+                            payAcquirer.append(val)
+                    if stripe:
+                        payAcquirer = stripe
+
                     # End Here
                     # Sale Order Details
                     sale_order = {

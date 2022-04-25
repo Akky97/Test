@@ -8,7 +8,7 @@ class NotificationCenter(models.Model):
     seller_id = fields.Many2one("res.partner", string="Seller")
     vendor_message = fields.Text()
     approve_by = fields.Many2one("res.partner", string="Approved By")
-    is_read = fields.Boolean("Check is Read", default=True)
+    is_read = fields.Boolean("Marked As Read", default=False)
     title = fields.Char('Title')
     model = fields.Char('Model Name')
 
