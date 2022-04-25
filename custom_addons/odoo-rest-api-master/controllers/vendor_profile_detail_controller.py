@@ -39,7 +39,6 @@ def _compute_sales_count(self):
         product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
     return r
 
-
 def check_gst_number(gst, state_id):
     state_id = request.env['res.country.state'].sudo().search([('id','=',int(state_id))])
     vals = {}
@@ -341,7 +340,7 @@ class AuthSignupHome(Website):
                         msg = {"message": "Password has been changed successfully", "status_code": 200}
                         return return_Response(msg)
                     else:
-                        msg = {"message": "OTP is Incorrect", "status_code": 200}
+                        msg = {"message": "OTP is Incorrect", "status_code": 400}
                         return return_Response(msg)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
@@ -515,6 +514,7 @@ class OdooAPI(http.Controller):
     @validate_token
     @http.route('/api/v1/v/product_product', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def create_product(self, **params):
+        idList = []
         try:
             try:
                 jdata = json.loads(request.httprequest.stream.read())
@@ -557,6 +557,8 @@ class OdooAPI(http.Controller):
                             dict["attribute_line_ids"]= lst
                         resId = request.env['product.template'].sudo().create(dict)
                         resId.set_pending()
+                        if resId.product_variant_ids:
+                            idList.append(resId.product_variant_ids[0].id)
                 else:
                     msg = {"message": "No Data Found.", "status_code": 400}
                     return return_Response_error(msg)
@@ -567,6 +569,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         res = {
             'message': "Product created Successfully",
+            'productList': idList,
             'status': 200
         }
         return return_Response(res)
@@ -872,6 +875,38 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         res = {
             "message": "Record Updated Successfully",
+            "status": 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/product_stock_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def product_stock_update(self, **kw):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('product_id') or not jdata.get('new_quantity'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                product = request.env['product.product'].sudo().search([('id','=',int(jdata.get('product_id')))])
+                if product:
+                    object = request.env['marketplace.stock'].sudo().create({
+                        'product_id': product.id,
+                        'new_quantity': int(jdata.get('new_quantity')),
+                        'location_id': product.marketplace_seller_id.get_seller_global_fields('location_id')
+                    })
+                    if object:
+                        object.request()
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "message": "Request Send Successfully",
             "status": 200
         }
         return return_Response(res)

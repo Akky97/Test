@@ -152,6 +152,9 @@ class PortalChatter(PortalChatter):
                     else:
                         msg = {"message": "Something Went Wrong.", "status_code": 400}
                         return return_Response_error(msg)
+                else:
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 

@@ -215,6 +215,17 @@ def checkout_check_address(order):
         redirectUrl = f'Profile / Address Page'
     return redirectUrl
 
+def get_shipping_method():
+    result = request.env['delivery.carrier'].sudo().search([])
+    deliveryMethod=[]
+    for res in result:
+        vals={
+            'id':res.id,
+            'name':res.name
+        }
+        deliveryMethod.append(vals)
+    return deliveryMethod
+
 def checkout_data(order):
     shippingAddress = []
     Partner = False
@@ -242,6 +253,7 @@ def checkout_data(order):
         'shippingAddress': shippingAddress,
         'invoiceAddress': get_address(Partner) if Partner else [],
         'only_services': order and order.only_services or False,
+        'shipping_method': get_shipping_method(),
         'express': False
     }]
     return values
@@ -271,6 +283,39 @@ def create_new_address(params):
 
 
 class WebsiteSale(WebsiteSale):
+
+    @validate_token
+    @http.route('/api/v1/c/update_shipping_method', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def update_shipping_method(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('delivery_id'):
+                    res = {"message": "Something Went Wrong.", "status": 400}
+                    return return_Response_error(res)
+                website = request.env['website'].sudo().browse(1)
+                partner = request.env.user.partner_id
+                order_id = request.env['sale.order'].sudo().search([('state', '=', 'draft'), ('partner_id', '=', partner.id), ('website_id', '=', website.id)], order='write_date DESC', limit=1)
+                if jdata.get('delivery_id'):
+                    delivery_id = request.env['delivery.carrier'].sudo().search([('id', '=', int(jdata.get('delivery_id')))])
+                    order_id.set_delivery_line(delivery_id, delivery_id.fixed_price)
+                    r = order_id.sudo().write({
+                        'recompute_delivery_price': False,
+                        'delivery_message': delivery_id.fixed_price})
+                    if r:
+                        res = {
+                            "message": 'Shipping Method Updated Successfully',
+                            "status": 200
+                        }
+                        return return_Response(res)
+            else:
+                res = {"message": "Something Went Wrong.", "status": 400}
+                return return_Response_error(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
 
     @validate_token
     @http.route('/api/v1/c/process_checkout', type='http', auth='public', methods=['GET'], csrf=False, cors='*',
