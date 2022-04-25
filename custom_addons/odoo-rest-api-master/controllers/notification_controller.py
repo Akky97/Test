@@ -12,7 +12,7 @@ class OdooAPI(http.Controller):
             user = request.env.user.partner_id.id
             domain = [('is_read', '=', False), ('seller_id', '=', user)]
             if "SeeAll" in params:
-                domain = []
+                domain = [('seller_id', '=', user)]
             model = 'notification.center'
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
