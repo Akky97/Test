@@ -49,6 +49,42 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
     @validate_token
+    @http.route('/api/v1/c/product.notifications/<id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def single_product_notification_view(self, id=None, **params):
+        try:
+            if not id:
+                error = {"message": "id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            model = 'notification.center'
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            record = request.env[model].sudo().search([('id','=',int(id))])
+            vals ={}
+            if record:
+                vals = {
+                    "id": record.id,
+                    "product_id": record.product_id.id if record.product_id.id != False else '',
+                    "product_name": record.product_id.name if record.product_id.name != False else '',
+                    'image': record.image_data,
+                    'seller_id': record.seller_id.id,
+                    'seller_name': record.seller_id.name,
+                    'vendor_message': record.vendor_message if record.vendor_message != False else '',
+                    'approve_by': record.approve_by.id if record.approve_by.id != False else '',
+                    'approve_by_name': record.approve_by.name if record.approve_by.name != False else '',
+                    "title": record.title if record.title != False else '',
+                    "model": record.model if record.model != False else ''}
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "notifications": vals,
+            'status':200
+        }
+
+        return return_Response(res)
+
+    @validate_token
     @http.route(['/api/v1/c/product.notifications.update', '/api/v1/c/product.notifications.update/<id>'],
                 type='http', auth='public', methods=['PUT'], csrf=False, cors='*')
     def product_notification_update(self, id=None, **params):
