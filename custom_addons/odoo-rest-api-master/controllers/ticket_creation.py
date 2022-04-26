@@ -106,3 +106,41 @@ class ControllerREST(http.Controller):
             return return_Response(res)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+
+    @http.route('/api/v1/c/getAssignedTo', methods=['GET'], type='http', auth="public", cors='*')
+    def getAssignedTo(self):
+        try:
+            temp = []
+            user = request.env['res.users'].sudo().search([('name', '=', 'Mitchell Admin')])
+            for i in user:
+                vals = {"user_id": i.id if i.id != False else '',
+                        "user_name": i.name if i.name != False else ''
+                        }
+                temp.append(vals)
+            res = {
+                'data': temp,
+                'message': "Assigned To Data",
+                'status': 200
+            }
+            return return_Response(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @http.route('/api/v1/c/getTicketType', methods=['GET'], type='http', auth="public", cors='*')
+    def getTicketType(self):
+        try:
+            temp = []
+            tags = request.env['project.tags'].sudo().search([])
+            for i in tags:
+                vals = {"tag_id": i.id if i.id != False else '',
+                        "tag_name": i.name if i.name != False else ''
+                        }
+                temp.append(vals)
+            res = {
+                'data': temp,
+                'message': "Ticket Type Data",
+                'status': 200
+            }
+            return return_Response(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
