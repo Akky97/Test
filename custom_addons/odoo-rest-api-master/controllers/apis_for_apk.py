@@ -314,3 +314,35 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
+    @validate_token
+    @http.route('/api/v1/apk/check_mobile_number', type='http', auth='public', methods=['POST'], csrf=False,
+                cors='*')
+    def check_mobile_number(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('mobile') or not jdata.get('country_id'):
+                    res = {"message": "Something Went Wrong.", "status": 400}
+                    return return_Response_error(res)
+                country_id = request.env['res.country'].sudo().search([('id', '=', int(jdata.get('country_id')))])
+                if country_id:
+                    my_number = phonenumbers.parse(str(jdata.get('mobile')), country_id.code)
+                    if not phonenumbers.is_valid_number(my_number):
+                        error = {"message": "Please Enter Correct Mobile Number", "status": 400}
+                        return return_Response_error(error)
+                    else:
+                        res = {"message": 'success', "status": 200}
+                        return return_Response(res)
+                else:
+                    res = {"message": "Something Went Wrong.", "status": 400}
+                    return return_Response_error(res)
+            else:
+                res = {"message": "Something Went Wrong.", "status": 400}
+                return return_Response_error(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+

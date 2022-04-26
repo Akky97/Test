@@ -910,3 +910,74 @@ class OdooAPI(http.Controller):
             "status": 200
         }
         return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/product_stock_list', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def product_stock_list(self, **kw):
+        try:
+            domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
+            model = 'marketplace.stock'
+            records = request.env[model].sudo().search(domain)
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
+            temp=[]
+            for rec in records:
+                category=[]
+                for z in rec.product_id.public_categ_ids:
+                    category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
+                                     "image": base_url.value + '/web/image/product.public.category/' + str(
+                                         z.id) + "/image_1920", })
+
+                vals = {
+                    'id': rec.id,
+                    'productId': rec.product_id.id,
+                    'productName': rec.product_id.name,
+                    'category': category,
+                    'totalOrder': rec.product_id.sales_count,
+                    "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
+                        warehouse=warehouse.id).virtual_available > 0 else 0.0
+
+                }
+                temp.append(vals)
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "products": temp,
+            "status": 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/product.product.list', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def product_product_list(self, **params):
+        try:
+            domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
+            model = 'product.product'
+            records = request.env[model].sudo().search(domain)
+            temp = []
+            for rec in records:
+                id = []
+                for c in rec.product_template_attribute_value_ids:
+                    id.append(c.attribute_id.id)
+                variant_name = ''
+                for attr_id in list(set(id)):
+                    for b in rec.product_template_attribute_value_ids:
+                        if attr_id == b.attribute_id.id:
+                            variant_name += '(' + b.name + ')'
+                vals = {
+                    'id': rec.id,
+                    'name': rec.product_tmpl_id.name + variant_name
+                }
+                temp.append(vals)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "products": temp
+        }
+        return return_Response(res)
+
