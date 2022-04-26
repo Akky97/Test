@@ -921,6 +921,19 @@ class OdooAPI(http.Controller):
         try:
             domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
             model = 'marketplace.stock'
+            if "status" in kw:
+                domain.append(('state','in',[kw.get('status')]))
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('from_date') or not jdata.get('to_date'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                else:
+                    domain.append(('create_date', '<=', jdata.get('to_date')))
+                    domain.append(('create_date', '>=', jdata.get('from_date')))
             records = request.env[model].sudo().search(domain)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             website = request.env['website'].sudo().browse(1)
@@ -928,7 +941,13 @@ class OdooAPI(http.Controller):
                 [('company_id', '=', website.company_id.id)], limit=1)
             temp=[]
             for rec in records:
-                category=[]
+                sol = request.env['sale.order.line'].sudo().search([('product_id', '=', rec.id)])
+                count = 0
+                total = 0
+                for line in sol:
+                    count += 1
+                    total += line.price_total
+                category = []
                 for z in rec.product_id.public_categ_ids:
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
@@ -939,10 +958,12 @@ class OdooAPI(http.Controller):
                     'productId': rec.product_id.id,
                     'productName': rec.product_id.name,
                     'category': category,
-                    'totalOrder': rec.product_id.sales_count,
-                    "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
-                        warehouse=warehouse.id).virtual_available > 0 else 0.0
-
+                    'totalOrder': count,
+                    'totalAmount': total,
+                    "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(warehouse=warehouse.id).virtual_available > 0 else 0.0,
+                    "status": rec.state,
+                    'write_date': str(rec.write_date),
+                    'create_date': str(rec.create_date)
                 }
                 temp.append(vals)
 

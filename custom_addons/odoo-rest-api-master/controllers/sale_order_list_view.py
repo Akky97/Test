@@ -504,6 +504,11 @@ class WebsiteSale(WebsiteSale):
                 if sale_order.state != 'draft':
                     request.session['sale_order_id'] = None
                     sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
+                    vals = dict(seller_id=request.env.user.partner_id.id,
+                                vendor_message=f"""Customer Place an Order""",
+                                model="sale.order", title="Sale Order Created")
+                    request.env['notification.center'].sudo().create(vals)
+
                 if product_id:
                     if set_qty > 0:
                         qty = set_qty
