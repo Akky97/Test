@@ -128,6 +128,9 @@ class ControllerREST(http.Controller):
                         "partner_name": i.partner_id.name if i.partner_id.name != False else '',
                         "create_date": str(i.create_date),
                         "deadline_date": str(i.date_deadline),
+                        "description": i.description,
+                        "product_id": i.product_id.id if i.product_id.id != False else '',
+                        "product_name": i.product_id.name if i.product_id.name != False else '',
                         "ticket_number": i.ticket_number
                         }
                 temp.append(vals)
