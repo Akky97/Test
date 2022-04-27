@@ -47,7 +47,7 @@ class OdooAPI(http.Controller):
             return False
         return True
 
-    def delete_image(self, bucket, file):
+    def delete_image(self, file):
         s3_client = boto3.client('s3')
         try:
             s3_client.delete_object(Bucket=bucket, Key=file)

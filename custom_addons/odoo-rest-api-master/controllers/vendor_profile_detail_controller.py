@@ -962,6 +962,7 @@ class OdooAPI(http.Controller):
                     'totalAmount': total,
                     "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(warehouse=warehouse.id).virtual_available > 0 else 0.0,
                     "status": rec.state,
+                    "requestQty": rec.new_quantity,
                     'write_date': str(rec.write_date),
                     'create_date': str(rec.create_date)
                 }
