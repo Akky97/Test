@@ -34,28 +34,27 @@ class ControllerREST(http.Controller):
             jdata = json.loads(request.httprequest.stream.read())
         except:
             jdata = {}
+        if not jdata.get('description') or not jdata.get('issue_name') or not jdata.get('priority') or not \
+                jdata.get('assignTo') or not jdata.get('tag_id'):
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
         uid = request.env.user.id
         partner_id = request.env.user.partner_id.id
         issue_name = jdata.get('issue_name')
         description = jdata.get('description')
-        sale_line_id = jdata.get('sale_line_id')
-
-        if not jdata.get('description') or not jdata.get('issue_name') or not jdata.get('sale_line_id'):
-            msg = {"message": "Something Went Wrong", "status_code": 400}
-            return return_Response_error(msg)
+        product_id = False if not jdata.get('product_id') else jdata.get('product_id')
+        priority = jdata.get('priority')
+        assignTo = jdata.get('assignTo')
+        tag_id = jdata.get('tag_id')
         stage_id = request.env['project.task.type'].sudo().search([('name', '=', 'New')], limit=1).id
         project_id = request.env['project.project'].sudo().search([('name', '=', 'Pando-Stores Issues')], limit=1).id
-        tag_id = request.env['project.tags'].sudo().search([('name', '=', 'Issue')], limit=1).id
         tag = [tag_id]
         from datetime import datetime, timedelta
         deadline_date = datetime.now() + timedelta(1)
-        # if tag_ids != None:
-        #     for x in tag_ids:
-        #         tag.append(x['id'])
         assert isinstance(uid, object)
-        vals = dict(name=issue_name, tag_ids=[[6, False, tag]], partner_id=int(partner_id), description=description,
-                    stage_id=stage_id, user_id=uid, project_id=project_id, sale_line_id_pando=int(sale_line_id),
-                    date_deadline=deadline_date)
+        vals = dict(name=issue_name, tag_ids=[[6, False, tag]], partner_id=int(partner_id),
+                    description=description, stage_id=stage_id, user_id=int(assignTo), product_id=int(product_id),
+                    project_id=project_id, date_deadline=deadline_date, priority=str(priority))
         try:
             ticket_id = request.env['project.task'].sudo().create(vals)
             if ticket_id:

@@ -44,12 +44,15 @@ class ProjectTaskPando(models.Model):
     sale_line_id_pando = fields.Many2one(
         'sale.order.line', 'Sales Order Item', store=True, readonly=False, copy=False)
     ticket_number = fields.Char(string="Ticket No", readonly=True, required=True, copy=False, default='New')
+    product_id = fields.Many2one(
+        'product.product', 'Product', store=True, readonly=False, copy=False)
 
-    def create(self, vals):
-        if vals.get('ticket_number', 'New') == 'New':
-            # company = request.env['res.company'].sudo().search([('name', '=', '')])
-            vals['ticket_number'] = next_by_code(self, 'project.task') or 'New'
-        result = super(ProjectTaskPando, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('ticket_number', 'New') == 'New':
+                vals['ticket_number'] = next_by_code(self, 'project.task') or 'New'
+        result = super(ProjectTaskPando, self).create(vals_list)
         return result
 
 
