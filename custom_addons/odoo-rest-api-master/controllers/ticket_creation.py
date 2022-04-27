@@ -111,7 +111,7 @@ class ControllerREST(http.Controller):
     def getAssignedTo(self):
         try:
             temp = []
-            user = request.env['res.users'].sudo().search([('name', '=', 'Mitchell Admin')])
+            user = request.env['res.users'].sudo().search([('name', '=', 'Pando Admin')])
             for i in user:
                 vals = {"user_id": i.id if i.id != False else '',
                         "user_name": i.name if i.name != False else ''
