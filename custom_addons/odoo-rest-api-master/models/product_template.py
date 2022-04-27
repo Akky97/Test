@@ -42,6 +42,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     sale_count_pando = fields.Float(string='Product Sale Count')
+    is_product_publish = fields.Boolean('Product Publish', default=True)
 
 
 class PaymentTransaction(models.Model):

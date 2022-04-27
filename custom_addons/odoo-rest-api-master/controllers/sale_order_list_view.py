@@ -777,6 +777,10 @@ class WebsiteSale(WebsiteSale):
                     if 'id' in rec:
                         order.sudo().write({'partner_shipping_id': rec['id']})
                     if 'message' in rec:
+                        vals = dict(seller_id=request.env.user.partner_id.id,
+                                    vendor_message="""Your Address Created Successfully""",
+                                    model="res.partner", title="Address")
+                        request.env['notification.center'].sudo().create(vals)
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
                 else:
@@ -830,6 +834,10 @@ class WebsiteSale(WebsiteSale):
                     dict['parent_id'] = request.env.user.partner_id.id
                     rec = create_new_address(dict)
                     if 'message' in rec:
+                        vals = dict(seller_id=request.env.user.partner_id.id,
+                                    vendor_message="""Your Address Created Successfully""",
+                                    model="res.partner", title="Address")
+                        request.env['notification.center'].sudo().create(vals)
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
                 else:

@@ -571,6 +571,12 @@ class OdooAPI(http.Controller):
                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+        if idList:
+            vals = dict(seller_id=request.env.user.partner_id.id,
+                        vendor_message="""New Product Created Successfully""",
+                        model="product.template", title="Product Template")
+            request.env['notification.center'].sudo().create(vals)
+
         res = {
             'message': "Product created Successfully",
             'productList': idList,
@@ -904,6 +910,11 @@ class OdooAPI(http.Controller):
                     })
                     if object:
                         object.request()
+                        vals = dict(seller_id=request.env.user.partner_id.id,
+                                    vendor_message="""Inventory Update Request Sent Successfully""",
+                                    model="marketplace.stock", title="Requested For Inventory Update")
+                        request.env['notification.center'].sudo().create(vals)
+
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
@@ -934,7 +945,14 @@ class OdooAPI(http.Controller):
                 else:
                     domain.append(('create_date', '<=', jdata.get('to_date')))
                     domain.append(('create_date', '>=', jdata.get('from_date')))
-            records = request.env[model].sudo().search(domain)
+            limit = 0
+            offset = 0
+            if "page" in kw:
+                limit = 10
+                page = int(kw["page"])
+                offset = (page - 1) * 10
+            record_count = request.env[model].sudo().search_count(domain)
+            records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
@@ -971,6 +989,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "total_count": record_count,
             "count": len(temp),
             "products": temp,
             "status": 200
@@ -1006,4 +1025,32 @@ class OdooAPI(http.Controller):
             "products": temp
         }
         return return_Response(res)
+
+    @http.route('/api/v1/v/product.status', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def product_status(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if not jdata.get('product_id'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                product_id = jdata.get('product_id')
+                product = request.env['product.product'].sudo().search([('id', '=', int(product_id))])
+                publish_state = product.is_product_publish
+                if publish_state:
+                    product.is_product_publish = False
+                else:
+                    product.is_product_publish = True
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "message": 'success',
+            "status": 200
+        }
+        return return_Response(res)
+
+
 
