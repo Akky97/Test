@@ -17,8 +17,11 @@ class ResPartner(models.Model):
             res_id.sudo().write({"public": True})
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             img = base_url.value + '/web/image/' + str(res_id.id)
-            vals = dict(seller_id=self.id, approve_by=uid,
-                        vendor_message=f"""You are approved by Admin as Seller""",
-                        model="res.partner", title="Seller Approval",
-                        image_data=img)
+            vals = {"seller_id": self.id,
+                    "approve_by": uid,
+                    "vendor_message": f"""You are approved by Admin as Seller""",
+                    "model": "res.partner",
+                    "title": "Seller Approval",
+                    "image_data": img
+                    }
             request.env['notification.center'].sudo().create(vals)

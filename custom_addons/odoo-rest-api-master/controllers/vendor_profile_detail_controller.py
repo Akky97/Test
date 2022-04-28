@@ -303,9 +303,12 @@ class AuthSignupHome(Website):
                         user.partner_id.sudo().write(partnerVals)
                         user.partner_id.set_to_pending()
                         res = {"message": "Account Successfully Created", "status_code": 200}
-                        vals = dict(seller_id=user.partner_id.id,
-                                    vendor_message=f"""You are successfully Signed Up""",
-                                    model="res.partner", title="Seller Signup")
+                        vals = {
+                            "seller_id":user.partner_id.id,
+                            "vendor_message":f"""You are successfully Signed Up""",
+                            "model":"res.partner",
+                            "title":"Seller Signup"
+                        }
                         request.env['notification.center'].sudo().create(vals)
                         email_get = request.env['email.verification'].sudo().search([('email', '=', email)], order='create_date desc', limit=1)
                         email_get.sudo().unlink()
@@ -667,7 +670,7 @@ class OdooAPI(http.Controller):
 
     @validate_token
     @http.route('/api/v1/v/product.template.view/<id>', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def product_template_view(self, id=None, **params):
+    def single_product_template_view(self, id=None, **params):
         try:
             model = 'product.product'
         except KeyError as e:
@@ -952,9 +955,12 @@ class OdooAPI(http.Controller):
                     })
                     if object:
                         object.request()
-                        vals = dict(seller_id=request.env.user.partner_id.id,
-                                    vendor_message="""Inventory Update Request Sent Successfully""",
-                                    model="marketplace.stock", title="Requested For Inventory Update")
+                        vals = {
+                            "seller_id": request.env.user.partner_id.id,
+                            "vendor_message": """Inventory Update Request Sent Successfully""",
+                            "model": "marketplace.stock",
+                            "title": "Requested For Inventory Update"
+                        }
                         request.env['notification.center'].sudo().create(vals)
 
             else:

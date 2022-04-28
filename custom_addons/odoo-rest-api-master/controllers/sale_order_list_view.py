@@ -504,9 +504,12 @@ class WebsiteSale(WebsiteSale):
                 if sale_order.state != 'draft':
                     request.session['sale_order_id'] = None
                     sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
-                    vals = dict(seller_id=request.env.user.partner_id.id,
-                                vendor_message=f"""Customer Place an Order""",
-                                model="sale.order", title="Sale Order Created")
+                    vals = {
+                        "seller_id": request.env.user.partner_id.id,
+                        "vendor_message": f"""Customer Place an Order""",
+                        "model": "sale.order",
+                        "title": "Sale Order Created"
+                    }
                     request.env['notification.center'].sudo().create(vals)
 
                 if product_id:
@@ -777,9 +780,12 @@ class WebsiteSale(WebsiteSale):
                     if 'id' in rec:
                         order.sudo().write({'partner_shipping_id': rec['id']})
                     if 'message' in rec:
-                        vals = dict(seller_id=request.env.user.partner_id.id,
-                                    vendor_message="""Your Address Created Successfully""",
-                                    model="res.partner", title="Address")
+                        vals = {
+                            "seller_id": request.env.user.partner_id.id,
+                            "vendor_message": """Your Address Created Successfully""",
+                            "model": "res.partner",
+                            "title": "Address"
+                        }
                         request.env['notification.center'].sudo().create(vals)
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
@@ -834,9 +840,12 @@ class WebsiteSale(WebsiteSale):
                     dict['parent_id'] = request.env.user.partner_id.id
                     rec = create_new_address(dict)
                     if 'message' in rec:
-                        vals = dict(seller_id=request.env.user.partner_id.id,
-                                    vendor_message="""Your Address Created Successfully""",
-                                    model="res.partner", title="Address")
+                        vals = {
+                            "seller_id": request.env.user.partner_id.id,
+                            "vendor_message": """Your Address Created Successfully""",
+                            "model": "res.partner",
+                            "title": "Address"
+                        }
                         request.env['notification.center'].sudo().create(vals)
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)

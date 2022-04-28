@@ -71,10 +71,15 @@ class VariantApprovalWizard(models.TransientModel):
                 }
         img = base_image.get(
             'image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
-        vals = dict(product_id=product_id.id, seller_id=product_id.marketplace_seller_id.id, approve_by=uid,
-                    vendor_message=f"""Your product {product_id.name} is approved by Admin""",
-                    model="product.template", title="Product",
-                    image_data=img)
+        vals = {
+            "product_id": product_id.id,
+            "seller_id": product_id.marketplace_seller_id.id,
+            "approve_by": uid,
+            "vendor_message": f"""Your product {product_id.name} is approved by Admin""",
+            "model": "product.template",
+            "title": "Product",
+            "image_data": img
+        }
         request.env['notification.center'].sudo().create(vals)
         if not product_id.is_initinal_qty_set and len(product_id.product_variant_ids) == 1:
             product_id.set_initial_qty()
