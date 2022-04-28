@@ -303,7 +303,7 @@ class AuthSignupHome(Website):
                         user.partner_id.sudo().write(partnerVals)
                         user.partner_id.set_to_pending()
                         res = {"message": "Account Successfully Created", "status_code": 200}
-                        vals = dict(seller_id=self.user.partner_id.id,
+                        vals = dict(seller_id=user.partner_id.id,
                                     vendor_message=f"""You are successfully Signed Up""",
                                     model="res.partner", title="Seller Signup")
                         request.env['notification.center'].sudo().create(vals)
