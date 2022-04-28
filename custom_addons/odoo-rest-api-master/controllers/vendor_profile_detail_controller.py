@@ -982,8 +982,8 @@ class OdooAPI(http.Controller):
                     msg = {"message": "Something Went Wrong.", "status_code": 400}
                     return return_Response_error(msg)
                 else:
-                    domain.append(('create_date', '<=', jdata.get('to_date')))
-                    domain.append(('create_date', '>=', jdata.get('from_date')))
+                    domain.append(('create_date', '<=', jdata.get('from_date')))
+                    domain.append(('create_date', '>=', jdata.get('to_date')))
             limit = 0
             offset = 0
             if "page" in kw:
