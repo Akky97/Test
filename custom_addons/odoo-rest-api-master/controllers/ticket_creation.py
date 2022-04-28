@@ -131,7 +131,9 @@ class ControllerREST(http.Controller):
                         "description": i.description,
                         "product_id": i.product_id.id if i.product_id.id != False else '',
                         "product_name": i.product_id.name if i.product_id.name != False else '',
-                        "ticket_number": i.ticket_number
+                        "ticket_number": i.ticket_number,
+                        "sale_order_line_id": i.sale_line_id_pando.id if i.sale_line_id_pando.id != False else '',
+                        "sale_order_line_name": i.sale_line_id_pando.name if i.sale_line_id_pando.name != False else ''
                         }
                 temp.append(vals)
             res = {
@@ -175,6 +177,75 @@ class ControllerREST(http.Controller):
             res = {
                 'data': temp,
                 'message': "Ticket Type Data",
+                'status': 200
+            }
+            return return_Response(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @http.route('/api/v1/c/customer/createticket', methods=['POST'], type='http', auth="public", csrf=False, cors='*')
+    @validate_token
+    def ticketcreate_customer_method(self):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        if not jdata.get('description') or not jdata.get('issue_name') or not jdata.get('priority') or not \
+                jdata.get('assignTo') or not jdata.get('tag_id') or not jdata.get('product_id') or not \
+                jdata.get('sale_order_line_id'):
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+        uid = request.env.user.id
+        partner_id = request.env.user.partner_id.id
+        issue_name = jdata.get('issue_name')
+        description = jdata.get('description')
+        product_id = jdata.get('product_id')
+        priority = jdata.get('priority')
+        assignTo = jdata.get('assignTo')
+        tag_id = jdata.get('tag_id')
+        sale_line_id_pando = jdata.get('sale_order_line_id')
+        stage_id = request.env['project.task.type'].sudo().search([('name', '=', 'New')], limit=1).id
+        project_id = request.env['project.project'].sudo().search([('name', '=', 'Pando-Stores Issues')], limit=1).id
+        tag = [tag_id]
+        from datetime import datetime, timedelta
+        deadline_date = datetime.now() + timedelta(1)
+        assert isinstance(uid, object)
+        vals = dict(name=issue_name, tag_ids=[[6, False, tag]], partner_id=int(partner_id),
+                    description=description, stage_id=stage_id, user_id=int(assignTo), product_id=int(product_id),
+                    project_id=project_id, date_deadline=deadline_date, priority=str(priority),
+                    sale_line_id_pando=int(sale_line_id_pando))
+        try:
+            ticket_id = request.env['project.task'].sudo().create(vals)
+            if ticket_id:
+                res = {
+                    'message': "Ticket created Successfully",
+                    'status': 200
+                }
+                return return_Response(res)
+            else:
+                res = {
+                    'message': "Something Went Wrong",
+                    'status': 200
+                }
+                return return_Response(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @http.route('/api/v1/c/customer/getSaleOrderLines/<id>', methods=['GET'], type='http', auth="public", cors='*')
+    def getSaleOrderLines(self, id=None):
+        try:
+            temp = []
+            sale_order_lines = request.env['sale.order.line'].sudo().search(['order_id', '=', int(id)])
+            for i in sale_order_lines:
+                vals = {"sale_order_line_id": i.id if i.id != False else '',
+                        "sale_order_line_name": i.name if i.name != False else '',
+                        "product_id": i.product_id.id if i.product_id.id != False else '',
+                        "product_name": i.product_id.name if i.product_id.name != False else ''
+                        }
+                temp.append(vals)
+            res = {
+                'data': temp,
+                'message': "Sale Order Line Data and Product Data",
                 'status': 200
             }
             return return_Response(res)
