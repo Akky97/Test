@@ -36,6 +36,13 @@ def _compute_sales_count(self):
         product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
     return r
 
+def get_rating_permission(product):
+    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id)])
+    if result:
+        return True
+    else:
+        return False
+
 def get_product_details(warehouse, records):
     base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
     temp = []
@@ -139,6 +146,7 @@ def get_product_details(warehouse, records):
                      "sold": i.sales_count,
                      "review": 2,
                      "rating": 3,
+                     "rating_permission": get_rating_permission(i),
                      "marketplace_seller_id": i.marketplace_seller_id.id,
                      "marketplace_seller_name": i.marketplace_seller_id.name,
                      "additional_info": i.additional_info if i.additional_info else '',

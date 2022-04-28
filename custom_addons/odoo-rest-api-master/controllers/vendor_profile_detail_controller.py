@@ -59,6 +59,20 @@ def check_gst_number(gst, state_id):
 
     return vals
 
+
+def get_rating_avg(product):
+    records = request.env['rating.rating'].sudo().search([('rating_product_id','=',product.id)])
+    if records:
+        rating_total = 0
+        count = 0
+        for rec in records:
+            count += 1
+            rating_total += rec.rating
+        return (rating_total/count)
+    else:
+        return 0
+
+
 def get_product_details(website, warehouse, base_url,records):
     temp = []
     for i in records:
@@ -161,7 +175,7 @@ def get_product_details(website, warehouse, base_url,records):
                      "author": "Pando-Stores",
                      "sold": i.sales_count,
                      "review": 2,
-                     "rating": 3,
+                     "rating": get_rating_avg(i),
                      "additional_info": i.additional_info if i.additional_info else '',
                      "shipping_return": i.shipping_return if i.shipping_return else '',
                      "status":i.marketplace_status,
@@ -642,6 +656,31 @@ class OdooAPI(http.Controller):
             "current": current_page,
             "next": next_page,
             "total_pages": total_page_number,
+            "products": temp,
+            'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
+        }
+
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/product.template.view/<id>', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def product_template_view(self, id=None, **params):
+        try:
+            model = 'product.product'
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        records = request.env[model].sudo().search([("id", "=", int(id))])
+        website = request.env['website'].sudo().browse(1)
+        try:
+            warehouse = request.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', website.company_id.id)], limit=1)
+
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            temp = get_product_details(website, warehouse, base_url, records)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
             "products": temp,
             'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
