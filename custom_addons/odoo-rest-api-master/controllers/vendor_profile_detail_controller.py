@@ -586,9 +586,12 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         if idList:
-            vals = dict(seller_id=request.env.user.partner_id.id,
-                        vendor_message="""New Product Created Successfully""",
-                        model="product.template", title="Product Template")
+            vals = {
+                'seller_id': request.env.user.partner_id.id,
+                'vendor_message': "New Product Created Successfully",
+                'model': "product.template",
+                'title': "Product Template"
+            }
             request.env['notification.center'].sudo().create(vals)
 
         res = {
