@@ -1,7 +1,4 @@
 from odoo import api, fields, models, _
-
-from odoo.tools.safe_eval import safe_eval
-from odoo.tools.sql import column_exists, create_column
 from odoo.http import request
 import logging
 

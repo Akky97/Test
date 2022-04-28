@@ -1,11 +1,5 @@
 import re
-
-import phonenumbers
-from odoo import http, _, exceptions
 from odoo.http import request
-from .serializers import Serializer
-from .exceptions import QueryFormatError
-from .error_or_response_parser import *
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.auth_signup.models.res_users import SignupError
 from odoo.exceptions import UserError

@@ -1,13 +1,8 @@
-import json
-import math
 import logging
-import requests
-import ast
 import uuid
 import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
-from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale

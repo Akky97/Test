@@ -1,18 +1,9 @@
-import logging
 import boto3
 from botocore.exceptions import ClientError
 import os
-import json
-import math
 import logging
-import requests
-import ast
-import base64
 from odoo import http, _, exceptions, fields
-from datetime import timedelta, time
-from odoo.tools.float_utils import float_round
 from odoo.http import request
-from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 from werkzeug.utils import secure_filename

@@ -5,7 +5,7 @@ from .exceptions import QueryFormatError
 from odoo import http, _, exceptions, fields
 from odoo.addons.portal.controllers.mail import PortalChatter
 from .error_or_response_parser import *
-
+import logging
 _logger = logging.getLogger(__name__)
 
 

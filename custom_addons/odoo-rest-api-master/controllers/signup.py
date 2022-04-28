@@ -1,31 +1,15 @@
-import logging
-import json
-import smtplib
-
 import werkzeug.wrappers
-from odoo import http
-from odoo.http import request
 from odoo.addons.auth_signup.controllers.main import AuthSignupHome
-import logging
 import werkzeug
-
 from odoo import http, _
 from odoo.addons.auth_signup.models.res_users import SignupError
-from odoo.addons.web.controllers.main import ensure_db, Home, SIGN_UP_REQUEST_PARAMS
-from odoo.addons.base_setup.controllers.main import BaseSetup
-from odoo.exceptions import UserError
 from odoo.http import request
 from .error_or_response_parser import *
 
 """Common methods"""
-import ast
 import logging
 import json
 import random
-import math
-
-from odoo.http import Response
-from odoo.tools import date_utils
 
 _logger = logging.getLogger(__name__)
 

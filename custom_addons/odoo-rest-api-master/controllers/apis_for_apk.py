@@ -1,5 +1,3 @@
-from .exceptions import QueryFormatError
-from .error_or_response_parser import *
 from .payment_controllers import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 import phonenumbers

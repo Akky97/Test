@@ -1,13 +1,8 @@
-import json
-import math
 import logging
-import requests
-import ast
 from odoo import http, _, exceptions, fields
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
 from odoo.http import request
-from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 
@@ -37,7 +32,7 @@ def _compute_sales_count(self):
     return r
 
 def get_rating_permission(product):
-    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id)])
+    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', request.env.user.partner_id.id)])
     if result:
         return True
     else:

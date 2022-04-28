@@ -1,12 +1,7 @@
-import json
-import math
 import logging
-import requests
-import ast
 import phonenumbers
 from odoo import http, _, exceptions
 from odoo.http import request
-from .serializers import Serializer
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 _logger = logging.getLogger(__name__)

@@ -1,20 +1,13 @@
 # Part of odoo. See LICENSE file for full copyright and licensing details.
-import logging
-import json
-import werkzeug.wrappers
+
 from odoo import http
 from odoo.http import request
-import odoo
-import time
 
 """Common methods"""
 import ast
 import logging
-import json
-import requests
 from odoo.http import Response
 from odoo.tools import date_utils
-from odoo.addons.web.controllers.main import Session
 from .error_or_response_parser import *
 from .exceptions import QueryFormatError
 

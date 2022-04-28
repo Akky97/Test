@@ -1,9 +1,5 @@
-import phonenumbers
 from odoo import http, _, exceptions, SUPERUSER_ID
 from odoo.http import request
-from .exceptions import QueryFormatError
-from .error_or_response_parser import *
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 import datetime
 import base64
 from .sale_order_list_view import *
@@ -128,13 +124,12 @@ def create_transaction(acquirer_id):
     return value
 
 def dispatch_order(order):
-    stockPicking = request.env['stock.picking'].sudo().search([('sale_id','=', order.id)], limit=1)
-    if stockPicking:
-        # stockMove = request.env['stock.move'].sudo().search([('picking_id','=',stockPicking.id)])
-        stockMoveLine = request.env['stock.move.line'].sudo().search([('picking_id','=',stockPicking.id)])
-        for rec in stockMoveLine:
-            rec.sudo().write({'qty_done':rec.product_uom_qty})
-        stockPicking.button_validate()
+    stockPicking = request.env['stock.picking'].sudo().search([('sale_id','=', order.id)])
+    for rec in stockPicking:
+        stockMoveLine = request.env['stock.move.line'].sudo().search([('picking_id','=',rec.id)])
+        for res in stockMoveLine:
+            res.sudo().write({'qty_done':res.product_uom_qty})
+        rec.button_validate()
 
 
 def create_invoice(transaction_id, order):
@@ -528,8 +523,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*',
-                website=True)
+    @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def confirm_order_send_mail(self, **params):
         try:
             jdata = json.loads(request.httprequest.stream.read())

@@ -1,9 +1,6 @@
-from odoo import http, _, exceptions
-import json
 import functools
 from odoo.http import request
 from odoo import http
-import logging
 import json
 
 from odoo.http import Response
