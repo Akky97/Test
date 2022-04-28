@@ -221,7 +221,7 @@ class ControllerREST(http.Controller):
     def getSaleOrderLines(self, id=None):
         try:
             temp = []
-            sale_order_lines = request.env['sale.order.line'].sudo().search(['order_id', '=', int(id)])
+            sale_order_lines = request.env['sale.order.line'].sudo().search([('order_id', '=', int(id))])
             for i in sale_order_lines:
                 vals = {"sale_order_line_id": i.id if i.id != False else '',
                         "sale_order_line_name": i.name if i.name != False else '',
