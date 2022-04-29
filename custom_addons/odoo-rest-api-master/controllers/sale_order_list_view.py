@@ -426,8 +426,8 @@ class SaleOrderController(http.Controller):
                     url = base_url.value + '/my/invoices/' + str(i.invoice_ids[0].id) + '?access_token=' + \
                       i.invoice_ids[0].access_token + '&report_type=pdf&download=true'
                 from datetime import datetime, timedelta
-                complaint_date_validity = i.date_order + timedelta(7)
-                check_date = True if complaint_date_validity >= datetime.now() else False
+                complaint_date_validity = i.date_order.date() + timedelta(7)
+                check_date = True if complaint_date_validity >= datetime.now().date() else False
                 value = {
                     'id': i.id,
                     'name': i.name if i.name != False else "",
