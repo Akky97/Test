@@ -231,7 +231,26 @@ class ControllerREST(http.Controller):
                 temp.append(vals)
             res = {
                 'data': temp,
-                'message': "Sale Order Line Data and Product Data",
+                'message': "Sale Order Line Data",
+                'status': 200
+            }
+            return return_Response(res)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @http.route('/api/v1/c/customer/getProductId/<id>', methods=['GET'], type='http', auth="public", cors='*')
+    def getProductId(self, id=None):
+        try:
+            temp = []
+            sale_order_line = request.env['sale.order.line'].sudo().search([('id', '=', int(id))])
+            for i in sale_order_line:
+                vals = {"product_id": i.product_id.id if i.product_id.id != False else '',
+                        "product_name": i.product_id.name if i.product_id.name != False else ''
+                        }
+                temp.append(vals)
+            res = {
+                'data': temp,
+                'message': "Product Data",
                 'status': 200
             }
             return return_Response(res)
