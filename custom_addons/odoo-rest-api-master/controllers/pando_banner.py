@@ -8,11 +8,14 @@ _logger = logging.getLogger(__name__)
 
 class PandoBanner(http.Controller):
 
-    @http.route('/api/v1/c/pando.banner/', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route('/api/v1/c/pando.banner', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_pando_banner(self, **params):
         try:
             model = 'pando.banner'
-            records = request.env[model].sudo().search([])
+            domain = []
+            if "type" in params and params.get('type'):
+                domain = [('drop_down', '=', params.get('type'))]
+            records = request.env[model].sudo().search(domain)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             bannerList = []
             for rec in records:

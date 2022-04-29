@@ -7,7 +7,8 @@ class pandoBanner(models.Model):
     _description = 'Here We Store All The Banners'
 
     name = fields.Char('Name')
-    drop_down = fields.Selection([('home', 'Home'),('banner','Banner')], string='Drop Down')
+    drop_down = fields.Selection([('home', 'Home'), ('offers', 'Offers')], string='Banner Type')
+    # drop_down = fields.Selection([('home', 'Home'), ('banner', 'Banner')], string='Drop Down')
     image = fields.Binary(attachment=True)
 
 
