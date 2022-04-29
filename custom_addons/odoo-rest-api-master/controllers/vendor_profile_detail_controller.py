@@ -142,7 +142,7 @@ def get_product_details(website, warehouse, base_url,records):
         for n in i.seller_ids:
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
-        temp.append({"id": i.id, "name": i.name,
+        temp.append({"id": i.id, "name": i.name+variant_name,
                      'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
@@ -608,6 +608,10 @@ class OdooAPI(http.Controller):
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
         search = ''
+
+        if "search" in params:
+            domain.append(('name', 'ilike', params['search']))
+
         if "orderBy" in params:
             orders = params["orderBy"]
             if orders == 'rating':
@@ -732,6 +736,8 @@ class OdooAPI(http.Controller):
 
         limit = 0
         offset = 0
+        if "search" in params:
+            domain.append(('name', 'ilike', params['search']))
         if "page" in params:
             limit = 10
             page = int(params["page"])
@@ -1094,5 +1100,67 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+    @validate_token
+    @http.route(['/api/v1/v/product_product_update','/api/v1/v/product_product_update/<id>'], type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def vendor_product_update(self, id=None, **params):
+        try:
+            if not id:
+                error = {"message": "Id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            record = request.env['product.product'].sudo().search([('id','=',int(id))])
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                website = request.env['website'].sudo().browse(1)
+                if record:
+                    dict = {
+                        "name": jdata.get('name'),
+                        "categ_id": jdata.get('categ_id'),
+                        "list_price": jdata.get('list_price'),
+                        "standard_price": jdata.get('standard_price'),
+                        "uom_id": jdata.get('uom') or 1,
+                        "uom_po_id": jdata.get('uom_po_id') or 1,
+                        "tracking": jdata.get('tracking') or 'none',
+                        "country_id": int(jdata.get('country_id')),
+                        "public_categ_ids":[[6, False,[int(jdata.get('public_categ_ids'))]]]
+                    }
+                    if 'tax' in jdata and jdata.get('tax'):
+                        dict['taxes_id'] = [[6, False,[int(jdata.get('tax'))]]]
+                    if 'ribbon' in jdata and jdata.get('ribbon'):
+                        dict['website_ribbon_id'] = int(jdata.get('ribbon'))
+                    # if 'variant' in jdata and jdata.get('variant'):
+                    #     lst=[]
+                    #     for i in jdata.get('variant').keys():
+                    #         if i:
+                    #             value = [[6, False,jdata.get('variant')[i]]]
+                    #             lst.append([0, 0,{'attribute_id':int(i),'value_ids':value}])
+                    #     dict["attribute_line_ids"]= lst
+                    resId = record.product_tmpl_id.sudo().write(dict)
+                    if resId:
+                        vals = {
+                            'seller_id': request.env.user.partner_id.id,
+                            'vendor_message': "Product Updated Successfully",
+                            'model': "product.template",
+                            'title': "Product Template"
+                        }
+                        request.env['notification.center'].sudo().create(vals)
+                        record.product_tmpl_id.reject()
+                        record.product_tmpl_id.set_pending()
+                else:
+                    msg = {"message": "No Data Found.", "status_code": 400}
+                    return return_Response_error(msg)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+        res = {
+            'message': "Product updated Successfully",
+            'status': 200
+        }
+        return return_Response(res)
 
 

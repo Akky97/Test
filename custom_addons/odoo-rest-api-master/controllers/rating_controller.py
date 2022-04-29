@@ -167,14 +167,24 @@ class PortalChatter(PortalChatter):
                 return return_Response_error(error)
             rating = request.env['rating.rating'].sudo().search([('rating_product_id','=',int(id))], order='id desc')
             temp = []
+            res_id = request.env['ir.attachment'].sudo()
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+
             for rec in rating:
-                temp.append({
+                res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                               ('res_field', '=', 'image_1920'),
+                                               ('res_id', 'in', [rec.partner_id.id])])
+                res_id.sudo().write({"public": True})
+                vals = {
                     'partnerId': rec.partner_id.id,
                     'partnerName': rec.partner_id.name,
                     'rating': rec.rating,
                     'rating_text': rec.rating_text,
                     'feedback': rec.feedback
-                })
+                }
+                if res_id:
+                    vals['image'] = base_url.value + '/web/image/' + str(res_id.id)
+                temp.append(vals)
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
