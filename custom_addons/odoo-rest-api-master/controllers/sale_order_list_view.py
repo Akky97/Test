@@ -427,6 +427,7 @@ class SaleOrderController(http.Controller):
                       i.invoice_ids[0].access_token + '&report_type=pdf&download=true'
                 from datetime import datetime, timedelta
                 complaint_date_validity = i.date_order + timedelta(7)
+                check_date = True if complaint_date_validity >= datetime.now() else False
                 value = {
                     'id': i.id,
                     'name': i.name if i.name != False else "",
@@ -436,7 +437,8 @@ class SaleOrderController(http.Controller):
                     'invoice_status': i.invoice_status if i.invoice_status != False else "",
                     'url': url,
                     'symbol': i.currency_id.symbol if i.currency_id.symbol != False else "",
-                    'complaint_date_validity': str(complaint_date_validity)
+                    'complaint_date_validity': str(complaint_date_validity),
+                    'check_validity': check_date
                 }
                 sale_order_data.append(value)
 
