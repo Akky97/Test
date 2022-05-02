@@ -154,7 +154,8 @@ class ControllerREST(http.Controller):
     def getTicketType(self):
         try:
             temp = []
-            tags = request.env['project.tags'].sudo().search([])
+            tags = request.env['project.tags'].sudo().search([('name', 'in',
+                                                               ['Product Issue', 'Invoice Issue', 'Other'])])
             for i in tags:
                 vals = {"tag_id": i.id if i.id != False else '',
                         "tag_name": i.name if i.name != False else ''
@@ -177,7 +178,7 @@ class ControllerREST(http.Controller):
         except:
             jdata = {}
         if not jdata.get('description') or not jdata.get('issue_name') or not jdata.get('priority') or not \
-                jdata.get('assignTo') or not jdata.get('tag_id') or not jdata.get('product_id') or not \
+                jdata.get('assignTo') or not jdata.get('tag_id') or not \
                 jdata.get('sale_order_line_id'):
             msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
@@ -185,7 +186,6 @@ class ControllerREST(http.Controller):
         partner_id = request.env.user.partner_id.id
         issue_name = jdata.get('issue_name')
         description = jdata.get('description')
-        product_id = jdata.get('product_id')
         priority = jdata.get('priority')
         assignTo = jdata.get('assignTo')
         tag_id = jdata.get('tag_id')
@@ -193,9 +193,12 @@ class ControllerREST(http.Controller):
         stage_id = request.env['project.task.type'].sudo().search([('name', '=', 'New')], limit=1).id
         project_id = request.env['project.project'].sudo().search([('name', '=', 'Pando-Stores Issues')], limit=1).id
         tag = [tag_id]
+        sale_order_line = request.env['sale.order.line'].sudo().search([('id', '=', int(sale_line_id_pando))])
+        product_id = sale_order_line.product_id.id
         from datetime import datetime, timedelta
         deadline_date = datetime.now() + timedelta(1)
         assert isinstance(uid, object)
+
         vals = dict(name=issue_name, tag_ids=[[6, False, tag]], partner_id=int(partner_id),
                     description=description, stage_id=stage_id, user_id=int(assignTo), product_id=int(product_id),
                     project_id=project_id, date_deadline=deadline_date, priority=str(priority),
@@ -238,21 +241,21 @@ class ControllerREST(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
-    @http.route('/api/v1/c/customer/getProductId/<id>', methods=['GET'], type='http', auth="public", cors='*')
-    def getProductId(self, id=None):
-        try:
-            temp = []
-            sale_order_line = request.env['sale.order.line'].sudo().search([('id', '=', int(id))])
-            for i in sale_order_line:
-                vals = {"product_id": i.product_id.id if i.product_id.id != False else '',
-                        "product_name": i.product_id.name if i.product_id.name != False else ''
-                        }
-                temp.append(vals)
-            res = {
-                'data': temp,
-                'message': "Product Data",
-                'status': 200
-            }
-            return return_Response(res)
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
+    # @http.route('/api/v1/c/customer/getProductId/<id>', methods=['GET'], type='http', auth="public", cors='*')
+    # def getProductId(self, id=None):
+    #     try:
+    #         temp = []
+    #         sale_order_line = request.env['sale.order.line'].sudo().search([('id', '=', int(id))])
+    #         for i in sale_order_line:
+    #             vals = {"product_id": i.product_id.id if i.product_id.id != False else '',
+    #                     "product_name": i.product_id.name if i.product_id.name != False else ''
+    #                     }
+    #             temp.append(vals)
+    #         res = {
+    #             'data': temp,
+    #             'message': "Product Data",
+    #             'status': 200
+    #         }
+    #         return return_Response(res)
+    #     except (SyntaxError, QueryFormatError) as e:
+    #         return error_response(e, e.msg)

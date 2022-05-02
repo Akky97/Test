@@ -22,5 +22,8 @@
         <record id="project_tags_05" model="project.tags">
             <field name="name">Invoice Issue</field>
         </record>
+        <record id="project_tags_06" model="project.tags">
+            <field name="name">Other</field>
+        </record>
     </data>
 </odoo>
