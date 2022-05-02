@@ -601,7 +601,7 @@ class OdooAPI(http.Controller):
 
     @validate_token
     @http.route('/api/v1/v/product.template.view', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def product_template_view(self, **params):
+    def vendor_product_template_view(self, **params):
         try:
             domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
             model = 'product.product'
