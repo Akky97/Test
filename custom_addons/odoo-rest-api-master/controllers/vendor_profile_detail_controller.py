@@ -484,6 +484,37 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
     @validate_token
+    @http.route('/api/v1/v/attribute_value_data', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def attribute_value_data(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            res = {}
+            if jdata:
+                if not jdata.get('variant'):
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+
+                for id in jdata.get('variant')[0].keys():
+                    value = jdata.get('variant')[0][id]
+                    pav = []
+                    pAttr = request.env['product.attribute'].sudo().search([('id','=',int(id))])
+                    pAttrValue = request.env['product.attribute.value'].sudo().search([('id', 'in', value)])
+                    for r in pAttrValue:
+                        pav.append(r.name)
+                    if pAttr:
+                        res[pAttr.name] = pav
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": res
+        }
+        return return_Response(res)
+
+    @validate_token
     @http.route('/api/v1/v/account.tax', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_account_tax(self, **params):
         try:
