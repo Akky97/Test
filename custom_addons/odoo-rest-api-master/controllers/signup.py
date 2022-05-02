@@ -57,13 +57,15 @@ class SignupAPI(AuthSignupHome):
                         if user_sudo and template:
                             template.sudo().send_mail(user_sudo.id, force_send=True)
                     res = {"message": "Account Successfully Created", "status_code": 200}
-                    vals = {
-                        "seller_id": self.user.partner_id.id,
-                        "vendor_message": f"""You are successfully Signed Up""",
-                        "model": "res.partner",
-                        "title": "Customer Signup"
-                    }
-                    request.env['notification.center'].sudo().create(vals)
+                    user = request.env["res.users"].sudo().search([("login", "=", qcontext.get('login'))])
+                    if user:
+                        vals = {
+                            "seller_id": user.partner_id.id,
+                            "vendor_message": f"""You are successfully Signed Up""",
+                            "model": "res.partner",
+                            "title": "Customer Signup"
+                        }
+                        request.env['notification.center'].sudo().create(vals)
                     email_get = request.env['email.verification'].sudo().search([('email', '=', email)],order='create_date desc',limit=1)
                     email_get.sudo().unlink()
                     return return_Response(res)
