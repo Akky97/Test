@@ -103,7 +103,7 @@ def get_product_details(website, warehouse, base_url,records):
             attribute_name = ''
             id = []
             data = []
-            variant_name = '('
+            variant_name = ''
             for c in k.product_template_attribute_value_ids:
                 id.append(c.attribute_id.id)
             for attr_id in list(set(id)):
@@ -117,9 +117,9 @@ def get_product_details(website, warehouse, base_url,records):
                             values.append({"id": b.id, "name": b.name, "slug": None,
                                            "pivot": {"components_variants_variant_id": k.id,
                                                      "component_id": b.id}})
-                        variant_name += b.name+' '
+                        variant_name += '('+b.name + ')'
 
-                data.append({attribute_name: values,'variant_name':variant_name+')'})
+                data.append({attribute_name: values})
                 values = []
             res_data = {"id": k.id, "price": k.list_price,
                         "pivot": {"product_id": i.id, "component_id": k.id}}
