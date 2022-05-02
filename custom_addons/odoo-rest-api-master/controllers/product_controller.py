@@ -34,7 +34,9 @@ def get_product_details(warehouse, records):
         category = []
         variant = []
         sellers = []
-        i.sale_count_pando = _compute_sales_count(self=i)
+        # i.sale_count_pando = _compute_sales_count(self=i)
+        i.sudo().write({'sale_count_pando': _compute_sales_count(self=i)})
+        # print(i.sale_count_pando,'      ',_compute_sales_count(self=i))
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
         if not result:
             result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
@@ -181,7 +183,9 @@ class OdooAPI(http.Controller):
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
-                res.sale_count_pando = _compute_sales_count(self=res)
+                # res.sale_count_pando = _compute_sales_count(self=res)
+                res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -547,7 +551,9 @@ class OdooAPI(http.Controller):
                     domain.append(attr)
                 search_product = request.env['product.product'].sudo().search(domain)
                 for res in search_product:
-                    res.sale_count_pando = _compute_sales_count(self=res)
+                    # res.sale_count_pando = _compute_sales_count(self=res)
+                    res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+
                     total_count += res.sale_count_pando
                 j.total_sold_count = total_count
             orders = 'total_sold_count DESC'
