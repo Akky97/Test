@@ -377,10 +377,9 @@ class OdooAPI(http.Controller):
             domain.append(('product_template_attribute_value_ids.product_attribute_value_id', 'in', jdata.get('attr')))
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
-        if "orderBy" in params and params['orderBy'] == 'featured':
+        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
-                _compute_sales_count(self=res)
-                res.sale_count_pando = res.sales_count
+                res.sale_count_pando = _compute_sales_count(self=res)
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -548,8 +547,7 @@ class OdooAPI(http.Controller):
                     domain.append(attr)
                 search_product = request.env['product.product'].sudo().search(domain)
                 for res in search_product:
-                    _compute_sales_count(self=res)
-                    res.sale_count_pando = res.sales_count
+                    res.sale_count_pando = _compute_sales_count(self=res)
                     total_count += res.sale_count_pando
                 j.total_sold_count = total_count
             orders = 'total_sold_count DESC'
