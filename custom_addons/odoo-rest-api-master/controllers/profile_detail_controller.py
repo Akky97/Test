@@ -152,6 +152,14 @@ class OdooAPI(http.Controller):
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+        vals = {
+            "seller_id": request.env.user.partner_id.id,
+            "vendor_message": """Record Updated Successfully""",
+            "model": "res.partner",
+            "title": "Address"
+        }
+        request.env['notification.center'].sudo().create(vals)
+
         res = {
             "result": "Record Updated Successfully", "status": 200
         }
@@ -182,6 +190,14 @@ class OdooAPI(http.Controller):
                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+        vals = {
+            "seller_id": request.env.user.partner_id.id,
+            "vendor_message": """Record Deleted Successfully""",
+            "model": "res.partner",
+            "title": "Address"
+        }
+        request.env['notification.center'].sudo().create(vals)
+
         res = {
             "result": "Record Deleted Successfully", "status": 200
         }

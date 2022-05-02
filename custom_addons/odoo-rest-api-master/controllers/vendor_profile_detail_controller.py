@@ -170,6 +170,7 @@ def get_product_details(website, warehouse, base_url,records):
                      "sold": i.sales_count,
                      "review": 2,
                      "rating": get_rating_avg(i),
+                     "is_product_publish": i.is_product_publish,
                      "additional_info": i.additional_info if i.additional_info else '',
                      "shipping_return": i.shipping_return if i.shipping_return else '',
                      "status":i.marketplace_status,
