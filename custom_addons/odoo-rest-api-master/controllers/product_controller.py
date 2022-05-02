@@ -126,8 +126,8 @@ def get_product_details(warehouse, records):
                      "category": category,
                      "create_uid": i.create_uid.id if i.create_uid.id != False else '',
                      "create_name": i.create_uid.name if i.create_uid.name != False else '',
-                     "write_uid": i.write_uid.id if i.write_uid.id != False else '',
-                     "write_name": i.write_uid.name if i.write_uid.name != False else '',
+                     # "write_uid": i.write_uid.id if i.write_uid.id != False else '',
+                     # "write_name": i.write_uid.name if i.write_uid.name != False else '',
                      "variants": variant,
                      "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
                          warehouse=warehouse.id).virtual_available > 0 else 0.0,
