@@ -46,8 +46,8 @@ def get_product_details(warehouse, records):
         category = []
         variant = []
         sellers = []
-        _compute_sales_count(self=i)
-        i.sale_count_pando = i.sales_count
+        # _compute_sales_count(self=i)
+        # i.sale_count_pando = i.sales_count
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
         if not result:
             result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
@@ -138,7 +138,7 @@ def get_product_details(warehouse, records):
                      "top": True if i.website_ribbon_id.html == 'Trending' else None,
                      "new": True if i.website_ribbon_id.html == 'New' else None,
                      "author": "Pando-Stores",
-                     "sold": i.sales_count,
+                     # "sold": i.sales_count,
                      "review": 2,
                      "rating": 3,
                      "rating_permission": get_rating_permission(i),
@@ -192,11 +192,11 @@ class OdooAPI(http.Controller):
             offset = (page - 1) * 12
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
-        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
-            for res in records:
-                _compute_sales_count(self=res)
-                res.sale_count_pando = res.sales_count
-            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        # if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
+        #     for res in records:
+        #         _compute_sales_count(self=res)
+        #         res.sale_count_pando = res.sales_count
+        #     records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
