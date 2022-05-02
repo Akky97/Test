@@ -1,0 +1,6 @@
+
+mpython:S1192ï"ODefine a constant instead of duplicating this literal "call %s.%s(%s)" 3 times.(æÎ›”ıÿÿÿÿ
+ipython:S2710D"QRename "meta" to a valid class parameter name or add the missing class parameter.(×Óå
+mpython:S3776Î"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(ğ›‚§
+rpython:S3776ú"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(ø…Øÿÿÿÿÿ
+lpython:S3776‰"TRefactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.(â…d

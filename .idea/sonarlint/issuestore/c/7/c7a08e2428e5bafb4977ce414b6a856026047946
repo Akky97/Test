@@ -1,0 +1,345 @@
+
+bpython:S1192P"JDefine a constant instead of duplicating this literal "res.users" 5 times.(î·Ç¤
+mpython:S1192g"UDefine a constant instead of duplicating this literal 'ir.config_parameter' 11 times.(ù¬˜
+ppython:S1192±"WDefine a constant instead of duplicating this literal "/recommend-course?ref=" 5 times.(ììÿ¼
+fpython:S1192g"NDefine a constant instead of duplicating this literal 'web.base.url' 11 times.(ù¬˜
+spython:S1192m"VDefine a constant instead of duplicating this literal "/profile/view/user/%d" 3 times.(¥—óùÿÿÿÿ
+ˆpython:S1192Ä!"jDefine a constant instead of duplicating this literal 'ecom_lms.email_template_journey_completed' 4 times.(Åú‹­úÿÿÿÿ
+Îpython:S1192ï"´Define a constant instead of duplicating this literal 'The availability of the course is expired. Please click on "Home" or "My Courses" to access your available content.' 4 times.(ïÎ˜
+jpython:S1192Ü"RDefine a constant instead of duplicating this literal 'survey.user_input' 6 times.(äå›{
+tpython:S1192¨"VDefine a constant instead of duplicating this literal '/slides/my/languages' 10 times.(ÂöÕ†ıÿÿÿÿ
+kpython:S1192ï"RDefine a constant instead of duplicating this literal 'slide.channel.tag' 7 times.(˜•–
+Ãpython:S1192®"¤Define a constant instead of duplicating this literal """</strong> to you. Please click on the sharable link to join the course.Course Due date will be """ 5 times.(â’‰üÿÿÿÿ
+Ğpython:S1192¬"¶Define a constant instead of duplicating this literal """</p>
+                                                    <p>
+                                                    """ 3 times.(³ÅÍĞ
+}python:S1192›"dDefine a constant instead of duplicating this literal 'ecom_lms.lms_pwa_all_courses_filter' 3 times.(›¦Û¿
+rpython:S1192Ö"YDefine a constant instead of duplicating this literal 'gamification.badge.user' 10 times.(¿§†­
+qpython:S1192ë"XDefine a constant instead of duplicating this literal 'course.journey.partner' 11 times.(òª²³
+ppython:S1192×"WDefine a constant instead of duplicating this literal 'slide.channel.partner' 12 times.(„“ŸÛ
+fpython:S1192×"MDefine a constant instead of duplicating this literal 'slide.slide' 16 times.(¸…™ú
+{python:S1192’1"cDefine a constant instead of duplicating this literal 'partner_id.commercial_company_name' 3 times.(±—¾_
+ppython:S1192Ö"WDefine a constant instead of duplicating this literal 'badge_id.is_published' 10 times.(¿§†­
+wpython:S1192³"YDefine a constant instead of duplicating this literal 'slide.channel.tag.group' 25 times.( ¾Ñøÿÿÿÿÿ
+jpython:S1192õ"LDefine a constant instead of duplicating this literal 'quiz.report' 4 times.(¸ÿøÿÿÿÿ
+python:S1192©"ƒDefine a constant instead of duplicating this literal """ <html>
+                                                   <head></head>
+                                                   <body>
+                                                   <p>Dear """ 3 times.(Ä¡ß³
+€python:S1192¨"bDefine a constant instead of duplicating this literal 'This course is recommended to you' 5 times.(“–£ˆùÿÿÿÿ
+upython:S1192Ş"WDefine a constant instead of duplicating this literal 'reward_id.is_published' 5 times.(­ºÄÂúÿÿÿÿ
+dpython:S1192è"KDefine a constant instead of duplicating this literal 'karma desc' 5 times.(ßÆÙÎ
+ipython:S1192Ô"KDefine a constant instead of duplicating this literal "/slides/%s" 4 times.(•’¾úÿÿÿÿ
+npython:S1192•"PDefine a constant instead of duplicating this literal 'slide.channel' 137 times.(Õ‘ãÿıÿÿÿÿ
+jpython:S1192š"QDefine a constant instead of duplicating this literal 'course.category' 10 times.(áş˜
+•python:S1192Á/"wDefine a constant instead of duplicating this literal 'ecom_lms.user_profile_edit_first_login_image_not_found' 3 times.(¶Ç„ûÿÿÿÿ
+hpython:S1192€"ODefine a constant instead of duplicating this literal 'slide.question' 3 times.(®€ÖÖ
+zpython:S1192®"\Define a constant instead of duplicating this literal """ recommend the <strong>""" 5 times.(â’‰üÿÿÿÿ
+upython:S1192Ü"WDefine a constant instead of duplicating this literal 'gamification.challenge' 5 times.(â«éÇûÿÿÿÿ
+jpython:S1192Ş"QDefine a constant instead of duplicating this literal 'quizzes.question' 9 times.(ß®
+•python:S1192®"öDefine a constant instead of duplicating this literal """..
+                                                    </p>
+                                                    <p>
+                                                     <a href=""" 3 times.(â’‰üÿÿÿÿ
+ipython:S1192Ş4"KDefine a constant instead of duplicating this literal '/web/login' 3 times.(ğğÊùşÿÿÿÿ
+‡python:S1192š"nDefine a constant instead of duplicating this literal 'ecom_lms.email_template_course_recommendation' 5 times.(ÛÀçï
+epython:S1192"LDefine a constant instead of duplicating this literal 'res.users' 143 times.(ÆÔŸÀ
+ppython:S1192Ò"RDefine a constant instead of duplicating this literal 'time.spent.report' 4 times.(Ñ¾ÌÔúÿÿÿÿ
+|python:S1192Ê"^Define a constant instead of duplicating this literal 'ecom_lms.channel_pwa_view_all' 5 times.(³Ş¾–ÿÿÿÿÿ
+hpython:S1192š1"ODefine a constant instead of duplicating this literal "/profile/users" 3 times.(åÛ¾¡
+ipython:S1192ì"PDefine a constant instead of duplicating this literal 'course.journey' 23 times.(ş›ß
+ypython:S1192Ã1"`Define a constant instead of duplicating this literal "website_profile.users_page_main" 3 times.(Éú¢ô
+fpython:S1192¥"MDefine a constant instead of duplicating this literal 'quiz.partner' 4 times.(¤şô³
+upython:S1192É"\Define a constant instead of duplicating this literal 'website_slides.courses_all' 10 times.(”á¡
+epython:S1192ß"GDefine a constant instead of duplicating this literal 'id asc' 5 times.(µ“ Äøÿÿÿÿ
+¥python:S1192Ä3"‹Define a constant instead of duplicating this literal 'Only employees can access this database. Please contact the administrator.' 3 times.(£îÎ©
+dpython:S11921"KDefine a constant instead of duplicating this literal 'karma DESC' 3 times.(å“ëü
+npython:S1192‡"PDefine a constant instead of duplicating this literal 'ir.mail_server' 11 times.(ô‘±úÿÿÿÿÿ
+Mpython:S1066…"/Merge this if statement with the enclosing one.(˜ô»’ûÿÿÿÿ
+Hpython:S1066ø"/Merge this if statement with the enclosing one.(è¹°®
+Hpython:S1066ı"/Merge this if statement with the enclosing one.(è¹°®
+Hpython:S1066Ò"/Merge this if statement with the enclosing one.(è¹°®
+Hpython:S1066×"/Merge this if statement with the enclosing one.(è¹°®
+Hpython:S1066Á
+"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066²"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Mpython:S1066ë"/Merge this if statement with the enclosing one.(ğ˜ˆıÿÿÿÿ
+Hpython:S1066…"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Mpython:S1066»"/Merge this if statement with the enclosing one.(ğ˜ˆıÿÿÿÿ
+Hpython:S1066Õ"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066™"/Merge this if statement with the enclosing one.(ÒŞÉÓ
+Hpython:S1066¿"/Merge this if statement with the enclosing one.(õ¶
+Hpython:S1066‡"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066Ë"/Merge this if statement with the enclosing one.(ÒŞÉÓ
+Hpython:S1066ñ"/Merge this if statement with the enclosing one.(õ¶
+Hpython:S1066¹"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066¨"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066’"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066å"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066¶"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066Ã"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066ü"/Merge this if statement with the enclosing one.(ÒŞÉÓ
+Hpython:S1066¡"/Merge this if statement with the enclosing one.(õ¶
+Mpython:S1066œ"/Merge this if statement with the enclosing one.(ğ˜ˆıÿÿÿÿ
+Hpython:S1066×"/Merge this if statement with the enclosing one.(¶§Ê´
+Gpython:S1066î"/Merge this if statement with the enclosing one.(Î°è\
+Hpython:S1066È"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066Ú"/Merge this if statement with the enclosing one.(ƒø‰ç
+Hpython:S1066¥"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066ş"/Merge this if statement with the enclosing one.(À­öã
+Hpython:S1066€"/Merge this if statement with the enclosing one.(º‡ş
+Mpython:S1066Ÿ"/Merge this if statement with the enclosing one.(‰ÚôÔüÿÿÿÿ
+Mpython:S1066³"/Merge this if statement with the enclosing one.(Ãèã¢øÿÿÿÿ
+Gpython:S1066µ"/Merge this if statement with the enclosing one.(—ÄÕ*
+Mpython:S1066Ô"/Merge this if statement with the enclosing one.(ÙôÅ§úÿÿÿÿ
+Mpython:S1066­"/Merge this if statement with the enclosing one.(ËÚœéÿÿÿÿÿ
+Hpython:S1066Ë "/Merge this if statement with the enclosing one.(îıé±
+Hpython:S1066‹$"/Merge this if statement with the enclosing one.(ÒŞÉÓ
+Hpython:S1066£$"/Merge this if statement with the enclosing one.(õ¶
+Mpython:S1066ˆ%"/Merge this if statement with the enclosing one.(ğ˜ˆıÿÿÿÿ
+Hpython:S1066¡&"/Merge this if statement with the enclosing one.(‚öıŸ
+Mpython:S1066ª&"/Merge this if statement with the enclosing one.(ğ˜ˆıÿÿÿÿ
+Gpython:S1066«&"/Merge this if statement with the enclosing one.(¿î
+Mpython:S1066Õ&"/Merge this if statement with the enclosing one.(Ğø·ğüÿÿÿÿ
+Mpython:S1066ç&"/Merge this if statement with the enclosing one.(ò®ñ«ùÿÿÿÿ
+Hpython:S1066ğ&"/Merge this if statement with the enclosing one.(ÒŞÉÓ
+Hpython:S1066û&"/Merge this if statement with the enclosing one.(¬òÇ¬
+Hpython:S1066…'"/Merge this if statement with the enclosing one.(õ¶
+Hpython:S1066‘'"/Merge this if statement with the enclosing one.(ºÊÿá
+Mpython:S1066 '"/Merge this if statement with the enclosing one.(¿ÌÚíşÿÿÿÿ
+Hpython:S1066Ø'"/Merge this if statement with the enclosing one.(¶§Ê´
+Gpython:S1066ï'"/Merge this if statement with the enclosing one.(Î°è\
+Hpython:S1066²("/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Hpython:S1066ë("/Merge this if statement with the enclosing one.(ÒŞÉÓ
+Hpython:S1066)"/Merge this if statement with the enclosing one.(õ¶
+Mpython:S1066‹*"/Merge this if statement with the enclosing one.(ğ˜ˆıÿÿÿÿ
+Hpython:S1066Æ+"/Merge this if statement with the enclosing one.(¶§Ê´
+Gpython:S1066İ+"/Merge this if statement with the enclosing one.(Î°è\
+Hpython:S1066¦,"/Merge this if statement with the enclosing one.(ÚÅÿÂ
+Mpython:S1066²,"/Merge this if statement with the enclosing one.(ì””ƒøÿÿÿÿ
+Mpython:S1066µ,"/Merge this if statement with the enclosing one.(èŸŒ¤úÿÿÿÿ
+Mpython:S1066¸,"/Merge this if statement with the enclosing one.(ì””ƒøÿÿÿÿ
+Hpython:S1066À/"/Merge this if statement with the enclosing one.(‹–Ÿ
+Mpython:S1066Í4"/Merge this if statement with the enclosing one.(çÿÑüÿÿÿÿ
+Mpython:S1066æ4"/Merge this if statement with the enclosing one.(çÿÑüÿÿÿÿ
+Mpython:S1066†5"/Merge this if statement with the enclosing one.(çÿÑüÿÿÿÿ
+6python:S125>"Remove this commented out code.(°üÆØ
+6python:S125`"Remove this commented out code.(Œ²¡«
+6python:S125e"Remove this commented out code.(¤§å¥
+5python:S125|"Remove this commented out code.(²ßÓI
+6python:S125"Remove this commented out code.(²ßÓI
+Epython:S1481Ò"'Remove the unused local variable "res".(Ñ¾ÌÔúÿÿÿÿ
+Epython:S1481à"'Remove the unused local variable "res".(Ñ¾ÌÔúÿÿÿÿ
+Epython:S1481î"'Remove the unused local variable "res".(Ñ¾ÌÔúÿÿÿÿ
+rpython:S3776ó"TRefactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.(²¶‹ºúÿÿÿÿ
+<python:S125"Remove this commented out code.(û˜ÿÿÿÿÿ
+Mpython:S1481—"/Remove the unused local variable "first_login".(ªò¢˜úÿÿÿÿ
+Jpython:S1481µ",Remove the unused local variable "lang_lst".(‹Æâìüÿÿÿÿ
+Mpython:S1481ì"/Remove the unused local variable "cookie_lang".(»œ¤êøÿÿÿÿ
+mpython:S3776–"TRefactor this function to reduce its Cognitive Complexity from 48 to the 15 allowed.(ÜŞÔ
+<python:S125£"Remove this commented out code.(“ô½Ëüÿÿÿÿ
+7python:S125Â"Remove this commented out code.(âùÂ 
+<python:S125Ç"Remove this commented out code.(‘ºÇşÿÿÿÿ
+7python:S125Ì"Remove this commented out code.(„Äá¶
+7python:S125Ò"Remove this commented out code.(„Äá¶
+7python:S125Ø"Remove this commented out code.(„Äá¶
+7python:S125Ş"Remove this commented out code.(„Äá¶
+7python:S125ã"Remove this commented out code.(„Äá¶
+7python:S125è"Remove this commented out code.(„Äá¶
+7python:S125í"Remove this commented out code.(–ğ
+mpython:S3776ƒ"TRefactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.(›€ÆÀ
+6python:S125í"Remove this commented out code.(¿ô’(
+Tpython:S5720¯";Rename "env" to "self" or add the missing "self" parameter.(öêöË
+mpython:S117"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+Apython:S1481"(Remove the unused local variable "User".(ÆÔŸÀ
+lpython:S3776ú"TRefactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.(„Š'
+mpython:S117á"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+Apython:S1481á"(Remove the unused local variable "User".(ÆÔŸÀ
+mpython:S3776Ì"TRefactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.(³‹ºë
+mpython:S117³"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+Apython:S1481³"(Remove the unused local variable "User".(ÆÔŸÀ
+mpython:S3776"TRefactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.(àüÒ‹
+<python:S125Ú"Remove this commented out code.(†Â®Æùÿÿÿÿ
+mpython:S117ˆ"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+Apython:S1481ˆ"(Remove the unused local variable "User".(ÆÔŸÀ
+mpython:S3776ó"TRefactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.(´ŞÑÂ
+<python:S125¯"Remove this commented out code.(†Â®Æùÿÿÿÿ
+Bpython:S1481Ò")Remove the unused local variable "order".(¦É·¥
+<python:S125ß"Remove this commented out code.(†Â®Æùÿÿÿÿ
+Bpython:S1481ø")Remove the unused local variable "order".(¦É·¥
+rpython:S3776ô"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(ÊªæØıÿÿÿÿ
+<python:S125‰"Remove this commented out code.(†Â®Æùÿÿÿÿ
+Bpython:S1481¢")Remove the unused local variable "order".(¦É·¥
+fpython:S1854í"MRemove this assignment to local variable 'channels'; the value is never used.(½¿§ã
+Ypython:S1481î";Remove the unused local variable "all_channels_values_ids".(ç»³­ıÿÿÿÿ
+mpython:S3776Â"TRefactor this function to reduce its Cognitive Complexity from 54 to the 15 allowed.(ÓÜØÏ
+<python:S125Ó"Remove this commented out code.(÷¡Ç’øÿÿÿÿ
+fpython:S1854Ç"MRemove this assignment to local variable 'channels'; the value is never used.(½¿§ã
+Ypython:S1481È";Remove the unused local variable "all_channels_values_ids".(ç»³­ıÿÿÿÿ
+mpython:S3776œ"TRefactor this function to reduce its Cognitive Complexity from 54 to the 15 allowed.(ßŠÎÌ
+<python:S125­"Remove this commented out code.(÷¡Ç’øÿÿÿÿ
+7python:S125ù"Remove this commented out code.(Î¾õŒ
+7python:S125“	"Remove this commented out code.(Ú“Íç
+mpython:S3776«	"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(÷ÕÁÜ
+<python:S125×	"Remove this commented out code.(†Â®Æùÿÿÿÿ
+rpython:S3776ì	"TRefactor this function to reduce its Cognitive Complexity from 96 to the 15 allowed.(ç£ø€ùÿÿÿÿ
+<python:S125º
+"Remove this commented out code.(ú¬­şÿÿÿÿ
+7python:S125Æ
+"Remove this commented out code.(„¤³
+rpython:S3776İ
+"TRefactor this function to reduce its Cognitive Complexity from 96 to the 15 allowed.(ë¦€şÿÿÿÿ
+<python:S125«"Remove this commented out code.(ú¬­şÿÿÿÿ
+7python:S125·"Remove this commented out code.(„¤³
+Spython:S1481é"5Remove the unused local variable "featured_user_lst".(Ğ™ÿ¢ÿÿÿÿÿ
+rpython:S3776Ğ"TRefactor this function to reduce its Cognitive Complexity from 45 to the 15 allowed.(¸ú‹±üÿÿÿÿ
+7python:S125Š"Remove this commented out code.(„¤³
+Spython:S1481¹"5Remove the unused local variable "featured_user_lst".(Ğ™ÿ¢ÿÿÿÿÿ
+mpython:S3776 "TRefactor this function to reduce its Cognitive Complexity from 45 to the 15 allowed.(˜“
+7python:S125Ú"Remove this commented out code.(„¤³
+spython:S3776ğ"URefactor this function to reduce its Cognitive Complexity from 170 to the 15 allowed.(ÂãÉ ÿÿÿÿÿ
+<python:S125Œ"Remove this commented out code.(âÛ‚µùÿÿÿÿ
+npython:S3776¢"URefactor this function to reduce its Cognitive Complexity from 170 to the 15 allowed.(¾Ç¤è
+<python:S125¾"Remove this commented out code.(âÛ‚µùÿÿÿÿ
+mpython:S3776Ô"TRefactor this function to reduce its Cognitive Complexity from 97 to the 15 allowed.(ÕÚÀÇ
+6python:S125­"Remove this commented out code.(öÄÏ
+rpython:S3776Á"TRefactor this function to reduce its Cognitive Complexity from 97 to the 15 allowed.(‰•Šøÿÿÿÿ
+6python:S125—"Remove this commented out code.(öÄÏ
+mpython:S3776«"TRefactor this function to reduce its Cognitive Complexity from 44 to the 15 allowed.(·Ü™Î
+6python:S125ê"Remove this commented out code.(öÄÏ
+mpython:S3776ş"TRefactor this function to reduce its Cognitive Complexity from 44 to the 15 allowed.(Ÿó«Ö
+6python:S125»"Remove this commented out code.(öÄÏ
+<python:S125ò"Remove this commented out code.(†Â®Æùÿÿÿÿ
+<python:S125«"Remove this commented out code.(†Â®Æùÿÿÿÿ
+<python:S125ä"Remove this commented out code.(†Â®Æùÿÿÿÿ
+<python:S125£"Remove this commented out code.(†Â®Æùÿÿÿÿ
+rpython:S1854à"TRemove this assignment to local variable 'channels_newest'; the value is never used.(íÿÏ«øÿÿÿÿ
+jpython:S1854¼"QRemove this assignment to local variable 'channels_all'; the value is never used.(ÚòÍ×
+Spython:S1481š"5Remove the unused local variable "featured_user_lst".(Ğ™ÿ¢ÿÿÿÿÿ
+Mpython:S1481Î"/Remove the unused local variable "channels_my".(ÉËóÂüÿÿÿÿ
+Hpython:S1481Ñ"/Remove the unused local variable "channels_my".(öÅÏÀ
+spython:S3776¹"URefactor this function to reduce its Cognitive Complexity from 548 to the 15 allowed.(úÖòØúÿÿÿÿ
+7python:S125½"Remove this commented out code.(•¯£¸
+<python:S125Ç"Remove this commented out code.(úâµ¢ıÿÿÿÿ
+<python:S125Ä"Remove this commented out code.(ÌÕÊ©øÿÿÿÿ
+ppython:S117°"XRename this local variable "Channel" to match the regular expression ^[_a-z][a-z0-9_]*$.(şÇç«
+Npython:S1481Ë"0Remove the unused local variable "channels_all".(¯´¤ßùÿÿÿÿ
+epython:S1763ğ"GDelete this unreachable code or refactor the code to make it reachable.(ª‘ıÿÿÿÿ
+mpython:S3776À"TRefactor this function to reduce its Cognitive Complexity from 74 to the 15 allowed.(ï¡Ó
+<python:S125Ç"Remove this commented out code.(ÕÊìÒüÿÿÿÿ
+Hpython:S1481€"*Remove the unused local variable "domain".(ƒ¾¾Éüÿÿÿÿ
+Ppython:S1481‹"7Remove the unused local variable "channel_attendee_id".(›½Óƒ
+Npython:S1481¨"0Remove the unused local variable "channels_all".(¯´¤ßùÿÿÿÿ
+epython:S1763×"GDelete this unreachable code or refactor the code to make it reachable.(ª‘ıÿÿÿÿ
+mpython:S3776"TRefactor this function to reduce its Cognitive Complexity from 80 to the 15 allowed.(İñªÕ
+<python:S125¤"Remove this commented out code.(ÕÊìÒüÿÿÿÿ
+6python:S125Ó"Remove this commented out code.(À™Ä&
+<python:S125ã"Remove this commented out code.(¼ ‰Ìÿÿÿÿÿ
+Ypython:S1481¸";Remove the unused local variable "updated_recommned_users".(Í¾±åøÿÿÿÿ
+mpython:S3776…"TRefactor this function to reduce its Cognitive Complexity from 47 to the 15 allowed.(è”…à
+6python:S125È"Remove this commented out code.(Ì³™j
+rpython:S3776ó"TRefactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.(²ûĞçıÿÿÿÿ
+<python:S125ı"Remove this commented out code.(ŠŸüÌşÿÿÿÿ
+lpython:S3776"TRefactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.(ã¥ô.
+<python:S125—"Remove this commented out code.(ŠŸüÌşÿÿÿÿ
+rpython:S3776¨"TRefactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.(û‡¢«ùÿÿÿÿ
+<python:S125²"Remove this commented out code.(ŠŸüÌşÿÿÿÿ
+rpython:S3776Â"TRefactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.(„Ø¾šşÿÿÿÿ
+<python:S125Ì"Remove this commented out code.(ŠŸüÌşÿÿÿÿ
+opython:S1854"QRemove this assignment to local variable 'answer_score'; the value is never used.(ÔÌäûÿÿÿÿ
+Epython:S1481"'Remove the unused local variable "res".(Ù’âÜüÿÿÿÿ
+Spython:S1481–":Remove the unused local variable "updated_quiz_report_id".(Ì»‘Ã
+Rpython:S1481ä"9Remove the unused local variable "submit_correct_answer".(¿á¼Ø
+Rpython:S1481†"9Remove the unused local variable "submit_correct_answer".(âÑ¸ı
+Rpython:S1481"9Remove the unused local variable "submit_correct_answer".(âÑ¸ı
+spython:S3776Ü"URefactor this function to reduce its Cognitive Complexity from 102 to the 15 allowed.(ÿ¾Ğ¨ÿÿÿÿÿ
+7python:S125¾"Remove this commented out code.(›Îé€
+{python:S1854Ä"]Remove this assignment to local variable 'independent_quiz_partner'; the value is never used.(ÛÊ†»øÿÿÿÿ
+{python:S1854È"]Remove this assignment to local variable 'independent_quiz_partner'; the value is never used.(ÛÊ†»øÿÿÿÿ
+Ppython:S1481¤"2Remove the unused local variable "no_of_attempts".(ªÄ¡Çÿÿÿÿÿ
+Ppython:S1481ª"2Remove the unused local variable "no_of_attempts".(ªùˆ·øÿÿÿÿ
+Npython:S1481Ÿ"5Remove the unused local variable "quiz_report_exist".(š¨Æ
+Mpython:S1481«"/Remove the unused local variable "quiz_update".(á¼á›ıÿÿÿÿ
+rpython:S3776š"TRefactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.(‹õ¨Êşÿÿÿÿ
+<python:S125­"Remove this commented out code.(Ã…öÒÿÿÿÿÿ
+<python:S125Í"Remove this commented out code.(²Â‘ªıÿÿÿÿ
+6python:S125Ó"Remove this commented out code.(ÚƒÅx
+6python:S125Ú"Remove this commented out code.(ˆÚß^
+7python:S125ò"Remove this commented out code.(·É÷
+<python:S125õ"Remove this commented out code.(áèÖÀüÿÿÿÿ
+<python:S125Œ "Remove this commented out code.(¼ ‰Ìÿÿÿÿÿ
+Kpython:S1481´ "-Remove the unused local variable "pager_url".(¢Ù‡şÿÿÿÿ
+<python:S125° "Remove this commented out code.(û¬Şûÿÿÿÿÿ
+Cpython:S1481È!"%Remove the unused local variable "a".(Áïáêÿÿÿÿÿ
+Cpython:S1481ñ!"%Remove the unused local variable "a".(Áïáêÿÿÿÿÿ
+spython:S3776!"URefactor this function to reduce its Cognitive Complexity from 135 to the 15 allowed.(×™Õ¦øÿÿÿÿ
+Ipython:S5806©!"+Rename this variable; it shadows a builtin.(ò‚¢òøÿÿÿÿ
+Cpython:S1481Ì""%Remove the unused local variable "a".(Áïáêÿÿÿÿÿ
+Cpython:S1481õ""%Remove the unused local variable "a".(Áïáêÿÿÿÿÿ
+spython:S3776”""URefactor this function to reduce its Cognitive Complexity from 135 to the 15 allowed.(¯º–éıÿÿÿÿ
+Ipython:S5806­""+Rename this variable; it shadows a builtin.(ò‚¢òøÿÿÿÿ
+Vpython:S1481Ì#"8Remove the unused local variable "channels_popular_ids".(ÂóÇÔÿÿÿÿÿ
+Upython:S1481Í#"7Remove the unused local variable "channels_newest_ids".(Œ‹¸¸ÿÿÿÿÿ
+Spython:S1481†%"5Remove the unused local variable "featured_user_lst".(Ğ™ÿ¢ÿÿÿÿÿ
+npython:S3776”#"URefactor this function to reduce its Cognitive Complexity from 254 to the 15 allowed.(ÉÀİ“
+Spython:S1481¨&"5Remove the unused local variable "featured_user_lst".(Ğ™ÿ¢ÿÿÿÿÿ
+Vpython:S1481Ì%"8Remove the unused local variable "channels_popular_ids".(ÂóÇÔÿÿÿÿÿ
+Upython:S1481Í%"7Remove the unused local variable "channels_newest_ids".(Œ‹¸¸ÿÿÿÿÿ
+spython:S3776§%"URefactor this function to reduce its Cognitive Complexity from 189 to the 15 allowed.(¥¤Àøÿÿÿÿ
+7python:S125ã%"Remove this commented out code.(‡Ä¼ø
+<python:S125»'"Remove this commented out code.(ÉĞƒÿÿÿÿÿ
+Hpython:S1481Ò'"/Remove the unused local variable "journey_lst".(Ò…ç¡
+mpython:S3776Å'"TRefactor this function to reduce its Cognitive Complexity from 71 to the 15 allowed.(ù–¡
+rpython:S1854Ï*"TRemove this assignment to local variable 'channels_newest'; the value is never used.(íÿÏ«øÿÿÿÿ
+jpython:S1854«("QRemove this assignment to local variable 'channels_all'; the value is never used.(ÚòÍ×
+Mpython:S1481½("/Remove the unused local variable "channels_my".(ÉËóÂüÿÿÿÿ
+Hpython:S1481À("/Remove the unused local variable "channels_my".(öÅÏÀ
+Spython:S1481‰*"5Remove the unused local variable "featured_user_lst".(Ğ™ÿ¢ÿÿÿÿÿ
+spython:S3776©("URefactor this function to reduce its Cognitive Complexity from 548 to the 15 allowed.(¥ØÀ„ıÿÿÿÿ
+7python:S125¬("Remove this commented out code.(•¯£¸
+<python:S125¶("Remove this commented out code.(úâµ¢ıÿÿÿÿ
+<python:S125³+"Remove this commented out code.(ÌÕÊ©øÿÿÿÿ
+Mpython:S1481Æ,"/Remove the unused local variable "channels_my".(ï¨öéúÿÿÿÿ
+Fpython:S1481ñ,"(Remove the unused local variable "vals".(Ã¹˜Çøÿÿÿÿ
+rpython:S3776Ÿ,"TRefactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.(‡‡Ä–øÿÿÿÿ
+<python:S125»,"Remove this commented out code.(ÊÜôÁıÿÿÿÿ
+<python:S125Á,"Remove this commented out code.(úâµ¢ıÿÿÿÿ
+7python:S125É,"Remove this commented out code.(€œğ
+mpython:S3776ö,"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(Õá‰ƒ
+<python:S125-"Remove this commented out code.(§˜êİøÿÿÿÿ
+Epython:S1481È-"-Remove the unused local variable "mail_send".(òŒï0
+Epython:S1481ğ-"-Remove the unused local variable "mail_send".(òŒï0
+Epython:S1481œ."-Remove the unused local variable "mail_send".(òŒï0
+Epython:S1481Å."-Remove the unused local variable "mail_send".(òŒï0
+rpython:S3776Î."TRefactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.(”Ûœøøÿÿÿÿ
+python:S101…/"qRename class "customWebsiteSlidesquiz" to match the regular expression ^_?([A-Z_][a-zA-Z0-9]*|[a-z_][a-z0-9_]*)$.( ¼¾Ûÿÿÿÿÿ
+<python:S125 /"Remove this commented out code.(–š×µıÿÿÿÿ
+dpython:S1854Æ/"KRemove this assignment to local variable 'image1'; the value is never used.(á€¸¶
+rpython:S3776Ó/"TRefactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.(Û »ÿÿÿÿÿ
+7python:S125˜0"Remove this commented out code.(û‰ìÂ
+wpython:S117Ì0"_Rename this local variable "AccountInvoice" to match the regular expression ^[_a-z][a-z0-9_]*$.(¢ÂôÖ
+mpython:S117‡1"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+rpython:S3776†1"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(Æ¸òšùÿÿÿÿ
+mpython:S117Ç1"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+mpython:S3776Æ1"TRefactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.(¹ë¬Æ
+<python:S125ğ1"Remove this commented out code.(£ ”¶ûÿÿÿÿ
+mpython:S117˜2"URename this local variable "User" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÆÔŸÀ
+rpython:S3776—2"TRefactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.(‡¤‰æúÿÿÿÿ
+<python:S125¨2"Remove this commented out code.(Ö—­÷ùÿÿÿÿ
+<python:S125Ê2"Remove this commented out code.(£ ”¶ûÿÿÿÿ
+Ypython:S5720…3";Rename "uid" to "self" or add the missing "self" parameter.(§¶·¼ûÿÿÿÿ
+rpython:S3776š3"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(Ê‰å£ıÿÿÿÿ
+mpython:S3776Ô3"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(ŒñÄÀ
+mpython:S3776Œ4"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(¥ûü‡
+‡python:S101Å4"oRename class "Custom_Website_course" to match the regular expression ^_?([A-Z_][a-zA-Z0-9]*|[a-z_][a-z0-9_]*)$.(Èãñ‰
+Apython:S1481Î4"(Remove the unused local variable "user".(Ò¤Çñ
+@python:S1481Ö4"'Remove the unused local variable "env".(¡Í­ê
+7python:S125Ü4"Remove this commented out code.(È³„æ
+Apython:S1481ç4"(Remove the unused local variable "user".(Ò¤Çñ
+<python:S125è4"Remove this commented out code.(¬¤Õçÿÿÿÿÿ
+@python:S1481ò4"'Remove the unused local variable "env".(¡Í­ê
+Apython:S1481‡5"(Remove the unused local variable "user".(Ò¤Çñ
+<python:S125ˆ5"Remove this commented out code.(¬¤Õçÿÿÿÿÿ
+@python:S1481’5"'Remove the unused local variable "env".(¡Í­ê
+Fpython:S1481ÿ5"(Remove the unused local variable "demo".(ÿô†øÿÿÿÿ
+mpython:S3776¤5"TRefactor this function to reduce its Cognitive Complexity from 39 to the 15 allowed.(îáşè

@@ -1,0 +1,6 @@
+
+cpython:S1192!"KDefine a constant instead of duplicating this literal 'sale.order' 5 times.(·”µ÷
+hpython:S1192"PDefine a constant instead of duplicating this literal 'product.product' 3 times.(¶π˘∂
+epython:S1226y"NIntroduce a new variable or use its initial value before reassigning 'amount'.(ïß◊Z
+lpython:S3776ù"TRefactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.(Äé‘;
+¥python:S1515±"öAdd a parameter to the parent lambda function and use variable "order" as its default value; The value of "order" might change at the next loop iteration.(€…·¿
