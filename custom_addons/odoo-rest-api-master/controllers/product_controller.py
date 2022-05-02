@@ -22,7 +22,7 @@ def _compute_sales_count(self):
         ('product_id', 'in', self.ids),
         ('date', '>=', date_from),
     ]
-    for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
+    for group in self.env['sale.report'].sudo().read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
         r[group['product_id'][0]] = group['product_uom_qty']
     for product in self:
         if not product.id:
