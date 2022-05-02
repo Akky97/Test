@@ -10,26 +10,14 @@ _logger = logging.getLogger(__name__)
 
 
 def _compute_sales_count(self):
-    r = {}
-    self.sales_count = 0
+    count =0
     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
                                                                   time.min))
-
-    done_states = self.env['sale.report']._get_done_states()
-
-    domain = [
-        ('state', 'in', done_states),
-        ('product_id', 'in', self.ids),
-        ('date', '>=', date_from),
-    ]
-    for group in self.env['sale.report'].sudo().read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
-        r[group['product_id'][0]] = group['product_uom_qty']
-    for product in self:
-        if not product.id:
-            product.sales_count = 0.0
-            continue
-        product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
-    return r
+    res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale','done','paid'])])
+    if res:
+        for r in res:
+            count += r.product_uom_qty
+    return count
 
 def get_rating_permission(product):
     result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', request.env.user.partner_id.id)])
@@ -46,8 +34,7 @@ def get_product_details(warehouse, records):
         category = []
         variant = []
         sellers = []
-        _compute_sales_count(self=i)
-        i.sale_count_pando = i.sales_count
+        i.sale_count_pando = _compute_sales_count(self=i)
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
         if not result:
             result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
@@ -192,11 +179,10 @@ class OdooAPI(http.Controller):
             offset = (page - 1) * 12
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
-        # if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
-        #     for res in records:
-        #         _compute_sales_count(self=res)
-        #         res.sale_count_pando = res.sales_count
-        #     records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
+            for res in records:
+                res.sale_count_pando = _compute_sales_count(self=res)
+            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
