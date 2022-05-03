@@ -36,8 +36,15 @@ def get_product_details(warehouse, records):
         category = []
         variant = []
         sellers = []
-        if request.env.user.id != 4:
-            i.sudo().write({'sale_count_pando': _compute_sales_count(self=i)})
+        try:
+            db_name = odoo.tools.config.get('db_name')
+            db_registry = registry(db_name)
+            with db_registry.cursor() as cr:
+                env = api.Environment(cr, SUPERUSER_ID, {})
+                prod = env['product.product'].sudo().browse([i.id])
+                prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+        except psycopg2.Error:
+            pass
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
         if not result:
             result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
@@ -191,7 +198,6 @@ class OdooAPI(http.Controller):
                         env = api.Environment(cr, SUPERUSER_ID, {})
                         prod = env['product.product'].sudo().browse([res.id])
                         prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-                        print(prod)
                 except psycopg2.Error:
                     pass
 
@@ -392,8 +398,15 @@ class OdooAPI(http.Controller):
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
-                if request.env.user.id != 4:
-                    res.sale_count_pando = _compute_sales_count(self=res)
+                try:
+                    db_name = odoo.tools.config.get('db_name')
+                    db_registry = registry(db_name)
+                    with db_registry.cursor() as cr:
+                        env = api.Environment(cr, SUPERUSER_ID, {})
+                        prod = env['product.product'].sudo().browse([res.id])
+                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                except psycopg2.Error:
+                    pass
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -561,9 +574,15 @@ class OdooAPI(http.Controller):
                     domain.append(attr)
                 search_product = request.env['product.product'].sudo().search(domain)
                 for res in search_product:
-                    if request.env.user.id != 4:
-                        res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
-
+                    try:
+                        db_name = odoo.tools.config.get('db_name')
+                        db_registry = registry(db_name)
+                        with db_registry.cursor() as cr:
+                            env = api.Environment(cr, SUPERUSER_ID, {})
+                            prod = env['product.product'].sudo().browse([res.id])
+                            prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    except psycopg2.Error:
+                        pass
                     total_count += res.sale_count_pando
                 j.total_sold_count = total_count
             orders = 'total_sold_count DESC'
