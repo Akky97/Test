@@ -441,6 +441,8 @@ class WebsiteSale(WebsiteSale):
                         env = api.Environment(cr, SUPERUSER_ID, {})
                         prod = env['product.product'].sudo().browse([rec.id])
                         prod.sudo().write({'sale_count_pando': _compute_sales_count(self=rec), 'rating_count':get_rating_avg(rec)})
+                        cr.commit()
+                        cr.close()
                 except psycopg2.Error:
                     pass
 
