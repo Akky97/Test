@@ -1,10 +1,11 @@
 import logging
-from odoo import http, _, exceptions, fields
+from odoo import http, _, exceptions, fields, registry, SUPERUSER_ID, api
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
 from odoo.http import request
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
+import psycopg2
 
 _logger = logging.getLogger(__name__)
 
@@ -182,8 +183,15 @@ class OdooAPI(http.Controller):
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
-                if request.env.user.id != 4:
-                    res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+                try:
+                    db_name = self._cr.dbname
+                    db_registry = registry(db_name)
+                    with db_registry.cursor() as cr:
+                        env = api.Environment(cr, SUPERUSER_ID, {})
+                        prod = env['product.product'].sudo().browse([res.id])
+                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+                except psycopg2.Error:
+                    pass
 
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
