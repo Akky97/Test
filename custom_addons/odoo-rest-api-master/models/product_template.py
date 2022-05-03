@@ -43,6 +43,7 @@ class ProductProduct(models.Model):
 
     sale_count_pando = fields.Float(string='Product Sale Count')
     is_product_publish = fields.Boolean('Product Publish', default=True)
+    rating_count = fields.Float('Rating Count')
 
 
 class PaymentTransaction(models.Model):

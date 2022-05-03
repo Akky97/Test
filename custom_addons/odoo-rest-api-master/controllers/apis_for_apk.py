@@ -1,8 +1,84 @@
 from .payment_controllers import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 import phonenumbers
-from odoo import http, _, exceptions, SUPERUSER_ID
+from datetime import timedelta, time
+import odoo
+from odoo import http, _, exceptions, SUPERUSER_ID, fields, registry, api
 from odoo.http import request
+import psycopg2
+
+def get_product_data(records):
+    temp = []
+    base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+    website = request.env['website'].sudo().browse(1)
+    warehouse = request.env['stock.warehouse'].sudo().search(
+        [('company_id', '=', website.company_id.id)], limit=1)
+    for rec in records:
+        id = []
+        category = []
+        result = request.env['pando.images'].sudo().search([('product_id', '=', rec.id)])
+        if not result:
+            result = request.env['pando.images'].sudo().search(
+                [('product_id.product_tmpl_id', '=', rec.product_tmpl_id.id)])
+        base_image = {}
+        for j in result:
+            if j.type != 'multi_image':
+                base_image = {
+                    "id": j.product_id.id,
+                    "image_url": j.image_url,
+                    'image_name': j.image_name
+                }
+        for c in rec.product_template_attribute_value_ids:
+            id.append(c.attribute_id.id)
+        variant_name = ''
+        for attr_id in list(set(id)):
+            for b in rec.product_template_attribute_value_ids:
+                if attr_id == b.attribute_id.id:
+                    variant_name += '(' + b.name + ')'
+        for z in rec.public_categ_ids:
+            category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
+                             "image": base_url.value + '/web/image/product.public.category/' + str(
+                                 z.id) + "/image_1920", })
+
+        temp.append({
+            'id': rec.id,
+            'name': rec.name + variant_name,
+            'image': base_image.get(
+                'image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+            'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
+            "stock": rec.with_context(warehouse=warehouse.id).virtual_available if rec.with_context(
+                warehouse=warehouse.id).virtual_available > 0 else 0.0,
+            "featured": rec.website_ribbon_id.html if rec.website_ribbon_id.html != False else '',
+            'sale_price': rec.list_price,
+            "category": category,
+            "rating": rec.rating_count
+        })
+    return temp
+
+
+def get_rating_avg(product):
+    records = request.env['rating.rating'].sudo().search([('rating_product_id','=',product.id)])
+    if records:
+        rating_total = 0
+        count = 0
+        for rec in records:
+            count += 1
+            rating_total += rec.rating
+        return (rating_total/count)
+    else:
+        return 0
+
+
+def _compute_sales_count(self):
+    count =0
+    date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+                                                                  time.min))
+    res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale','done','paid'])])
+    if res:
+        for r in res:
+            count += r.product_uom_qty
+    return count
+
 
 def get_sale_order_line(order_id=None, order_line_id=None):
     saleOrderLine = []
@@ -46,7 +122,6 @@ def updatePriceListAPK(pricelist, order):
                 order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
 
 
-
 def checkout_data_apk(order):
     shippingAddress = []
     Partner = False
@@ -77,6 +152,7 @@ def checkout_data_apk(order):
         'express': False
     }]
     return values
+
 
 class WebsiteSale(WebsiteSale):
 
@@ -343,4 +419,44 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
+    @http.route('/api/v1/apk/home_page_products', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def home_page_products(self, **params):
+        try:
+            domain = [('is_product_publish', '=', True), ('is_published', '=', True), ('type', '=', 'product'),
+                      ('marketplace_status', 'in', ['approved'])]
+            model = 'product.product'
+        except KeyError as e:
+            msg = "The model `%s` does not exist." % model
+            return error_response(e, msg)
+        try:
+            if "country_id" in params and params.get('country_id'):
+                domain.append(('country_id', '=', int(params.get('country_id'))))
+            product = {}
+            records = request.env[model].sudo().search(domain)
+            for rec in records:
+                try:
+                    db_name = odoo.tools.config.get('db_name')
+                    db_registry = registry(db_name)
+                    with db_registry.cursor() as cr:
+                        env = api.Environment(cr, SUPERUSER_ID, {})
+                        prod = env['product.product'].sudo().browse([rec.id])
+                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=rec), 'rating_count':get_rating_avg(rec)})
+                except psycopg2.Error:
+                    pass
+
+                # if request.env.user.id != 4:
+                #     rec.sudo().write({'sale_count_pando': _compute_sales_count(self=rec), 'rating_count':get_rating_avg(rec)})
+            temp = []
+            records = request.env[model].sudo().search(domain, order='rating_count DESC', limit=20)
+            product['rating'] = get_product_data(records)
+            records = request.env[model].sudo().search(domain, order='create_date DESC', limit=20)
+            product['new'] = get_product_data(records)
+            records = request.env[model].sudo().search(domain, order='sale_count_pando DESC', limit=20)
+            product['top_selling'] = get_product_data(records)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "products": product, "status": 200
+        }
+        return return_Response(res)
 
