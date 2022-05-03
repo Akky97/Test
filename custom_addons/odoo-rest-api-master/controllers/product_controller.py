@@ -43,6 +43,8 @@ def get_product_details(warehouse, records):
                 env = api.Environment(cr, SUPERUSER_ID, {})
                 prod = env['product.product'].sudo().browse([i.id])
                 prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+            cr.commit()
+            cr.close()
         except psycopg2.Error:
             pass
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
@@ -198,6 +200,8 @@ class OdooAPI(http.Controller):
                         env = api.Environment(cr, SUPERUSER_ID, {})
                         prod = env['product.product'].sudo().browse([res.id])
                         prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    cr.commit()
+                    cr.close()
                 except psycopg2.Error:
                     pass
 
@@ -405,6 +409,8 @@ class OdooAPI(http.Controller):
                         env = api.Environment(cr, SUPERUSER_ID, {})
                         prod = env['product.product'].sudo().browse([res.id])
                         prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    cr.commit()
+                    cr.close()
                 except psycopg2.Error:
                     pass
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
@@ -581,6 +587,8 @@ class OdooAPI(http.Controller):
                             env = api.Environment(cr, SUPERUSER_ID, {})
                             prod = env['product.product'].sudo().browse([res.id])
                             prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                        cr.commit()
+                        cr.close()
                     except psycopg2.Error:
                         pass
                     total_count += res.sale_count_pando
