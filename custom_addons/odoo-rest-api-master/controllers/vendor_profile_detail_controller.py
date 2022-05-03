@@ -954,7 +954,7 @@ class OdooAPI(http.Controller):
 
                 object = request.env['pando.images'].sudo().search([('product_id','=',int(jdata.get('product_id'))),('image_name','=',jdata.get('image_name'))])
                 for obj in object:
-                    if jdata.get('image'):
+                    if jdata.get('image') and request.env.user.id != 4:
                         obj.sudo().write({'image_url': jdata.get('image').get('url'),
                         'image_name':jdata.get('image').get('name')
                         })

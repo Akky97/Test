@@ -34,9 +34,8 @@ def get_product_details(warehouse, records):
         category = []
         variant = []
         sellers = []
-        # i.sale_count_pando = _compute_sales_count(self=i)
-        i.sudo().write({'sale_count_pando': _compute_sales_count(self=i)})
-        # print(i.sale_count_pando,'      ',_compute_sales_count(self=i))
+        if request.env.user.id != 4:
+            i.sudo().write({'sale_count_pando': _compute_sales_count(self=i)})
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
         if not result:
             result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
@@ -183,8 +182,8 @@ class OdooAPI(http.Controller):
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
-                # res.sale_count_pando = _compute_sales_count(self=res)
-                res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+                if request.env.user.id != 4:
+                    res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
 
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
@@ -383,7 +382,8 @@ class OdooAPI(http.Controller):
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
-                res.sale_count_pando = _compute_sales_count(self=res)
+                if request.env.user.id != 4:
+                    res.sale_count_pando = _compute_sales_count(self=res)
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
@@ -551,8 +551,8 @@ class OdooAPI(http.Controller):
                     domain.append(attr)
                 search_product = request.env['product.product'].sudo().search(domain)
                 for res in search_product:
-                    # res.sale_count_pando = _compute_sales_count(self=res)
-                    res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+                    if request.env.user.id != 4:
+                        res.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
 
                     total_count += res.sale_count_pando
                 j.total_sold_count = total_count
@@ -908,6 +908,35 @@ class OdooAPI(http.Controller):
             "next": None,
             "total_pages": 1,
             "products": temp
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/product.graph.data', type='http', auth='public', methods=['GET'], csrf=False,
+                cors='*')
+    def product_graph_data(self, **params):
+        try:
+            user = request.env.user.partner_id.id
+            domain = [('marketplace_seller_id', '=', user), ('is_product_publish', '=', True),
+                      ('is_published', '=', True), ('type', '=', 'product'),
+                      ('marketplace_status', 'in', ['approved'])]
+            records = request.env['product.product'].sudo().search(domain)
+            count_list = []
+            for res in records:
+                count_list.append({'id': res.id, 'name': res.name, 'count': _compute_sales_count(self=res)})
+            new_lst = sorted(count_list, key=lambda i: i['count'], reverse=True)
+            list_of_prod_ids = list(map(lambda d: d['id'], new_lst))
+            prod_records = request.env['product.product'].sudo().browse(list_of_prod_ids)
+            prod_name = []
+            prod_sale_count = []
+            for i in prod_records:
+                prod_name.append(i.name)
+                prod_sale_count.append(_compute_sales_count(self=i))
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "prod_name": prod_name,
+            "prod_sale_count": prod_sale_count
         }
         return return_Response(res)
 
