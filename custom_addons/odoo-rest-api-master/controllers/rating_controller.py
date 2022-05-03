@@ -174,7 +174,7 @@ class PortalChatter(PortalChatter):
                 res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                                ('res_field', '=', 'image_1920'),
                                                ('res_id', 'in', [rec.partner_id.id])])
-                res_id.sudo().write({"public": True})
+                # res_id.sudo().write({"public": True})
                 vals = {
                     'partnerId': rec.partner_id.id,
                     'partnerName': rec.partner_id.name,

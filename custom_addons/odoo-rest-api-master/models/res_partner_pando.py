@@ -14,7 +14,7 @@ class ResPartner(models.Model):
             res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                            ('res_field', '=', 'image_1920'),
                                            ('res_id', 'in', [self.id])])
-            res_id.sudo().write({"public": True})
+            # res_id.sudo().write({"public": True})
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             img = base_url.value + '/web/image/' + str(res_id.id)
             vals = {"seller_id": self.id,

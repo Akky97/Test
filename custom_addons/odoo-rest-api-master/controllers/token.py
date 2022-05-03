@@ -269,7 +269,7 @@ class AccessToken(http.Controller):
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
                                        ('res_id', 'in', [request.env.user.partner_id.id])])
-        res_id.sudo().write({"public": True})
+        # res_id.sudo().write({"public": True})
         # odoo login failed:
         if not uid:
             error = 'authentication failed'
@@ -360,7 +360,7 @@ class AccessToken(http.Controller):
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
                                        ('res_id', 'in', [request.env.user.partner_id.id])])
-        res_id.sudo().write({"public": True})
+        # res_id.sudo().write({"public": True})
         # odoo login failed:
         if not uid:
             error = 'authentication failed'

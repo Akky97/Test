@@ -183,7 +183,7 @@ class WebsiteSale(WebsiteSale):
             res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                            ('res_field', '=', 'image_1920'),
                                            ('res_id', 'in', [id])])
-            res_id.sudo().write({"public": True})
+            # res_id.sudo().write({"public": True})
 
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             for i in records:

@@ -29,7 +29,7 @@ class OdooAPI(http.Controller):
             res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                            ('res_field', '=', 'image_1920'),
                                            ('res_id', 'in', [id])])
-            res_id.sudo().write({"public": True})
+            # res_id.sudo().write({"public": True})
 
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             temp = []
@@ -94,15 +94,8 @@ class OdooAPI(http.Controller):
             res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                            ('res_field', '=', 'image_1920'),
                                            ('res_id', 'in', [id])])
-            res_id.sudo().write({"public": True})
-            # if records:
-            #     for rec in records:
-            #         sale = request.env['sale.order'].sudo().search(['|', ('partner_id', '=', rec.id), '|', ('partner_invoice_id', '=', rec.id), ('partner_shipping_id', '=', rec.id)])
-            #         if sale:
-            #             msg = {"message": "Can not Update Your address Because it's in use.", "status_code": 400}
-            #             return return_Response_error(msg)
-
-            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+            # res_id.sudo().write({"public": True})
+            # base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             try:
                 jdata = json.loads(request.httprequest.stream.read())
             except:
