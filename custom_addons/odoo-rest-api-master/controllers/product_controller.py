@@ -1,4 +1,5 @@
 import logging
+import odoo
 from odoo import http, _, exceptions, fields, registry, SUPERUSER_ID, api
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
@@ -184,7 +185,7 @@ class OdooAPI(http.Controller):
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
             for res in records:
                 try:
-                    db_name = self._cr.dbname
+                    db_name = odoo.tools.config.get('db_name')
                     db_registry = registry(db_name)
                     with db_registry.cursor() as cr:
                         env = api.Environment(cr, SUPERUSER_ID, {})
