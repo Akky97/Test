@@ -190,7 +190,8 @@ class OdooAPI(http.Controller):
                     with db_registry.cursor() as cr:
                         env = api.Environment(cr, SUPERUSER_ID, {})
                         prod = env['product.product'].sudo().browse([res.id])
-                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=res)})
+                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                        print(prod)
                 except psycopg2.Error:
                     pass
 
