@@ -1080,7 +1080,8 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/v/product.product.list', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def product_product_list(self, **params):
         try:
-            domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
+            domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id), ('type', '=', 'product'),
+                      ('marketplace_status', 'in', ['approved'])]
             model = 'product.product'
             records = request.env[model].sudo().search(domain)
             temp = []

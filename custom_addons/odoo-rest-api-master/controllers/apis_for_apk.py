@@ -364,10 +364,14 @@ class WebsiteSale(WebsiteSale):
             except:
                 jdata = {}
             if jdata:
-                if jdata.get('transaction_id') and jdata.get('payment_intent'):
+                if jdata.get('transaction_id') and jdata.get('payment_intent') :
                     transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
+                    intent_data = stripe.PaymentIntent.retrieve(
+                        jdata.get('payment_intent'),
+                    )
                     transaction.write({
-                        'payment_intent': jdata.get('payment_intent')
+                        'payment_intent': jdata.get('payment_intent'),
+                        'payment_data': intent_data
                     })
                     res = {
                         "message": 'success', "status": 200
