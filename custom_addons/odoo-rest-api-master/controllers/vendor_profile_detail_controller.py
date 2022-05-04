@@ -1398,9 +1398,9 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
     @validate_token
-    @http.route('/api/v1/v/picking_address_update', type='http',
+    @http.route('/api/v1/v/get_vendor_address', type='http',
                 auth='public', methods=['POST'], csrf=False, cors='*')
-    def picking_address_update(self, id=None, **params):
+    def get_vendor_address(self, id=None, **params):
         try:
             user = request.env.user
             if user and user.id != 4:
