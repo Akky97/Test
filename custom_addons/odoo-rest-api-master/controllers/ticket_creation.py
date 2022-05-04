@@ -13,7 +13,7 @@ ts = calendar.timegm(time.gmtime())
 
 class ControllerREST(http.Controller):
 
-    @http.route('/api/v1/c/createticket', methods=['POST'], type='http', auth="public", csrf=False, cors='*')
+    @http.route('/api/v1/vendor/createticket', methods=['POST'], type='http', auth="public", csrf=False, cors='*')
     @validate_token
     def ticketcreate_method(self):
         try:
@@ -40,7 +40,8 @@ class ControllerREST(http.Controller):
         assert isinstance(uid, object)
         vals = dict(name=issue_name, tag_ids=[[6, False, tag]], partner_id=int(partner_id),
                     description=description, stage_id=stage_id, user_id=int(assignTo), product_id=int(product_id),
-                    project_id=project_id, date_deadline=deadline_date, priority=str(priority))
+                    project_id=project_id, date_deadline=deadline_date, priority=str(priority),
+                    user_type='vendor')
         try:
             ticket_id = request.env['project.task'].sudo().create(vals)
             if ticket_id:
@@ -60,12 +61,17 @@ class ControllerREST(http.Controller):
 
     @http.route('/api/v1/c/getticket', methods=['GET'], type='http', auth="public",cors='*')
     @validate_token
-    def getticket(self):
+    def getticket(self, **params):
         try:
             temp = []
             uid = request.env.user.id
             partner_id = request.env.user.partner_id
-            tasks = http.request.env['project.task'].sudo().search([('partner_id', '=', int(partner_id.id))])
+            if not "user_type" in params:
+                error = {"message": "Please Send User Type", "status": 400}
+                return return_Response_error(error)
+            user_type = params["user_type"]
+            tasks = http.request.env['project.task'].sudo().search([('partner_id', '=', int(partner_id.id)),
+                                                                    ('user_type', '=', user_type)])
             for i in tasks:
                 tags = []
                 for z in i.tag_ids:
@@ -81,11 +87,12 @@ class ControllerREST(http.Controller):
                         "partner_name": i.partner_id.name if i.partner_id.name != False else '',
                         "create_date": str(i.create_date),
                         "deadline_date": str(i.date_deadline),
-                        "ticket_number": i.ticket_number
+                        "ticket_number": i.ticket_number,
+                        "user_type": i.user_type
                         }
                 temp.append(vals)
             res = {
-                'data':temp,
+                'data': temp,
                 'message': "Get Successfully ",
                 'status': 200
             }
@@ -119,7 +126,8 @@ class ControllerREST(http.Controller):
                         "product_name": i.product_id.name if i.product_id.name != False else '',
                         "ticket_number": i.ticket_number,
                         "sale_order_line_id": i.sale_line_id_pando.id if i.sale_line_id_pando.id != False else '',
-                        "sale_order_line_name": i.sale_line_id_pando.name if i.sale_line_id_pando.name != False else ''
+                        "sale_order_line_name": i.sale_line_id_pando.name if i.sale_line_id_pando.name != False else '',
+                        "user_type": i.user_type
                         }
                 temp.append(vals)
             res = {
@@ -202,7 +210,7 @@ class ControllerREST(http.Controller):
         vals = dict(name=issue_name, tag_ids=[[6, False, tag]], partner_id=int(partner_id),
                     description=description, stage_id=stage_id, user_id=int(assignTo), product_id=int(product_id),
                     project_id=project_id, date_deadline=deadline_date, priority=str(priority),
-                    sale_line_id_pando=int(sale_line_id_pando))
+                    sale_line_id_pando=int(sale_line_id_pando), user_type='customer')
         try:
             ticket_id = request.env['project.task'].sudo().create(vals)
             if ticket_id:

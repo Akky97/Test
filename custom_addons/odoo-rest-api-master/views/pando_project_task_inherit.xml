@@ -14,6 +14,7 @@
                 <xpath expr="//field[@name='partner_id']" position="before">
                     <field name="ticket_number"/>
                     <field name="product_id"/>
+                    <field name="user_type"/>
                 </xpath>
             </field>
         </record>
