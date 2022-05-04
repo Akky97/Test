@@ -42,7 +42,7 @@ def get_product_details(warehouse, records):
             with db_registry.cursor() as cr:
                 env = api.Environment(cr, SUPERUSER_ID, {})
                 prod = env['product.product'].sudo().browse([i.id])
-                prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                prod.write({'sale_count_pando': _compute_sales_count(self=prod), 'write_uid': SUPERUSER_ID})
                 cr.commit()
                 cr.close()
         except psycopg2.Error:
@@ -199,7 +199,7 @@ class OdooAPI(http.Controller):
                     with db_registry.cursor() as cr:
                         env = api.Environment(cr, SUPERUSER_ID, {})
                         prod = env['product.product'].sudo().browse([res.id])
-                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                        prod.write({'sale_count_pando': _compute_sales_count(self=prod), 'write_uid': SUPERUSER_ID})
                         cr.commit()
                         cr.close()
                 except psycopg2.Error:
@@ -586,7 +586,7 @@ class OdooAPI(http.Controller):
                         with db_registry.cursor() as cr:
                             env = api.Environment(cr, SUPERUSER_ID, {})
                             prod = env['product.product'].sudo().browse([res.id])
-                            prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                            prod.write({'sale_count_pando': _compute_sales_count(self=prod), 'write_uid': SUPERUSER_ID})
                             cr.commit()
                             cr.close()
                     except psycopg2.Error:
