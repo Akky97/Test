@@ -1366,5 +1366,66 @@ class OdooAPI(http.Controller):
             msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
 
+    @validate_token
+    @http.route(['/api/v1/v/get_picking_address','/api/v1/v/get_picking_address/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def get_picking_address(self, id=None, **params):
+        try:
+            user = request.env.user
+            if id:
+                domain = [('id', '=', int(id))]
+            else:
+                domain = [('user_id', '=', user.id)]
+            picking_address = request.env['pickup.address'].sudo().search(domain)
+            temp = []
+            for rec in picking_address:
+                temp.append({
+                    'id': rec.id,
+                    'country_id': rec.country_id.id,
+                    'country_name': rec.country_id.name,
+                    'address': rec.address,
+                    'city': rec.city,
+                    'state_id': rec.state_id.id,
+                    'state_name': rec.state_id.name
+                })
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+        res = {
+            'count': len(temp),
+            'record': temp,
+            'status': 200
+        }
+        return return_Response(res)
 
+    @validate_token
+    @http.route('/api/v1/v/picking_address_update', type='http',
+                auth='public', methods=['POST'], csrf=False, cors='*')
+    def picking_address_update(self, id=None, **params):
+        try:
+            user = request.env.user
+            if user and user.id != 4:
+                record = {
+                    'account_number': user.account_number,
+                    'account_name': user.account_name,
+                    'ifsc_code': user.ifsc_code,
+                    'owner_name': user.owner_name,
+                    'business_name': user.business_name,
+                    'supplier_country_id': user.supplier_country_id.id,
+                    'supplier_state_id': user.supplier_state_id.id,
+                    'supplier_phone': user.supplier_phone,
+                    'supplier_city': user.supplier_city,
+                    'supplier_address': user.supplier_address,
+                    'partner_details': get_address(user.partner_id)
+                }
+                res = {
+                    'record': record,
+                    'status': 200
+                }
+                return return_Response(res)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
 
