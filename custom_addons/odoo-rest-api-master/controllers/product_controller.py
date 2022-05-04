@@ -4,6 +4,8 @@ from odoo import http, _, exceptions, fields, registry, SUPERUSER_ID, api
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
 from odoo.http import request
+from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED
+
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 import psycopg2
@@ -39,12 +41,14 @@ def get_product_details(warehouse, records):
         try:
             db_name = odoo.tools.config.get('db_name')
             db_registry = registry(db_name)
-            with db_registry.cursor() as cr:
-                env = api.Environment(cr, SUPERUSER_ID, {})
-                prod = env['product.product'].sudo().browse([i.id])
-                prod.write({'sale_count_pando': _compute_sales_count(self=prod), 'write_uid': SUPERUSER_ID})
-                cr.commit()
-                cr.close()
+            # with db_registry.cursor() as cr:
+            cr, uid = db_registry.cursor(), request.session.uid
+            cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+            Model = request.env(cr, uid)['product.product']
+            prod = Model.search([('id', '=', i.id)])
+            prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+            cr.commit()
+            cr.close()
         except psycopg2.Error:
             pass
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
@@ -196,12 +200,14 @@ class OdooAPI(http.Controller):
                 try:
                     db_name = odoo.tools.config.get('db_name')
                     db_registry = registry(db_name)
-                    with db_registry.cursor() as cr:
-                        env = api.Environment(cr, SUPERUSER_ID, {})
-                        prod = env['product.product'].sudo().browse([res.id])
-                        prod.write({'sale_count_pando': _compute_sales_count(self=prod), 'write_uid': SUPERUSER_ID})
-                        cr.commit()
-                        cr.close()
+                    # with db_registry.cursor() as cr:
+                    cr, uid = db_registry.cursor(), request.session.uid
+                    cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                    Model = request.env(cr, uid)['product.product']
+                    prod = Model.search([('id', '=', res.id)])
+                    prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    cr.commit()
+                    cr.close()
                 except psycopg2.Error:
                     pass
 
@@ -405,12 +411,14 @@ class OdooAPI(http.Controller):
                 try:
                     db_name = odoo.tools.config.get('db_name')
                     db_registry = registry(db_name)
-                    with db_registry.cursor() as cr:
-                        env = api.Environment(cr, SUPERUSER_ID, {})
-                        prod = env['product.product'].sudo().browse([res.id])
-                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-                        cr.commit()
-                        cr.close()
+                    # with db_registry.cursor() as cr:
+                    cr, uid = db_registry.cursor(), request.session.uid
+                    cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                    Model = request.env(cr, uid)['product.product']
+                    prod = Model.search([('id', '=', res.id)])
+                    prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    cr.commit()
+                    cr.close()
                 except psycopg2.Error:
                     pass
             records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
@@ -583,12 +591,14 @@ class OdooAPI(http.Controller):
                     try:
                         db_name = odoo.tools.config.get('db_name')
                         db_registry = registry(db_name)
-                        with db_registry.cursor() as cr:
-                            env = api.Environment(cr, SUPERUSER_ID, {})
-                            prod = env['product.product'].sudo().browse([res.id])
-                            prod.write({'sale_count_pando': _compute_sales_count(self=prod), 'write_uid': SUPERUSER_ID})
-                            cr.commit()
-                            cr.close()
+                        # with db_registry.cursor() as cr:
+                        cr, uid = db_registry.cursor(), request.session.uid
+                        cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                        Model = request.env(cr, uid)['product.product']
+                        prod = Model.search([('id', '=', res.id)])
+                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                        cr.commit()
+                        cr.close()
                     except psycopg2.Error:
                         pass
                     total_count += res.sale_count_pando
