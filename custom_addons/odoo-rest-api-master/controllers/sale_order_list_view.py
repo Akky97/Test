@@ -49,12 +49,24 @@ def get_sale_order_line(order_id=None, order_line_id = None):
             category = []
             variant = []
             sellers = []
-            for j in rec.product_id.product_template_image_ids:
-                image.append({"id": j.id, "name": j.name,
-                              "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                              'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-
-                              })
+            imagerec = request.env['pando.images'].sudo().search([('product_id', '=', rec.product_id.id)])
+            if not imagerec:
+                imagerec = request.env['pando.images'].sudo().search(
+                    [('product_id.product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)])
+            base_image = {}
+            for j in imagerec:
+                if j.type == 'multi_image':
+                    image.append({"id": j.product_id.id,
+                                  "image": j.image_url,
+                                  "url": j.image_url,
+                                  'name': j.image_name,
+                                  })
+                else:
+                    base_image = {
+                        "id": j.product_id.id,
+                        "image_url": j.image_url,
+                        'image_name': j.image_name
+                    }
 
             for z in rec.product_id.public_categ_ids:
                 category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
@@ -114,7 +126,8 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
                 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else 0.0,
                 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else 0.0,
-                "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
+                # "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
+                'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
                 "sm_pictures": image,
                 "featured": rec.product_id.website_ribbon_id.html if rec.product_id.website_ribbon_id.html != False else '',
                 "seller_ids": sellers,
@@ -638,11 +651,26 @@ class WebsiteSale(WebsiteSale):
                     category = []
                     variant = []
                     sellers = []
-                    for j in i.product_template_image_ids:
-                        image.append({"id": j.id, "name": j.name,
-                                      "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                      'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                      })
+                    imagerec = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
+                    if not imagerec:
+                        imagerec = request.env['pando.images'].sudo().search(
+                            [('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
+                    base_image = {}
+                    for j in imagerec:
+                        if j.type == 'multi_image':
+                            image.append({"id": j.product_id.id,
+                                          "image": j.image_url,
+                                          "url": j.image_url,
+                                          'name': j.image_name,
+                                          })
+                        else:
+                            base_image = {
+                                "id": j.product_id.id,
+                                "image_url": j.image_url,
+                                'image_name': j.image_name
+                            }
+
+
                     for z in i.public_categ_ids:
                         category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                          "image": base_url.value + '/web/image/product.public.category/' + str(
@@ -690,8 +718,9 @@ class WebsiteSale(WebsiteSale):
                         sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
                     temp.append({"id": i.id, "name": i.name,
-                                 'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                 'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                                 'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                                 'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
                                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                                  'description': i.description if i.description != False else '',
                                  'short_desc': i.description_sale if i.description_sale != False else '',
@@ -718,11 +747,10 @@ class WebsiteSale(WebsiteSale):
                                  "rating": 3,
                                  "additional_info": i.additional_info if i.additional_info else '',
                                  "shipping_return": i.shipping_return if i.shipping_return else '',
-                                 "pictures": [
-                                     {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                      "image": base_url.value + '/web/image/product.template/' + str(
-                                          i.id) + "/image_1920"}]
-                                 })
+                                 "pictures": [{
+                                    'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                                    'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" }]
+                                })
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)

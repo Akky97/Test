@@ -51,6 +51,7 @@ class PaymentTransaction(models.Model):
 
     payment_intent = fields.Char('Payment Intent Id')
     payment_data = fields.Char('Payment Data')
+    device_name = fields.Text('Device Name')
 
 
 class VariantApprovalWizard(models.TransientModel):

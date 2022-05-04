@@ -9,13 +9,16 @@ SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tH
 stripe.api_key = SECRET_KEY
 
 
-def check_transaction_status(transaction_id):
+def check_transaction_status(transaction_id, device_name=None):
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     if transaction:
         res = stripe.PaymentIntent.retrieve(
             transaction.payment_intent,
         )
-        transaction.sudo().write({'payment_data': res})
+        vals ={'payment_data': res}
+        if device_name:
+            vals['device_name'] = device_name
+        transaction.sudo().write(vals)
         if res.status == 'succeeded':
             return True
         else:
@@ -541,7 +544,10 @@ class WebsiteSale(WebsiteSale):
                                                             order='write_date DESC', limit=1)
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
-                    check = check_transaction_status(int(jdata.get('transaction_id')))
+                    device_name = None
+                    if 'device_name' in jdata and jdata.get('device_name'):
+                        device_name = jdata.get('device_name')
+                    check = check_transaction_status(int(jdata.get('transaction_id')),device_name)
                     if check:
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
                         vals = {

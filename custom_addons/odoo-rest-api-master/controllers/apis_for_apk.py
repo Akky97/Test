@@ -92,6 +92,19 @@ def get_sale_order_line(order_id=None, order_line_id=None):
         solObject = solObject.search([('order_id','=',order_id)])
     if solObject:
         for rec in solObject:
+            result = request.env['pando.images'].sudo().search([('product_id', '=', rec.product_id.id)])
+            if not result:
+                result = request.env['pando.images'].sudo().search(
+                    [('product_id.product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)])
+            base_image = {}
+            for j in result:
+                if j.type != 'multi_image':
+                    base_image = {
+                        "id": j.product_id.id,
+                        "image_url": j.image_url,
+                        'image_name': j.image_name
+                    }
+
             saleOrderLine.append({
                 'id': rec.id if rec.id != False else "",
                 'name': rec.name if rec.name != False else "",
@@ -102,7 +115,8 @@ def get_sale_order_line(order_id=None, order_line_id=None):
                 'price_tax': rec.price_tax if rec.price_tax != False else 0.0,
                 'price_total': rec.price_total if rec.price_total != False else 0.0,
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
-                "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
+                # "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
+                'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 # 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
             })
@@ -211,13 +225,27 @@ class WebsiteSale(WebsiteSale):
             if records:
                 for rec in records:
                     i = request.env['product.product'].sudo().search([('id', '=', rec.product_id.id)])
+                    result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
+                    if not result:
+                        result = request.env['pando.images'].sudo().search(
+                            [('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
+                    base_image = {}
+                    for j in result:
+                        if j.type != 'multi_image':
+                            base_image = {
+                                "id": j.product_id.id,
+                                "image_url": j.image_url,
+                                'image_name': j.image_name
+                            }
+
                     for z in i.public_categ_ids:
                         category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                          "image": base_url.value + '/web/image/product.public.category/' + str(
                                              z.id) + "/image_1920", })
 
                     temp.append({"id": i.id, "name": i.name,
-                                 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                 # 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+                                 'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
                                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                                  'description': i.description if i.description != False else '',
                                  # "stock": i.qty_available,

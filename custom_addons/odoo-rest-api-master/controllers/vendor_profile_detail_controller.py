@@ -1,3 +1,4 @@
+import datetime
 import re
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
@@ -365,7 +366,69 @@ class AuthSignupHome(Website):
             msg = {"message": str(e), "status_code": 400}
             return return_Response_error(msg)
 
+
 class OdooAPI(http.Controller):
+
+    @validate_token
+    @http.route('/api/v1/v/vendor_profile_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def vendor_profile_update(self):
+        try:
+            if not id:
+                error = {"message": "Partner id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                user = request.env.user
+                userVals = {
+                    'account_number': jdata.get('account_number') or user.account_number,
+                    'account_name': jdata.get('account_name') or user.account_name,
+                    'ifsc_code': jdata.get('ifsc_code') or user.ifsc_code,
+                    'owner_name': jdata.get('owner_name') or user.owner_name,
+                    'business_name': jdata.get('business_name') or user.business_name,
+                    'supplier_country_id': jdata.get('supplier_country_id') or user.supplier_country_id.id,
+                    'supplier_state_id': jdata.get('supplier_state_id') or user.supplier_state_id.id,
+                    'supplier_phone': jdata.get('supplier_phone') or user.supplier_phone,
+                    'supplier_city': jdata.get('supplier_city') or user.supplier_city,
+                    'supplier_address': jdata.get('supplier_address') or user.supplier_address
+                }
+                gst_number = jdata.get('gst_number')
+                if gst_number:
+                    rec = check_gst_number(gst_number, userVals.get('supplier_state_id'))
+                    if 'message' not in rec:
+                        userVals['gst_number'] = jdata.get('gst_number')
+                    else:
+                        msg = {"message": rec['message'], "status_code": 400}
+                        return return_Response_error(msg)
+
+                partnerVals ={
+                    'name': jdata.get('name') or user.partner_id.name,
+                    'state_id': jdata.get('supplier_state_id') or user.partner_id.state_id.id,
+                    'phone': jdata.get('supplier_phone') or user.partner_id.phone,
+                    'mobile': jdata.get('supplier_phone') or user.partner_id.mobile,
+                    'city': jdata.get('supplier_city') or user.partner_id.city,
+                    'street': jdata.get('supplier_address') or user.partner_id.street
+                }
+                user.sudo().write(userVals)
+                user.partner_id.sudo().write(partnerVals)
+                vals = {
+                    "seller_id": user.partner_id.id,
+                    "vendor_message": "Your record successfully Updated",
+                    "model": "res.partner",
+                    "title": "Seller Record Update"
+                }
+                request.env['notification.center'].sudo().create(vals)
+                res = {"message": "Record Successfully Updated", "status_code": 200}
+                return return_Response(res)
+            else:
+                msg = {"message": "Something Went Wrong", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+
     @validate_token
     @http.route('/api/v1/v/get_product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_product_category_list(self, **params):
@@ -783,6 +846,23 @@ class OdooAPI(http.Controller):
         if jdata and jdata.get('from_date') and jdata.get('to_date'):
             domain.append(('order_id.date_order', '<=', jdata.get('from_date')))
             domain.append(('order_id.date_order', '>=', jdata.get('to_date')))
+        if "quator" in params and params.get('quator'):
+            from_date = datetime.datetime.now().date()
+            if params.get('quator') == 'week':
+                to_date = from_date - timedelta(days=7)
+            if params.get('quator') == 'month':
+                to_date = from_date - timedelta(days=30)
+            if params.get('quator') == 'q1':
+                to_date = from_date - timedelta(days=90)
+            if params.get('quator') == 'q2':
+                to_date = from_date - timedelta(days=180)
+            if params.get('quator') == 'q3':
+                to_date = from_date - timedelta(days=270)
+            if params.get('quator') == 'q4':
+                to_date = from_date - timedelta(days=365)
+            if from_date and to_date:
+                domain.append(('order_id.date_order', '<=', from_date))
+                domain.append(('order_id.date_order', '>=', to_date))
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
         prev_page = None
