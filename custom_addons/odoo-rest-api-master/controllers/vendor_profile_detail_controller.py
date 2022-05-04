@@ -373,15 +373,26 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/v/vendor_profile_update', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def vendor_profile_update(self):
         try:
-            if not id:
-                error = {"message": "Partner id is not present in the request", "status": 400}
-                return return_Response_error(error)
             try:
                 jdata = json.loads(request.httprequest.stream.read())
             except:
                 jdata = {}
             if jdata:
                 user = request.env.user
+                res_id = request.env['ir.attachment'].sudo()
+                res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                               ('res_field', '=', 'image_1920'),
+                                               ('res_id', 'in', [user.partner_id.id])])
+                if 'image' in jdata:
+                    image = jdata.get('image')
+                    jdata.pop('image')
+                    res_id.sudo().write({
+                        'name': 'image_1920',
+                        'checksum': image,
+                        'datas': image,
+                        'type': 'binary'
+                    })
+
                 userVals = {
                     'account_number': jdata.get('account_number') or user.account_number,
                     'account_name': jdata.get('account_name') or user.account_name,
@@ -425,9 +436,9 @@ class OdooAPI(http.Controller):
             else:
                 msg = {"message": "Something Went Wrong", "status_code": 400}
                 return return_Response_error(msg)
-        except Exception as e:
-            msg = {"message": "Something Went Wrong", "status_code": 400}
-            return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
 
     @validate_token
     @http.route('/api/v1/v/get_product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
