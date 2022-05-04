@@ -1196,4 +1196,84 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
+    @validate_token
+    @http.route('/api/v1/v/picking_address_create', type='http',
+                auth='public', methods=['POST'], csrf=False, cors='*')
+    def picking_address_create(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if not jdata.get('country_id') or not jdata.get('state_id') or not jdata.get('city') or not jdata.get(
+                    'address'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+            uid = request.env.user.id
+            user = request.env['res.users'].sudo().search([('id', '=', uid)], limit=1)
+            if user:
+                userVals = {
+                    'pickup_address_line': [(0, 0, {
+                        'country_id': int(jdata.get('country_id')),
+                        'address': jdata.get('address'),
+                        'city': jdata.get('city'),
+                        'state_id': int(jdata.get('state_id'))
+                    })]
+                }
+                user.sudo().write(userVals)
+                # user.partner_id.set_to_pending()
+                res = {"message": "Picking Address Created Successfully", "status_code": 200}
+                vals = {
+                    "seller_id": user.partner_id.id,
+                    "vendor_message": f"""Picking Address Created Successfully""",
+                    "model": "pickup.address",
+                    "title": "Picking Address Create"
+                }
+                request.env['notification.center'].sudo().create(vals)
+                return return_Response(res)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+
+    @validate_token
+    @http.route('/api/v1/v/picking_address_update/<id>', type='http',
+                auth='public', methods=['POST'], csrf=False, cors='*')
+    def picking_address_update(self, id=None, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                uid = request.env.user
+                picking_address = request.env['pickup.address'].sudo().search([('id', '=', id)], limit=1)
+                if picking_address:
+                    pickingVals = {
+                            'country_id': jdata.get('country_id') or picking_address.country_id.id,
+                            'address': jdata.get('address') or picking_address.address,
+                            'city': jdata.get('city') or picking_address.city,
+                            'state_id': jdata.get('state_id') or picking_address.state_id.id
+                    }
+                    picking_address.sudo().write(pickingVals)
+                    # user.partner_id.set_to_pending()
+                    res = {"message": "Picking Address Updated Successfully", "status_code": 200}
+                    vals = {
+                        "seller_id": uid.partner_id.id,
+                        "vendor_message": f"""Picking Address Updated Successfully""",
+                        "model": "pickup.address",
+                        "title": "Picking Address Update"
+                    }
+                    request.env['notification.center'].sudo().create(vals)
+                    return return_Response(res)
+                else:
+                    msg = {"message": "Picking Address Not Found", "status_code": 400}
+                    return return_Response_error(msg)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+
+
 
