@@ -43,6 +43,7 @@ class ProjectTaskPando(models.Model):
     ticket_number = fields.Char(string="Ticket No", readonly=True, required=True, copy=False, default='New')
     product_id = fields.Many2one(
         'product.product', 'Product', store=True, readonly=False, copy=False)
+    user_type = fields.Selection([('vendor', 'Vendor'), ('customer', 'Customer')], string='User type')
 
     @api.model_create_multi
     def create(self, vals_list):
