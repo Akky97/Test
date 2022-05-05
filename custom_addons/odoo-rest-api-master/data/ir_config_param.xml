@@ -5,5 +5,9 @@
             <field name="key">access_token_expires_in</field>
             <field name="value">31536000</field>
         </record>
+        <record id="firebase_credentials" model="ir.config_parameter">
+            <field name="key">firebase_credentials</field>
+            <field name="value">AAAA6QPLDgc:APA91bF8VS2yicpLHHwoSMbxylS-CDJ8sqssGFe8--v2A0eLp9VLi3isSU1KaJbjdVMBJ75X6HXeZ9q2VzczLBqsXYHfT-NocEZbGtGQhijgSMqYp8OYyUHlrmLE8Ii90vzZuiW3reGU</field>
+        </record>
     </data>
 </odoo>
