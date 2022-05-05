@@ -420,7 +420,8 @@ class OdooAPI(http.Controller):
                     'phone': jdata.get('supplier_phone') or user.partner_id.phone,
                     'mobile': jdata.get('supplier_phone') or user.partner_id.mobile,
                     'city': jdata.get('supplier_city') or user.partner_id.city,
-                    'street': jdata.get('supplier_address') or user.partner_id.street
+                    'street': jdata.get('supplier_address') or user.partner_id.street,
+                    'zip': jdata.get('zip') or user.partner_id.zip
                 }
                 user.sudo().write(userVals)
                 user.partner_id.sudo().write(partnerVals)
