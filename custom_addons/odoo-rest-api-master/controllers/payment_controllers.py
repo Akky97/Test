@@ -9,6 +9,21 @@ SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tH
 stripe.api_key = SECRET_KEY
 
 
+def refund_payment(transaction_id, amount):
+    transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
+    res = {}
+    if transaction:
+        res = stripe.PaymentIntent.retrieve(
+            transaction.payment_intent,
+        )
+        if res.status == 'succeeded':
+            if not amount:
+                amount = transaction.amount
+            res = stripe.Refund.create(payment_intent=transaction.payment_intent, amount=amount)
+            print(res)
+    return res
+
+
 def check_transaction_status(transaction_id, device_name=None):
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     if transaction:
@@ -566,6 +581,11 @@ class WebsiteSale(WebsiteSale):
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
+        # except (SyntaxError, QueryFormatError) as e:
+        #     return error_response(e, e.msg)
+        except Exception as e:
+            if jdata:
+                if 'transaction_id' in jdata and jdata.get('transaction_id'):
+                    res = refund_payment(jdata.get('transaction_id'), amount=None)
+        return return_Response_error(res)
 

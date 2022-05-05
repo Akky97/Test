@@ -71,7 +71,7 @@ class ControllerREST(http.Controller):
                 return return_Response_error(error)
             user_type = params["user_type"]
             tasks = http.request.env['project.task'].sudo().search([('partner_id', '=', int(partner_id.id)),
-                                                                    ('user_type', '=', user_type)])
+                                                                    ('user_type', '=', user_type)], order='id desc')
             for i in tasks:
                 tags = []
                 for z in i.tag_ids:
@@ -88,7 +88,9 @@ class ControllerREST(http.Controller):
                         "create_date": str(i.create_date),
                         "deadline_date": str(i.date_deadline),
                         "ticket_number": i.ticket_number,
-                        "user_type": i.user_type
+                        "user_type": i.user_type,
+                        "product_id": i.product_id.id if i.product_id.id != False else '',
+                        "product_name": i.product_id.name if i.product_id.name != False else ''
                         }
                 temp.append(vals)
             res = {

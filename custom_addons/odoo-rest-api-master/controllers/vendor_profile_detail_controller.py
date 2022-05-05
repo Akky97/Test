@@ -875,7 +875,7 @@ class OdooAPI(http.Controller):
                 domain.append(('order_id.date_order', '<=', from_date))
                 domain.append(('order_id.date_order', '>=', to_date))
         record_count = request.env[model].sudo().search_count(domain)
-        records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
+        records = request.env[model].sudo().search(domain, order='id desc', limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -1105,17 +1105,17 @@ class OdooAPI(http.Controller):
             model = 'marketplace.stock'
             if "status" in kw:
                 domain.append(('state','in',[kw.get('status')]))
-            try:
-                jdata = json.loads(request.httprequest.stream.read())
-            except:
-                jdata = {}
-            if jdata:
-                if not jdata.get('from_date') or not jdata.get('to_date'):
-                    msg = {"message": "Something Went Wrong.", "status_code": 400}
-                    return return_Response_error(msg)
-                else:
-                    domain.append(('create_date', '<=', jdata.get('from_date')))
-                    domain.append(('create_date', '>=', jdata.get('to_date')))
+            # try:
+            #     jdata = json.loads(request.httprequest.stream.read())
+            # except:
+            #     jdata = {}
+            # if jdata:
+            #     if not jdata.get('from_date') or not jdata.get('to_date'):
+            #         msg = {"message": "Something Went Wrong.", "status_code": 400}
+            #         return return_Response_error(msg)
+            #     else:
+            #         domain.append(('create_date', '<=', jdata.get('from_date')))
+            #         domain.append(('create_date', '>=', jdata.get('to_date')))
             limit = 0
             offset = 0
             if "page" in kw:
@@ -1123,7 +1123,7 @@ class OdooAPI(http.Controller):
                 page = int(kw["page"])
                 offset = (page - 1) * 10
             record_count = request.env[model].sudo().search_count(domain)
-            records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
+            records = request.env[model].sudo().search(domain, order='id desc', limit=limit, offset=offset)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
@@ -1375,7 +1375,7 @@ class OdooAPI(http.Controller):
                 domain = [('id', '=', int(id))]
             else:
                 domain = [('user_id', '=', user.id)]
-            picking_address = request.env['pickup.address'].sudo().search(domain)
+            picking_address = request.env['pickup.address'].sudo().search(domain, order='id desc')
             temp = []
             for rec in picking_address:
                 temp.append({
