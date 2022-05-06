@@ -290,8 +290,7 @@ class AccessToken(http.Controller):
             token = tokenObject.search([('user_id', '=', uid), ('token', '=', deviceToken)])
             if not token:
                 token = tokenObject.create({'user_id': uid, 'token': deviceToken})
-            send_notification('Login Successfully', 'You Have been Login', request.env.user, token, None)
-            print('test notification')
+            send_notification('Login Successfully', f'Welcome {request.env.user.partner_id.name}!!!', request.env.user, token, None)
 
         return token_response({
             'uid': uid,
