@@ -263,6 +263,7 @@ class AccessToken(http.Controller):
                 if not token:
                     token = tokenObject.create({'user_id': user.id, 'token': deviceToken})
                 send_notification('Login Successfully', 'You Have been Login', user, token, None)
+                print('test notification')
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:
