@@ -304,6 +304,7 @@ class AccessToken(http.Controller):
             'expires_in': request.env.ref(expires_in).sudo().value,
             'session_id': request.session.sid,
             'partner_id': request.env.user.partner_id.id,
+            'r': r,
             'deviceToken': deviceToken
         })
 
