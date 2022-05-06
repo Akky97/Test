@@ -238,6 +238,7 @@ class AccessToken(http.Controller):
         db = jdata.get('db')
         login = jdata.get('login')
         password = jdata.get('password')
+        deviceToken = jdata.get('deviceToken')
         try:
             db, username, password = db, login, password
         except Exception as e:
@@ -255,6 +256,11 @@ class AccessToken(http.Controller):
             if user.user_type == 'vendor':
                 error = {"message": "You are not authorized to login here", "status": 400}
                 return return_Response_error(error)
+            if user.deviceToken:
+                deviceToken = user.deviceToken+' '+deviceToken
+            else:
+                deviceToken = deviceToken
+            user.sudo().write({'deviceToken': deviceToken})
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:

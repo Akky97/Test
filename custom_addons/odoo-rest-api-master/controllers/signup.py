@@ -66,6 +66,7 @@ class SignupAPI(AuthSignupHome):
                             "title": "Customer Signup"
                         }
                         request.env['notification.center'].sudo().create(vals)
+
                     email_get = request.env['email.verification'].sudo().search([('email', '=', email)],order='create_date desc',limit=1)
                     email_get.sudo().unlink()
                     return return_Response(res)

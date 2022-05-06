@@ -1,10 +1,40 @@
 from odoo import http, _, exceptions, fields
 from odoo.http import request
+import requests
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 
 
+def send_notification(title, message, user, deviceToken, image=None):
+    serverToken = request.env['ir.config_parameter'].sudo().search([('key', '=', 'firebase_credentials')],
+                                                                   limit=1).value
+    if not image:
+        res_id = request.env['ir.attachment'].sudo()
+        res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
+                                       ('res_field', '=', 'image_1920'),
+                                       ('res_id', 'in', [user.partner_id.id])], limit=1)
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        image = base_url.value + '/web/image/' + str(res_id.id)
+    if deviceToken:
+        for device in deviceToken:
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'key=' + serverToken,
+            }
+            body = {
+                'notification': {'title': title or '',
+                                 'body': message or '',
+                                 'image': image
+                                 },
+                'to': device,
+                'priority': 'high',
+                #   'data': dataPayLoad,
+            }
+            response = requests.post("https://fcm.googleapis.com/fcm/send", headers=headers, data=json.dumps(body))
+
+
 class OdooAPI(http.Controller):
+
     @validate_token
     @http.route('/api/v1/c/product.notifications', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_notification_view(self, **params):

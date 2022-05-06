@@ -6,6 +6,7 @@ from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 _logger = logging.getLogger(__name__)
 
+from .notification_controller import *
 import base64
 
 
@@ -152,6 +153,12 @@ class OdooAPI(http.Controller):
             "title": "Address"
         }
         request.env['notification.center'].sudo().create(vals)
+        user = request.env.user
+        deviceToken = user.deviceToken
+        if deviceToken:
+            deviceToken = user.deviceToken.split()
+            deviceToken = set(deviceToken)
+            send_notification(vals['title'], vals['vendor_message'], user, deviceToken, None)
 
         res = {
             "result": "Record Updated Successfully", "status": 200

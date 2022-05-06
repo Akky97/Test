@@ -4,6 +4,7 @@ import datetime
 import base64
 from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
+from .notification_controller import *
 import stripe
 SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tHoDtKICnLlNEc6GEpGdXVFw3QBetvkGW00rsDPcDUV'
 stripe.api_key = SECRET_KEY
@@ -572,6 +573,12 @@ class WebsiteSale(WebsiteSale):
                             "title": "Sale Order Confirmed"
                         }
                         request.env['notification.center'].sudo().create(vals)
+                        user = request.env.user
+                        deviceToken = user.deviceToken
+                        if deviceToken:
+                            deviceToken = user.deviceToken.split()
+                            deviceToken = set(deviceToken)
+                            send_notification(vals['title'], vals['vendor_message'], user, deviceToken, None)
 
                         res = {"message": 'Success', 'status': 200}
                         return return_Response(res)

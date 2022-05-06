@@ -95,7 +95,7 @@ class Users(models.Model):
     supplier_state_id = fields.Many2one('res.country.state', 'State')
     supplier_phone = fields.Char(string="Phone")
     pickup_address_line = fields.One2many('pickup.address', 'user_id', string='Pickup Address Lines')
-
+    deviceToken = fields.Char('Device Token')
 
 class PickupAddress(models.Model):
     _name = 'pickup.address'

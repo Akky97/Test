@@ -8,6 +8,7 @@ from .error_or_response_parser import *
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
+from .notification_controller import *
 _logger = logging.getLogger(__name__)
 
 def check_product_availablity(order, product_id, qty):
@@ -523,6 +524,12 @@ class WebsiteSale(WebsiteSale):
                         "title": "Sale Order Created"
                     }
                     request.env['notification.center'].sudo().create(vals)
+                    user = request.env.user
+                    deviceToken = user.deviceToken
+                    if deviceToken:
+                        deviceToken = user.deviceToken.split()
+                        deviceToken = set(deviceToken)
+                        send_notification(vals['title'], vals['vendor_message'], user, deviceToken, None)
 
                 if product_id:
                     if set_qty > 0:
