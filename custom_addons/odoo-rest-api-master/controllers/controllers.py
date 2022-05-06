@@ -8,6 +8,7 @@ from odoo.http import request
 
 from .serializers import Serializer
 from .exceptions import QueryFormatError
+from .main import *
 
 
 _logger = logging.getLogger(__name__)
@@ -53,9 +54,21 @@ class OdooAPI(http.Controller):
         res = request.env['ir.http'].session_info()
         return res
 
-    @http.route('/api/auth/session/logout')
+    @validate_token
+    @http.route('/api/auth/session/logout', type='http', auth='none', methods=["POST"], csrf=False)
     def logout(self):
         try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                if jdata.get('deviceToken'):
+                    user = request.env.user
+                    tokenObject = request.env['device.token'].sudo()
+                    token = tokenObject.search([('user_id', '=', user.id), ('token', '=', jdata.get('deviceToken'))])
+                    for t in token:
+                        t.sudo().unlink()
             request.session.logout(keep_db=True)
             return http.Response(
                     json.dumps({"message":"Successfully Logout",
