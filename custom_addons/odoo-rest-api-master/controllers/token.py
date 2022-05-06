@@ -257,13 +257,6 @@ class AccessToken(http.Controller):
             if user.user_type == 'vendor':
                 error = {"message": "You are not authorized to login here", "status": 400}
                 return return_Response_error(error)
-            if deviceToken:
-                tokenObject = request.env['device.token'].sudo()
-                token = tokenObject.search([('user_id', '=', user.id), ('token', '=', deviceToken)])
-                if not token:
-                    token = tokenObject.create({'user_id': user.id, 'token': deviceToken})
-                send_notification('Login Successfully', 'You Have been Login', user, token, None)
-                print('test notification')
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:
@@ -291,6 +284,15 @@ class AccessToken(http.Controller):
         # Successful response:
         print(request.httprequest.headers, ":fg")
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+
+        if deviceToken:
+            tokenObject = request.env['device.token'].sudo()
+            token = tokenObject.search([('user_id', '=', uid), ('token', '=', deviceToken)])
+            if not token:
+                token = tokenObject.create({'user_id': uid, 'token': deviceToken})
+            send_notification('Login Successfully', 'You Have been Login', request.env.user, token, None)
+            print('test notification')
+
         return token_response({
             'uid': uid,
             'user_context': request.session.get_context(),
