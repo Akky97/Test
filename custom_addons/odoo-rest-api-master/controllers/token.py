@@ -16,6 +16,7 @@ _logger = logging.getLogger(__name__)
 from werkzeug.wrappers import BaseResponse
 from odoo.tools.config import config
 
+from .notification_controller import *
 original_set_cookie = BaseResponse.set_cookie
 
 
@@ -238,7 +239,7 @@ class AccessToken(http.Controller):
         db = jdata.get('db')
         login = jdata.get('login')
         password = jdata.get('password')
-        deviceToken = jdata.get('deviceToken')
+        deviceToken = jdata.get('deviceToken') or False
         try:
             db, username, password = db, login, password
         except Exception as e:
@@ -256,11 +257,12 @@ class AccessToken(http.Controller):
             if user.user_type == 'vendor':
                 error = {"message": "You are not authorized to login here", "status": 400}
                 return return_Response_error(error)
-            if user.deviceToken:
-                deviceToken = user.deviceToken+' '+deviceToken
-            else:
-                deviceToken = deviceToken
-            user.sudo().write({'deviceToken': deviceToken})
+            if deviceToken:
+                tokenObject = request.env['device.token'].sudo()
+                token = tokenObject.search([('user_id', '=', user.id), ('token', '=', deviceToken)])
+                if not token:
+                    token = tokenObject.create({'user_id': user.id, 'token': deviceToken})
+                send_notification('Login Successfully', 'You Have been Login', user, token, None)
             request.session.authenticate(db, login, password)
             r = request.env['ir.http'].session_info()
         except Exception as e:
@@ -299,7 +301,7 @@ class AccessToken(http.Controller):
             'expires_in': request.env.ref(expires_in).sudo().value,
             'session_id': request.session.sid,
             'partner_id': request.env.user.partner_id.id,
-            "r": r
+            'deviceToken': deviceToken
         })
 
     @http.route('/api/vendor/auth/token', methods=['POST'], type='http', auth='none', csrf=False, cors='*')

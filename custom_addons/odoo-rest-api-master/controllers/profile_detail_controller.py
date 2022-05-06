@@ -154,11 +154,9 @@ class OdooAPI(http.Controller):
         }
         request.env['notification.center'].sudo().create(vals)
         user = request.env.user
-        deviceToken = user.deviceToken
-        if deviceToken:
-            deviceToken = user.deviceToken.split()
-            deviceToken = set(deviceToken)
-            send_notification(vals['title'], vals['vendor_message'], user, deviceToken, None)
+        tokenObject = request.env['device.token'].sudo()
+        tokens = tokenObject.search([('user_id', '=', user.id)])
+        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
 
         res = {
             "result": "Record Updated Successfully", "status": 200

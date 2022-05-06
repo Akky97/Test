@@ -97,6 +97,7 @@ class Users(models.Model):
     pickup_address_line = fields.One2many('pickup.address', 'user_id', string='Pickup Address Lines')
     deviceToken = fields.Char('Device Token')
 
+
 class PickupAddress(models.Model):
     _name = 'pickup.address'
 
@@ -106,3 +107,10 @@ class PickupAddress(models.Model):
     city = fields.Char('City')
     state_id = fields.Many2one('res.country.state', 'State')
     zip = fields.Char('ZIP')
+
+
+class DeviceToken(models.Model):
+    _name = 'device.token'
+
+    user_id = fields.Many2one('res.users', string='User')
+    token = fields.Char('Token')

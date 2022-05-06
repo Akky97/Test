@@ -11,6 +11,7 @@ from odoo.addons.portal.controllers.portal import CustomerPortal
 from .notification_controller import *
 _logger = logging.getLogger(__name__)
 
+
 def check_product_availablity(order, product_id, qty):
     avQty = 0
     message = False
@@ -200,7 +201,6 @@ def get_address(id):
                            "country_name": id.country_id.name if id.country_id.name != False else "",
                            "website": id.website if id.website != False else "",
                            "image":  base_url.value + '/web/image/' + str(res_id.id),}
-    print('address details', address)
     return address
 
 
@@ -523,13 +523,12 @@ class WebsiteSale(WebsiteSale):
                         "model": "sale.order",
                         "title": "Sale Order Created"
                     }
+
                     request.env['notification.center'].sudo().create(vals)
                     user = request.env.user
-                    deviceToken = user.deviceToken
-                    if deviceToken:
-                        deviceToken = user.deviceToken.split()
-                        deviceToken = set(deviceToken)
-                        send_notification(vals['title'], vals['vendor_message'], user, deviceToken, None)
+                    tokenObject = request.env['device.token'].sudo()
+                    tokens = tokenObject.search([('user_id', '=', user.id)])
+                    send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
 
                 if product_id:
                     if set_qty > 0:
@@ -821,6 +820,11 @@ class WebsiteSale(WebsiteSale):
                             "title": "Address"
                         }
                         request.env['notification.center'].sudo().create(vals)
+                        user = request.env.user
+                        tokenObject = request.env['device.token'].sudo()
+                        tokens = tokenObject.search([('user_id', '=', user.id)])
+                        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
                 else:
@@ -881,6 +885,10 @@ class WebsiteSale(WebsiteSale):
                             "title": "Address"
                         }
                         request.env['notification.center'].sudo().create(vals)
+                        user = request.env.user
+                        tokenObject = request.env['device.token'].sudo()
+                        tokens = tokenObject.search([('user_id', '=', user.id)])
+                        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
                 else:

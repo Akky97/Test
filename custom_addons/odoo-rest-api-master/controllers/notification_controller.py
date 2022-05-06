@@ -26,7 +26,7 @@ def send_notification(title, message, user, deviceToken, image=None):
                                  'body': message or '',
                                  'image': image
                                  },
-                'to': device,
+                'to': device.token,
                 'priority': 'high',
                 #   'data': dataPayLoad,
             }
@@ -34,7 +34,7 @@ def send_notification(title, message, user, deviceToken, image=None):
 
 
 class OdooAPI(http.Controller):
-    
+
     @validate_token
     @http.route('/api/v1/c/product.notifications', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def product_notification_view(self, **params):
