@@ -208,7 +208,7 @@ class AuthSignupHome(Website):
                 return return_Response_error(msg)
 
             if not jdata.get('country_id') or not jdata.get('state_id') or not jdata.get('city') or not jdata.get(
-                    'address') or not jdata.get('email'):
+                    'address') or not jdata.get('email') or not jdata.get('zip'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
 
@@ -269,7 +269,8 @@ class AuthSignupHome(Website):
                                 'country_id': jdata.get('country_id'),
                                 'address': jdata.get('address'),
                                 'city': jdata.get('city'),
-                                'state_id': jdata.get('state_id')
+                                'state_id': jdata.get('state_id'),
+                                'zip': jdata.get('zip')
                             })]
                         }
                         gst_number = jdata.get('gst_number')
@@ -1298,7 +1299,7 @@ class OdooAPI(http.Controller):
             except:
                 jdata = {}
             if not jdata.get('country_id') or not jdata.get('state_id') or not jdata.get('city') or not jdata.get(
-                    'address'):
+                    'address') or not jdata.get('zip'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             uid = request.env.user.id
@@ -1309,7 +1310,8 @@ class OdooAPI(http.Controller):
                         'country_id': int(jdata.get('country_id')),
                         'address': jdata.get('address'),
                         'city': jdata.get('city'),
-                        'state_id': int(jdata.get('state_id'))
+                        'state_id': int(jdata.get('state_id')),
+                        'zip': jdata.get('zip')
                     })]
                 }
                 user.sudo().write(userVals)
@@ -1341,10 +1343,11 @@ class OdooAPI(http.Controller):
                 picking_address = request.env['pickup.address'].sudo().search([('id', '=', id)], limit=1)
                 if picking_address:
                     pickingVals = {
-                            'country_id': jdata.get('country_id') or picking_address.country_id.id,
-                            'address': jdata.get('address') or picking_address.address,
-                            'city': jdata.get('city') or picking_address.city,
-                            'state_id': jdata.get('state_id') or picking_address.state_id.id
+                        'country_id': jdata.get('country_id') or picking_address.country_id.id,
+                        'address': jdata.get('address') or picking_address.address,
+                        'city': jdata.get('city') or picking_address.city,
+                        'state_id': jdata.get('state_id') or picking_address.state_id.id,
+                        'zip': jdata.get('zip') or picking_address.zip
                     }
                     picking_address.sudo().write(pickingVals)
                     # user.partner_id.set_to_pending()
@@ -1386,7 +1389,8 @@ class OdooAPI(http.Controller):
                     'address': rec.address,
                     'city': rec.city,
                     'state_id': rec.state_id.id,
-                    'state_name': rec.state_id.name
+                    'state_name': rec.state_id.name,
+                    'zip': rec.zip
                 })
         except Exception as e:
             msg = {"message": "Something Went Wrong", "status_code": 400}

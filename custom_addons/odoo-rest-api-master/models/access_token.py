@@ -105,3 +105,4 @@ class PickupAddress(models.Model):
     address = fields.Char('Street Address')
     city = fields.Char('City')
     state_id = fields.Many2one('res.country.state', 'State')
+    zip = fields.Char('ZIP')

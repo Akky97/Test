@@ -41,6 +41,7 @@
                                     <field name="state_id" domain="[('country_id','=',country_id)]"/>
                                     <field name="city"/>
                                     <field name="address"/>
+                                    <field name="zip"/>
                                 </tree>
                             </field>
 
