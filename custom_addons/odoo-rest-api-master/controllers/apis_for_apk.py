@@ -52,7 +52,7 @@ def get_product_data(records):
             'sale_price': rec.list_price,
             'price': rec.price,
             "category": category,
-            "rating": rec.rating_count,
+            "rating": round(rec.rating_count, 2),
             'review': request.env['rating.rating'].sudo().search_count([('rating_product_id','=',rec.id)])
 
         })
