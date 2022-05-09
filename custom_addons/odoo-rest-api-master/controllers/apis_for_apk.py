@@ -50,8 +50,11 @@ def get_product_data(records):
                 warehouse=warehouse.id).virtual_available > 0 else 0.0,
             "featured": rec.website_ribbon_id.html if rec.website_ribbon_id.html != False else '',
             'sale_price': rec.list_price,
+            'price': rec.price,
             "category": category,
-            "rating": rec.rating_count
+            "rating": rec.rating_count,
+            'review': request.env['rating.rating'].sudo().search_count([('rating_product_id','=',rec.id)])
+
         })
     return temp
 
