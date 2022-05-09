@@ -143,7 +143,7 @@ def get_product_details(website, warehouse, base_url,records):
         for n in i.seller_ids:
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
-        temp.append({"id": i.id, "name": i.name+variant_name,
+        temp.append({"id": i.id, "name": i.product_tmpl_id.name+variant_name,
                      'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
@@ -648,6 +648,7 @@ class OdooAPI(http.Controller):
 
                 if jdata.get('products'):
                     for rec in jdata.get('products'):
+                        tax = [[6, False, []]]
                         dict = {
                             "name": rec.get('name'),
                             "sequence": 1,
@@ -669,16 +670,18 @@ class OdooAPI(http.Controller):
                         }
                         if 'tax' in rec and rec.get('tax'):
                             dict['taxes_id'] = [[6, False,[int(rec.get('tax'))]]]
+                            tax = dict['taxes_id']
                         if 'ribbon' in rec and rec.get('ribbon'):
                             dict['website_ribbon_id'] = int(rec.get('ribbon'))
                         if 'variant' in rec and rec.get('variant'):
                             lst=[]
                             for i in rec.get('variant').keys():
                                 if i:
-                                    value = [[6, False,rec.get('variant')[i]]]
-                                    lst.append([0, 0,{'attribute_id':int(i),'value_ids':value}])
-                            dict["attribute_line_ids"]= lst
+                                    value = [[6, False, rec.get('variant')[i]]]
+                                    lst.append([0, 0, {'attribute_id': int(i), 'value_ids': value}])
+                            dict["attribute_line_ids"] = lst
                         resId = request.env['product.template'].sudo().create(dict)
+                        resId.sudo().write({"categ_id": rec.get('categ_id'), 'taxes_id': tax})
                         resId.set_pending()
                         if resId.product_variant_ids:
                             idList.append(resId.product_variant_ids[0].id)
@@ -1107,17 +1110,6 @@ class OdooAPI(http.Controller):
             model = 'marketplace.stock'
             if "status" in kw:
                 domain.append(('state','in',[kw.get('status')]))
-            # try:
-            #     jdata = json.loads(request.httprequest.stream.read())
-            # except:
-            #     jdata = {}
-            # if jdata:
-            #     if not jdata.get('from_date') or not jdata.get('to_date'):
-            #         msg = {"message": "Something Went Wrong.", "status_code": 400}
-            #         return return_Response_error(msg)
-            #     else:
-            #         domain.append(('create_date', '<=', jdata.get('from_date')))
-            #         domain.append(('create_date', '>=', jdata.get('to_date')))
             limit = 0
             offset = 0
             if "page" in kw:
@@ -1132,7 +1124,7 @@ class OdooAPI(http.Controller):
                 [('company_id', '=', website.company_id.id)], limit=1)
             temp=[]
             for rec in records:
-                sol = request.env['sale.order.line'].sudo().search([('product_id', '=', rec.id)])
+                sol = request.env['sale.order.line'].sudo().search([('product_id', '=', rec.product_id.id)])
                 count = 0
                 total = 0
                 for line in sol:
@@ -1426,6 +1418,76 @@ class OdooAPI(http.Controller):
                 }
                 res = {
                     'record': record,
+                    'status': 200
+                }
+                return return_Response(res)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+
+    @validate_token
+    @http.route('/api/v1/v/generate_invoice_report', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def generate_invoice_report(self, **params):
+        try:
+            domain = [('product_id.marketplace_seller_id', '=', request.env.user.partner_id.id), ('move_id.payment_state', 'in', ['paid', 'not_paid'])]
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata:
+                domain.append(('date', '>=', jdata.get('from_date')))
+                domain.append(('date', '<=', jdata.get('to_date')))
+
+            if "quator" in params and params.get('quator'):
+                from_date = datetime.datetime.now().date()
+                if params.get('quator') == 'week':
+                    to_date = from_date - timedelta(days=7)
+                if params.get('quator') == 'month':
+                    to_date = from_date - timedelta(days=30)
+                if params.get('quator') == 'q1':
+                    to_date = from_date - timedelta(days=90)
+                if params.get('quator') == 'q2':
+                    to_date = from_date - timedelta(days=180)
+                if params.get('quator') == 'q3':
+                    to_date = from_date - timedelta(days=270)
+                if params.get('quator') == 'q4':
+                    to_date = from_date - timedelta(days=365)
+                if from_date and to_date:
+                    domain.append(('date', '>=', from_date))
+                    domain.append(('date', '<=', to_date))
+            if domain:
+                records = request.env['account.move.line'].sudo().search(domain, order='id desc')
+                temp = []
+                total = 0
+                for rec in records:
+                    if not rec.exclude_from_invoice_tab:
+                        vals = {
+                            'id': rec.id,
+                            'name': rec.move_id.name,
+                            'productName': rec.name,
+                            'price_unit': rec.price_unit,
+                            "qty": rec.quantity,
+                            'price_subtotal': rec.price_subtotal,
+                            'price_total': rec.price_total
+                        }
+                        tax = []
+                        record = request.env['account.move.line'].sudo().search([('product_id', '=', rec.product_id.id), ('move_id', '=', rec.move_id.id)], order='id desc')
+                        for r in record:
+                            if r.exclude_from_invoice_tab:
+                                v = {
+                                    'name': r.name,
+                                    'taxAmount': r.price_unit
+                                }
+                                tax.append(v)
+                        vals['tax'] = tax
+                        temp.append(vals)
+                        total += rec.price_total
+                res = {
+                    'record': temp,
+                    'totalAmount': round(total, 2),
                     'status': 200
                 }
                 return return_Response(res)

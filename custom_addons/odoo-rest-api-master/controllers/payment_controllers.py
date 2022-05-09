@@ -568,7 +568,7 @@ class WebsiteSale(WebsiteSale):
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
                         vals = {
                             "seller_id": partner.id,
-                            "vendor_message": f"""Order Confirm Successfully""",
+                            "vendor_message": f"""Order Place Successfully""",
                             "model": "sale.order",
                             "title": "Sale Order Confirmed"
                         }

@@ -602,7 +602,20 @@ class OdooAPI(http.Controller):
                     except psycopg2.Error:
                         pass
                     total_count += res.sale_count_pando
-                j.total_sold_count = total_count
+                # j.total_sold_count = total_count
+                try:
+                    db_name = odoo.tools.config.get('db_name')
+                    db_registry = registry(db_name)
+                    # with db_registry.cursor() as cr:
+                    cr, uid = db_registry.cursor(), request.session.uid
+                    cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                    Model = request.env(cr, uid)['product.public.category']
+                    prod = Model.search([('id', '=', j.id)])
+                    prod.sudo().write({'total_sold_count': total_count})
+                    cr.commit()
+                    cr.close()
+                except psycopg2.Error:
+                    pass
             orders = 'total_sold_count DESC'
             limit = 6
         records = request.env[model].sudo().search([], order=orders, limit=limit, offset=offset)
