@@ -23,12 +23,27 @@ def _compute_sales_count(self):
             count += r.product_uom_qty
     return count
 
+
+def get_rating_avg(product):
+    records = request.env['rating.rating'].sudo().search([('rating_product_id', '=', product.id)])
+    if records:
+        rating_total = 0
+        count = 0
+        for rec in records:
+            count += 1
+            rating_total += rec.rating
+        return (rating_total/count)
+    else:
+        return 0
+
+
 def get_rating_permission(product):
     result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', request.env.user.partner_id.id)])
     if result:
         return True
     else:
         return False
+
 
 def get_product_details(warehouse, records):
     base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -46,7 +61,8 @@ def get_product_details(warehouse, records):
             cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
             Model = request.env(cr, uid)['product.product']
             prod = Model.search([('id', '=', i.id)])
-            prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+            # prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+            prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod), 'rating_count': get_rating_avg(prod)})
             cr.commit()
             cr.close()
         except psycopg2.Error:
@@ -142,8 +158,8 @@ def get_product_details(warehouse, records):
                      "new": True if i.website_ribbon_id.html == 'New' else None,
                      "author": "Pando-Stores",
                      "sold": i.sale_count_pando,
-                     "review": 2,
-                     "rating": 3,
+                     "rating": round(i.rating_count, 2),
+                     'review': request.env['rating.rating'].sudo().search_count([('rating_product_id', '=', i.id)]),
                      "rating_permission": get_rating_permission(i),
                      "marketplace_seller_id": i.marketplace_seller_id.id,
                      "marketplace_seller_name": i.marketplace_seller_id.name,
@@ -179,7 +195,7 @@ class OdooAPI(http.Controller):
         if "orderBy" in params:
             orders = params["orderBy"]
             if orders == 'rating':
-                pass
+                search = 'rating_count DESC'
             elif orders == 'new':
                 search = 'create_date DESC'
             elif orders == 'featured':
@@ -205,7 +221,8 @@ class OdooAPI(http.Controller):
                     cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
                     Model = request.env(cr, uid)['product.product']
                     prod = Model.search([('id', '=', res.id)])
-                    prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    # prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod), 'rating_count': get_rating_avg(prod)})
                     cr.commit()
                     cr.close()
                 except psycopg2.Error:

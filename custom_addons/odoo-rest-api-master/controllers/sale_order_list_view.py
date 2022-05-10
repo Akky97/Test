@@ -12,19 +12,18 @@ from .notification_controller import *
 _logger = logging.getLogger(__name__)
 
 
-def check_product_availablity(order, product_id, qty):
+def check_product_availablity(order, product_id, qty, temp):
     avQty = 0
     message = False
-    orderLine = request.env['sale.order.line'].sudo().search([('product_id','=',int(product_id)),('order_id','=',order.id)])
-    if orderLine and orderLine.product_id.type == 'product':
+    orderLine = request.env['sale.order.line'].sudo().search([('product_id', '=', int(product_id)), ('order_id', '=', order.id)])
+    if orderLine and orderLine.product_id.type == 'product' and not temp:
         cart_qty = int(orderLine.product_uom_qty) + int(qty)
         avl_qty = orderLine.product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
         if cart_qty > avl_qty:
             available_qty = avl_qty if avl_qty > 0 else 0
             message = f'You ask for {cart_qty} products but only {available_qty} is available'
     else:
-        product_id = request.env['product.product'].sudo().search([('id','=',int(product_id))])
-
+        product_id = request.env['product.product'].sudo().search([('id', '=', int(product_id))])
         if product_id.type == 'product':
             virtual_qty = product_id.with_context(warehouse=order.warehouse_id.id).virtual_available
             if qty > virtual_qty:
@@ -519,7 +518,7 @@ class WebsiteSale(WebsiteSale):
                     sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
                     vals = {
                         "seller_id": request.env.user.partner_id.id,
-                        "vendor_message": f"""Customer Place an Order""",
+                        "vendor_message": f"""Customer Create an Order""",
                         "model": "sale.order",
                         "title": "Sale Order Created"
                     }
@@ -533,10 +532,12 @@ class WebsiteSale(WebsiteSale):
                 if product_id:
                     if set_qty > 0:
                         qty = set_qty
+                        temp = True
                     else:
                         qty = add_qty
+                        temp = False
                     if qty and set_qty != -1:
-                        stockMessage = check_product_availablity(sale_order,product_id,qty)
+                        stockMessage = check_product_availablity(sale_order, product_id, qty, temp)
                         if stockMessage:
                             error = {"message": stockMessage, "status": 400}
                             return return_Response_error(error)
