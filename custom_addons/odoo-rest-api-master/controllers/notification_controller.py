@@ -61,7 +61,7 @@ class OdooAPI(http.Controller):
                 temp.append({"id": i.id,
                              "product_id": i.product_id.id if i.product_id.id != False else '',
                              "product_name": i.product_id.name if i.product_id.name != False else '',
-                             'image': i.image_data if i.image_data != False else 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1651571985notification.svg',
+                             'image': i.image_data if i.image_data != False else 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1652177979bell.png',
                              'seller_id': i.seller_id.id, 'seller_name': i.seller_id.name,
                              'vendor_message': i.vendor_message if i.vendor_message != False else '',
                              'approve_by': i.approve_by.id if i.approve_by.id != False else '',

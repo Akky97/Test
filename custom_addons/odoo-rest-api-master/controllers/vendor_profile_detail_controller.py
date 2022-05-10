@@ -638,6 +638,7 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/v/product_product', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def create_product(self, **params):
         idList = []
+        name = ''
         try:
             try:
                 jdata = json.loads(request.httprequest.stream.read())
@@ -649,6 +650,7 @@ class OdooAPI(http.Controller):
                 if jdata.get('products'):
                     for rec in jdata.get('products'):
                         tax = [[6, False, []]]
+                        name = rec.get('name')
                         dict = {
                             "name": rec.get('name'),
                             "sequence": 1,
@@ -699,7 +701,7 @@ class OdooAPI(http.Controller):
         if idList:
             vals = {
                 'seller_id': request.env.user.partner_id.id,
-                'vendor_message': "New Product Created Successfully",
+                'vendor_message': f"{name} Created Successfully",
                 'model': "product.template",
                 'title': "Product Template"
             }

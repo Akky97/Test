@@ -505,10 +505,15 @@ class WebsiteSale(WebsiteSale):
             try:
                 jdata = json.loads(request.httprequest.stream.read())
             except:
-                jdata={}
+                jdata = {}
             if jdata:
                 if not jdata.get('product_id') or not jdata.get('add_qty'):
                     msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+                product = request.env['product.product'].sudo().search([('is_product_publish', '=', True), ('is_published', '=', True), ('type', '=', 'product'), (
+                'marketplace_status', 'in', ['approved']) ,('id', '=', int(jdata.get('product_id')))])
+                if not product:
+                    msg = {"message": "Product Is not Publish or Approve.", "status_code": 400}
                     return return_Response_error(msg)
                 product_id = int(jdata.get('product_id')) or False
                 set_qty = int(jdata.get('set_qty')) if jdata.get('set_qty') else 0

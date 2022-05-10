@@ -260,7 +260,12 @@ class OdooAPI(http.Controller):
             if not product_id:
                 error = {"message": "Product id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            records = request.env[model].sudo().search([('id', '=', int(product_id))])
+            # records = request.env[model].sudo().search([('id', '=', int(product_id))])
+            records = request.env[model].sudo().search([('id', '=', int(product_id)), ('is_product_publish', '=', True), ('is_published', '=', True), ('type', '=', 'product'), (
+                'marketplace_status', 'in', ['approved'])])
+            if not records:
+                msg = {"message": "Product Is not Publish or Approve.", "status_code": 400}
+                return return_Response_error(msg)
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
