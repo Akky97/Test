@@ -54,7 +54,7 @@
                     </p>
                 </div>
             </field>
-            <field name="report_template" ref="account.account_invoices"/>
+<!--            <field name="report_template" ref="account.account_invoices"/>-->
         </record>
     </data>
 </odoo>

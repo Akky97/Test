@@ -32,6 +32,7 @@ def check_product_availablity(order, product_id, qty, temp):
                 message = f'You ask for {qty} products but only {virtual_qty} is available'
     return message
 
+
 def get_sale_order_line(order_id=None, order_line_id = None):
     saleOrderLine = []
     count = 0
