@@ -98,7 +98,7 @@ class OdooAPI(http.Controller):
                     "id": record.id,
                     "product_id": record.product_id.id if record.product_id.id != False else '',
                     "product_name": record.product_id.name if record.product_id.name != False else '',
-                    'image': record.image_data,
+                    'image': record.image_data if record.image_data != False else 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1652177979bell.png',
                     'seller_id': record.seller_id.id,
                     'seller_name': record.seller_id.name,
                     'vendor_message': record.vendor_message if record.vendor_message != False else '',

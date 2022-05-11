@@ -17,7 +17,7 @@
             <field name="inherit_id" ref="sale_stock.view_order_form_inherit_sale_stock"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='date_order']" position="after">
-                    <field name="shipping_Details"/>
+                    <field name="shipping_Details" readonly="1" force_save="1"/>
                 </xpath>
             </field>
         </record>
