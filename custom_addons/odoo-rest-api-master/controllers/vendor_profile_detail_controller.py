@@ -428,7 +428,7 @@ class OdooAPI(http.Controller):
                 user.partner_id.sudo().write(partnerVals)
                 vals = {
                     "seller_id": user.partner_id.id,
-                    "vendor_message": "Your record successfully Updated",
+                    "vendor_message": "Your Profile Is Successfully Updated",
                     "model": "res.partner",
                     "title": "Seller Record Update"
                 }
@@ -1090,7 +1090,7 @@ class OdooAPI(http.Controller):
                         object.request()
                         vals = {
                             "seller_id": request.env.user.partner_id.id,
-                            "vendor_message": """Inventory Update Request Sent Successfully""",
+                            "vendor_message": f"""Inventory Update Request For {product.name} Sent Successfully""",
                             "model": "marketplace.stock",
                             "title": "Requested For Inventory Update"
                         }
@@ -1267,7 +1267,7 @@ class OdooAPI(http.Controller):
                     if resId:
                         vals = {
                             'seller_id': request.env.user.partner_id.id,
-                            'vendor_message': "Product Updated Successfully",
+                            'vendor_message': f"""{record.name} Updated Successfully""",
                             'model': "product.template",
                             'title': "Product Template"
                         }
