@@ -24,6 +24,13 @@ def next_by_code(self, sequence_code, sequence_date=None, company=False):
     return seq_id._next(sequence_date=sequence_date)
 
 
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
+
+    shipping_Details = fields.Selection([('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
+                                         ('shipped', 'Shipped')], string='Shipping Details')
+
+
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
