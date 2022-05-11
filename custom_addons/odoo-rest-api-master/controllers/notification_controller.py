@@ -55,7 +55,7 @@ class OdooAPI(http.Controller):
             offset = (page - 1) * 12
         try:
             record_count = request.env[model].sudo().search_count(domain)
-            records = request.env[model].sudo().search(domain, limit=limit, offset=offset)
+            records = request.env[model].sudo().search(domain, limit=limit, offset=offset, order='id DESC')
             temp = []
             for i in records:
                 temp.append({"id": i.id,
