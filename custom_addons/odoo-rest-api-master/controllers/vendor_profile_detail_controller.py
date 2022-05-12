@@ -818,8 +818,8 @@ class OdooAPI(http.Controller):
             except:
                 jdata = {}
             if jdata and jdata.get('from_date') and jdata.get('to_date'):
-                domain.append(('order_id.date_order', '<=', jdata.get('from_date')))
-                domain.append(('order_id.date_order', '>=', jdata.get('to_date')))
+                domain.append(('order_id.date_order', '>=', jdata.get('from_date')))
+                domain.append(('order_id.date_order', '<=', jdata.get('to_date')))
             records = request.env[model].sudo().search(domain)
             total_sales_unit = 0
             total_earning = 0
@@ -865,8 +865,8 @@ class OdooAPI(http.Controller):
         except:
             jdata = {}
         if jdata and jdata.get('from_date') and jdata.get('to_date'):
-            domain.append(('order_id.date_order', '<=', jdata.get('from_date')))
-            domain.append(('order_id.date_order', '>=', jdata.get('to_date')))
+            domain.append(('order_id.date_order', '>=', jdata.get('from_date')))
+            domain.append(('order_id.date_order', '<=', jdata.get('to_date')))
         if "quator" in params and params.get('quator'):
             from_date = datetime.datetime.now().date()
             if params.get('quator') == 'week':
