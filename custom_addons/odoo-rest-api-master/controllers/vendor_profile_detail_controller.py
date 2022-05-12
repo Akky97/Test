@@ -208,7 +208,7 @@ class AuthSignupHome(Website):
                 return return_Response_error(msg)
 
             if not jdata.get('country_id') or not jdata.get('state_id') or not jdata.get('city') or not jdata.get(
-                    'address') or not jdata.get('email') or not jdata.get('zip'):
+                    'address') or not jdata.get('email'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
 
@@ -269,8 +269,8 @@ class AuthSignupHome(Website):
                                 'country_id': jdata.get('country_id'),
                                 'address': jdata.get('address'),
                                 'city': jdata.get('city'),
-                                'state_id': jdata.get('state_id'),
-                                'zip': jdata.get('zip')
+                                'state_id': jdata.get('state_id')
+                                # 'zip': jdata.get('zip')
                             })]
                         }
                         gst_number = jdata.get('gst_number')
