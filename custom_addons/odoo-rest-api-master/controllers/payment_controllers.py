@@ -142,18 +142,20 @@ def create_transaction(acquirer_id):
     }
     return value
 
+
 def dispatch_order(order):
-    stockPicking = request.env['stock.picking'].sudo().search([('sale_id','=', order.id)])
+    stockPicking = request.env['stock.picking'].sudo().search([('sale_id', '=', order.id)])
     for rec in stockPicking:
-        stockMoveLine = request.env['stock.move.line'].sudo().search([('picking_id','=',rec.id)])
+        stockMoveLine = request.env['stock.move.line'].sudo().search([('picking_id', '=', rec.id)])
         for res in stockMoveLine:
-            res.sudo().write({'qty_done':res.product_uom_qty})
+            res.sudo().write({'qty_done': res.product_uom_qty})
         rec.button_validate()
 
 
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
-    result = dispatch_order(order)
+    dispatch_order(order)
+    order.sudo().write({'shipping_Details': 'ordered'})
     if res:
         invoice = order._create_invoices(final=True)
         if invoice:

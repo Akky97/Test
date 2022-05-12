@@ -931,7 +931,8 @@ class OdooAPI(http.Controller):
                     "multi_image": image,
                     "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
                     warehouse=warehouse.id).virtual_available > 0 else 0.0,
-                    "marketplace_state":rec.marketplace_state
+                    "marketplace_state": rec.marketplace_state,
+                    "shipping_status": rec.shipping_Details if rec.shipping_Details != False else ''
                 }
                 temp.append(vals)
         except (SyntaxError, QueryFormatError) as e:
@@ -977,7 +978,8 @@ class OdooAPI(http.Controller):
                         warehouse=warehouse.id).virtual_available if record.product_id.with_context(
                         warehouse=warehouse.id).virtual_available > 0 else 0.0,
                     "marketplace_state": record.marketplace_state,
-                    "customer_detail": get_address(record.order_id.partner_id)
+                    "customer_detail": get_address(record.order_id.partner_id),
+                    "shipping_status": record.shipping_Details if record.shipping_Details != False else ''
                 }
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
