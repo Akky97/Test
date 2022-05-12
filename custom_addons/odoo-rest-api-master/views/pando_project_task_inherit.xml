@@ -19,7 +19,7 @@
             </field>
         </record>
 
-        <!--<record id="view_pando_sale_order_inherit_form" model="ir.ui.view">
+        <record id="view_pando_sale_order_inherit_form" model="ir.ui.view">
             <field name="name">pando.sale.order.inherit</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
@@ -28,6 +28,6 @@
                     <field name="shipping_Details" readonly="1" force_save="1"/>
                 </xpath>
             </field>
-        </record>-->
+        </record>
     </data>
 </odoo>
