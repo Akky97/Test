@@ -154,7 +154,7 @@ def dispatch_order(order):
 
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
-    dispatch_order(order)
+    result = dispatch_order(order)
     order.sudo().write({'shipping_Details': 'ordered'})
     if res:
         invoice = order._create_invoices(final=True)
@@ -578,7 +578,8 @@ class WebsiteSale(WebsiteSale):
                         user = request.env.user
                         tokenObject = request.env['device.token'].sudo()
                         tokens = tokenObject.search([('user_id', '=', user.id)])
-                        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+                        if tokens:
+                            send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
                         res = {"message": 'Success', 'status': 200}
                         return return_Response(res)
                     else:
