@@ -155,7 +155,7 @@ def dispatch_order(order):
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
     result = dispatch_order(order)
-    order.sudo().write({'shipping_Details': 'ordered'})
+    # order.sudo().write({'shipping_Details': 'ordered'})
     if res:
         invoice = order._create_invoices(final=True)
         if invoice:
