@@ -1,7 +1,10 @@
-from odoo import http, _, exceptions, SUPERUSER_ID
+from odoo import http, _, exceptions, SUPERUSER_ID,registry
 from odoo.http import request
 import datetime
 import base64
+from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED
+import odoo
+import psycopg2
 from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
 from .notification_controller import *
@@ -155,6 +158,19 @@ def dispatch_order(order):
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
     result = dispatch_order(order)
+    try:
+        db_name = odoo.tools.config.get('db_name')
+        db_registry = registry(db_name)
+        # with db_registry.cursor() as cr:
+        cr, uid = db_registry.cursor(), request.session.uid
+        cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+        Model = request.env(cr, uid)['sale.order']
+        order = Model.search([('id', '=', order.id)])
+        order.sudo().write({'shipping_Details': 'ordered'})
+        cr.commit()
+        cr.close()
+    except psycopg2.Error:
+        pass
     # order.sudo().write({'shipping_Details': 'ordered'})
     if res:
         invoice = order._create_invoices(final=True)
