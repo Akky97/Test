@@ -175,6 +175,8 @@ def get_product_details(website, warehouse, base_url,records):
                      "additional_info": i.additional_info if i.additional_info else '',
                      "shipping_return": i.shipping_return if i.shipping_return else '',
                      "status":i.marketplace_status,
+                     "country_id": i.product_tmpl_id.country_id.id if i.product_tmpl_id.country_id.id else '',
+                     "country_name": i.product_tmpl_id.country_id.name if i.product_tmpl_id.country_id.name else '',
                      "pictures": [
                          {
                             'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
