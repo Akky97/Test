@@ -24,17 +24,15 @@ def next_by_code(self, sequence_code, sequence_date=None, company=False):
     return seq_id._next(sequence_date=sequence_date)
 
 
-class SaleOrder(models.Model):
-    _inherit = "sale.order"
-
-    shipping_Details = fields.Selection([('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
-                                         ('shipped', 'Shipped')], string='Shipping Details')
-
-
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    is_stockable = fields.Boolean("Is a Stockable", compute='_compute_is_stockable', store=True, compute_sudo=True, help="Sales Order item should generate a task and/or a project, depending on the product settings.")
+    is_stockable = fields.Boolean("Is a Stockable", compute='_compute_is_stockable',
+                                  store=True, compute_sudo=True,
+                                  help="Sales Order item should generate a task and/or a project, depending "
+                                       "on the product settings.")
+    shipping_Details = fields.Selection([('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
+                                         ('shipped', 'Shipped')], string='Shipping Status')
 
     @api.depends('product_id')
     def _compute_is_stockable(self):
