@@ -597,7 +597,7 @@ class OdooAPI(http.Controller):
     def get_account_tax(self, **params):
         try:
             temp = []
-            record = request.env['account.tax'].sudo().search([])
+            record = request.env['account.tax'].sudo().search([('type_tax_use','=','sale')])
             if record:
                 for i in record:
                     vals = {
