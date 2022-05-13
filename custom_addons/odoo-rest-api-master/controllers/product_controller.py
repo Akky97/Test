@@ -17,7 +17,7 @@ def _compute_sales_count(self):
     count =0
     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
                                                                   time.min))
-    res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale','done','paid'])])
+    res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale', 'done', 'paid'])])
     if res:
         for r in res:
             count += r.product_uom_qty
@@ -38,7 +38,7 @@ def get_rating_avg(product):
 
 
 def get_rating_permission(product):
-    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', request.env.user.partner_id.id)])
+    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', request.env.user.partner_id.id), ('order_id.state', '=', 'sale')])
     if result:
         return True
     else:
@@ -910,32 +910,4 @@ class OdooAPI(http.Controller):
         }
         return return_Response(res)
 
-    @validate_token
-    @http.route('/api/v1/c/product.graph.data', type='http', auth='public', methods=['GET'], csrf=False,
-                cors='*')
-    def product_graph_data(self, **params):
-        try:
-            user = request.env.user.partner_id.id
-            domain = [('marketplace_seller_id', '=', user), ('is_product_publish', '=', True),
-                      ('is_published', '=', True), ('type', '=', 'product'),
-                      ('marketplace_status', 'in', ['approved'])]
-            records = request.env['product.product'].sudo().search(domain)
-            count_list = []
-            for res in records:
-                count_list.append({'id': res.id, 'name': res.name, 'count': _compute_sales_count(self=res)})
-            new_lst = sorted(count_list, key=lambda i: i['count'], reverse=True)
-            list_of_prod_ids = list(map(lambda d: d['id'], new_lst))
-            prod_records = request.env['product.product'].sudo().browse(list_of_prod_ids)
-            prod_name = []
-            prod_sale_count = []
-            for i in prod_records:
-                prod_name.append(i.name)
-                prod_sale_count.append(_compute_sales_count(self=i))
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
-        res = {
-            "prod_name": prod_name,
-            "prod_sale_count": prod_sale_count
-        }
-        return return_Response(res)
-
+    

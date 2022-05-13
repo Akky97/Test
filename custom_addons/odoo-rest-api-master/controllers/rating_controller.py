@@ -18,6 +18,8 @@ def _check_special_access(res_model, res_id, token='', _hash='', pid=False):
         return consteq(_hash, record._sign_token(pid))
     else:
         raise Forbidden()
+
+
 def _message_post_helper(res_model, res_id, message, token='', _hash=False, pid=False, nosubscribe=True, **kw):
     """ Generic chatter function, allowing to write on *any* object that inherits mail.thread. We
         distinguish 2 cases:

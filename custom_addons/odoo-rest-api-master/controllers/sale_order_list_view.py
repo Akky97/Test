@@ -524,7 +524,7 @@ class WebsiteSale(WebsiteSale):
                     sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
                     vals = {
                         "seller_id": request.env.user.partner_id.id,
-                        "vendor_message": f"""Customer Create an Order""",
+                        "vendor_message": f"""{sale_order.name} Order Place Successfully""",
                         "model": "sale.order",
                         "title": "Sale Order Created"
                     }

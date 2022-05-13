@@ -4,35 +4,50 @@ from odoo.http import request
 from odoo.addons.website.controllers.main import Website
 from odoo.addons.auth_signup.models.res_users import SignupError
 from odoo.exceptions import UserError
-from odoo import http, _, exceptions, fields
+import odoo
+from odoo import http, _, exceptions, fields, registry, SUPERUSER_ID, api
+from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
 from .sale_order_list_view import *
 import werkzeug
 _logger = logging.getLogger(__name__)
+import psycopg2
 
-
-def _compute_sales_count(self):
-    r = {}
-    self.sales_count = 0
+def _compute_sales_count(self, from_date=None, to_date=None):
+    count = 0
     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
                                                                   time.min))
+    domain = [('product_id', '=', self.id), ('date', '>=', date_from), ('state', 'in', ['sale', 'done', 'paid'])]
+    if from_date and to_date:
+        domain = [('product_id', '=', self.id), ('date', '>=', from_date), ('date', '<=', to_date), ('state', 'in', ['sale', 'done', 'paid'])]
+    res = request.env['sale.report'].sudo().search(domain)
+    if res:
+        for r in res:
+            count += r.product_uom_qty
+    return count
 
-    done_states = self.env['sale.report']._get_done_states()
-
-    domain = [
-        ('state', 'in', done_states),
-        ('product_id', 'in', self.ids),
-        ('date', '>=', date_from),
-    ]
-    for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
-        r[group['product_id'][0]] = group['product_uom_qty']
-    for product in self:
-        if not product.id:
-            product.sales_count = 0.0
-            continue
-        product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
-    return r
+# def _compute_sales_count(self):
+#     r = {}
+#     self.sales_count = 0
+#     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+#                                                                   time.min))
+#
+#     done_states = self.env['sale.report']._get_done_states()
+#
+#     domain = [
+#         ('state', 'in', done_states),
+#         ('product_id', 'in', self.ids),
+#         ('date', '>=', date_from),
+#     ]
+#     for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
+#         r[group['product_id'][0]] = group['product_uom_qty']
+#     for product in self:
+#         if not product.id:
+#             product.sales_count = 0.0
+#             continue
+#         product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
+#     return r
 
 def check_gst_number(gst, state_id):
     state_id = request.env['res.country.state'].sudo().search([('id','=',int(state_id))])
@@ -764,8 +779,21 @@ class OdooAPI(http.Controller):
             if ("orderBy" in params and params['orderBy'] == 'featured') or (
                     "orderBy" in params and params['orderBy'] == 'sale'):
                 for res in records:
-                    _compute_sales_count(self=res)
-                    res.sale_count_pando = res.sales_count
+                    try:
+                        db_name = odoo.tools.config.get('db_name')
+                        db_registry = registry(db_name)
+                        # with db_registry.cursor() as cr:
+                        cr, uid = db_registry.cursor(), request.session.uid
+                        cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                        Model = request.env(cr, uid)['product.product']
+                        prod = Model.search([('id', '=', res.id)])
+                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                        cr.commit()
+                        cr.close()
+                    except psycopg2.Error:
+                        pass
+                    # _compute_sales_count(self=res)
+                    # res.sale_count_pando = res.sales_count
                 records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
 
             temp = get_product_details(website, warehouse, base_url, records)
@@ -826,16 +854,16 @@ class OdooAPI(http.Controller):
             total_sales_unit = 0
             total_earning = 0
             total_count = 0
-            total_return=0
+            total_return = 0
             for rec in records:
-                total_count +=1
+                total_count += 1
                 total_sales_unit += rec.product_uom_qty
                 total_earning += rec.price_subtotal
             res={
-                'total_count':total_count,
-                'total_sales_unit':total_sales_unit,
-                'total_earning':total_earning,
-                'total_return':total_return
+                'total_count': total_count,
+                'total_sales_unit': total_sales_unit,
+                'total_earning': total_earning,
+                'total_return': total_return
             }
             return return_Response(res)
 
@@ -920,11 +948,11 @@ class OdooAPI(http.Controller):
                         }
 
                 vals={
-                    "id":rec.id,
-                    "order_id":rec.order_id.name,
-                    "product_id":rec.product_id.id,
-                    "product_name":rec.product_id.name,
-                    "price_subtotal":rec.price_subtotal,
+                    "id": rec.id,
+                    "order_id": rec.order_id.name,
+                    "product_id": rec.product_id.id,
+                    "product_name": rec.product_id.name,
+                    "price_subtotal": rec.price_subtotal,
                     "date": str(rec.order_id.date_order),
                     "create_date": str(rec.order_id.create_date),
                     "quantity": rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
@@ -1007,7 +1035,7 @@ class OdooAPI(http.Controller):
                 for image in jdata.get('image'):
                     dict = {
                         'image_url': image.get('url'),
-                        'image_name':image.get('name'),
+                        'image_name': image.get('name'),
                         'product_id': int(jdata.get('product_id')),
                         'type': jdata.get('image_type'),
                     }
@@ -1243,21 +1271,22 @@ class OdooAPI(http.Controller):
                 website = request.env['website'].sudo().browse(1)
                 if record:
                     dict = {
-                        "name": jdata.get('name'),
-                        "categ_id": jdata.get('categ_id'),
-                        "list_price": jdata.get('list_price'),
-                        "standard_price": jdata.get('standard_price'),
-                        "description": jdata.get('description') or '',
-                        "description_sale": jdata.get('description_sale') or '',
-                        "additional_info": jdata.get('additional_info') or '',
-                        "uom_id": jdata.get('uom') or 1,
-                        "uom_po_id": jdata.get('uom_po_id') or 1,
-                        "tracking": jdata.get('tracking') or 'none',
-                        "country_id": int(jdata.get('country_id')),
-                        "public_categ_ids":[[6, False,[int(jdata.get('public_categ_ids'))]]]
+                        "name": jdata.get('name') or record.product_tmpl_id.name,
+                        "categ_id": jdata.get('categ_id') or record.product_tmpl_id.categ_id.id,
+                        "list_price": jdata.get('list_price') or record.list_price,
+                        "standard_price": jdata.get('standard_price') or record.standard_price,
+                        "description": jdata.get('description') or record.description,
+                        "description_sale": jdata.get('description_sale') or record.description_sale,
+                        "additional_info": jdata.get('additional_info') or record.additional_info,
+                        "uom_id": jdata.get('uom') or record.uom_id.id,
+                        "uom_po_id": jdata.get('uom_po_id') or record.uom_po_id.id,
+                        "tracking": jdata.get('tracking') or record.tracking,
+                        "country_id": int(jdata.get('country_id')) if jdata.get('country_id') != False else record.country_id.id
                     }
+                    if 'public_categ_ids' in jdata and jdata.get('public_categ_ids'):
+                        dict['public_categ_ids'] = [[6, False, [int(jdata.get('public_categ_ids'))]]]
                     if 'tax' in jdata and jdata.get('tax'):
-                        dict['taxes_id'] = [[6, False,[int(jdata.get('tax'))]]]
+                        dict['taxes_id'] = [[6, False, [int(jdata.get('tax'))]]]
                     if 'ribbon' in jdata and jdata.get('ribbon'):
                         dict['website_ribbon_id'] = int(jdata.get('ribbon'))
                     # if 'variant' in jdata and jdata.get('variant'):
@@ -1509,4 +1538,40 @@ class OdooAPI(http.Controller):
         except Exception as e:
             msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
+
+    @validate_token
+    @http.route('/api/v1/c/product.graph.data', type='http', auth='public', methods=['POST'], csrf=False,
+                cors='*')
+    def product_graph_data(self, **params):
+        try:
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            from_date = jdata.get('from_date') or None
+            to_date = jdata.get('to_date') or None
+
+            user = request.env.user.partner_id.id
+            domain = [('marketplace_seller_id', '=', user), ('is_product_publish', '=', True),
+                      ('is_published', '=', True), ('type', '=', 'product'),
+                      ('marketplace_status', 'in', ['approved'])]
+            records = request.env['product.product'].sudo().search(domain)
+            count_list = []
+            for res in records:
+                count_list.append({'id': res.id, 'name': res.name, 'count': _compute_sales_count(self=res, from_date=from_date, to_date=to_date)})
+            new_lst = sorted(count_list, key=lambda i: i['count'], reverse=True)
+            list_of_prod_ids = list(map(lambda d: d['id'], new_lst))
+            prod_records = request.env['product.product'].sudo().browse(list_of_prod_ids)
+            prod_name = []
+            prod_sale_count = []
+            for i in prod_records:
+                prod_name.append(i.name)
+                prod_sale_count.append(_compute_sales_count(self=i, from_date=from_date, to_date=to_date))
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "prod_name": prod_name,
+            "prod_sale_count": prod_sale_count
+        }
+        return return_Response(res)
 

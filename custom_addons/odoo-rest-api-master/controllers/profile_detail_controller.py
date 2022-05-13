@@ -148,7 +148,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         vals = {
             "seller_id": request.env.user.partner_id.id,
-            "vendor_message": """Record Updated Successfully""",
+            "vendor_message": """Profile Updated Successfully""",
             "model": "res.partner",
             "title": "Address"
         }
@@ -190,7 +190,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         vals = {
             "seller_id": request.env.user.partner_id.id,
-            "vendor_message": """Record Deleted Successfully""",
+            "vendor_message": """Profile Deleted Successfully""",
             "model": "res.partner",
             "title": "Address"
         }

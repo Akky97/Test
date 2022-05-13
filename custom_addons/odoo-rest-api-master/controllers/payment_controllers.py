@@ -158,19 +158,19 @@ def dispatch_order(order):
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
     result = dispatch_order(order)
-    # try:
-    #     db_name = odoo.tools.config.get('db_name')
-    #     db_registry = registry(db_name)
-    #     # with db_registry.cursor() as cr:
-    #     cr, uid = db_registry.cursor(), request.session.uid
-    #     cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-    #     Model = request.env(cr, uid)['sale.order']
-    #     order = Model.search([('id', '=', order.id)])
-    #     order.sudo().write({'shipping_Details': 'ordered'})
-    #     cr.commit()
-    #     cr.close()
-    # except psycopg2.Error:
-    #     pass
+    try:
+        db_name = odoo.tools.config.get('db_name')
+        db_registry = registry(db_name)
+        # with db_registry.cursor() as cr:
+        cr, uid = db_registry.cursor(), request.session.uid
+        cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+        Model = request.env(cr, uid)['sale.order']
+        order = Model.search([('id', '=', order.id)])
+        order.sudo().write({'shipping_Details': 'ordered'})
+        cr.commit()
+        cr.close()
+    except psycopg2.Error:
+        pass
     # order.sudo().write({'shipping_Details': 'ordered'})
     if res:
         invoice = order._create_invoices(final=True)
@@ -219,6 +219,7 @@ def checkout_redirection(order, tx):
     #     redirectUrl = f'/shop/payment/confirmation/{order.id}'
     return redirectUrl
 
+
 def _get_mandatory_billing_fields(country_id=False):
     fields = ["name", "email", "street", "city", "country_id"]
     if country_id:
@@ -228,6 +229,7 @@ def _get_mandatory_billing_fields(country_id=False):
             fields += ['zip']
     return fields
 
+
 def _get_mandatory_shipping_fields(country_id=None):
     fields = ["name", "street", "city", "country_id"]
     if country_id:
@@ -236,6 +238,7 @@ def _get_mandatory_shipping_fields(country_id=None):
         if country_id.zip_required:
             fields += ['zip']
     return fields
+
 
 def checkout_check_address(order):
     redirectUrl = ''
@@ -247,6 +250,7 @@ def checkout_check_address(order):
         redirectUrl = f'Profile / Address Page'
     return redirectUrl
 
+
 def get_shipping_method():
     result = request.env['delivery.carrier'].sudo().search([])
     deliveryMethod=[]
@@ -257,6 +261,7 @@ def get_shipping_method():
         }
         deliveryMethod.append(vals)
     return deliveryMethod
+
 
 def checkout_data(order):
     shippingAddress = []
@@ -289,6 +294,7 @@ def checkout_data(order):
         'express': False
     }]
     return values
+
 
 def create_new_address(params):
     value = {}
@@ -586,7 +592,7 @@ class WebsiteSale(WebsiteSale):
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
                         vals = {
                             "seller_id": partner.id,
-                            "vendor_message": f"""Order Place Successfully""",
+                            "vendor_message": f"""{order.name} Order Confirmed Successfully""",
                             "model": "sale.order",
                             "title": "Sale Order Confirmed"
                         }
