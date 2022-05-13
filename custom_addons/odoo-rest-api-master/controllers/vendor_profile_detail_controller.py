@@ -90,6 +90,7 @@ def get_product_details(website, warehouse, base_url,records):
         category = []
         variant = []
         sellers = []
+        taxs = []
         result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
         if not result:
             result = request.env['pando.images'].sudo().search(
@@ -154,7 +155,11 @@ def get_product_details(website, warehouse, base_url,records):
                 variant.append(res_data)
             else:
                 pass
-
+        for j in i.taxes_id:
+            taxs.append({
+                'id': j.id,
+                'name': j.name
+            })
         for n in i.seller_ids:
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
@@ -182,6 +187,8 @@ def get_product_details(website, warehouse, base_url,records):
                      "slug": i.id,
                      "top": True if i.website_ribbon_id.html == 'Trending' else None,
                      "new": True if i.website_ribbon_id.html == 'New' else None,
+                     "ribbon_id": i.website_ribbon_id.id,
+                     'tax': taxs,
                      "author": "Pando-Stores",
                      "sold": i.sales_count,
                      "review": 2,
