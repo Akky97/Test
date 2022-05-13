@@ -33,8 +33,8 @@ class WebsiteCategory(http.Controller):
         }
         return return_Response(res)
 
-    @http.route('/api/v1/c/contact.us/<id>', type='http', auth='public', methods=['POST'], csrf=False, cors='*', website=True)
-    def get_contact_us(self, id=None, **params):
+    @http.route('/api/v1/c/contact.us', type='http', auth='public', methods=['POST'], csrf=False, cors='*', website=True)
+    def get_contact_us(self, **params):
         try:
             model = 'crm.lead'
             object = request.env[model].sudo()
@@ -59,15 +59,14 @@ class WebsiteCategory(http.Controller):
                                                raise_if_not_found=False)
                     outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
                     if outgoing_server_name:
-                        email_check = request.env['res.users'].sudo().search([('id', '=', int(id))])
                         template.email_from = outgoing_server_name
-                        template.email_to = email_check.email
+                        template.email_to = jdata.get('email')
                         template.subject = jdata.get('subject')
                         template.body_html = f"""<![CDATA[
                         <div class="container-fluid">
                             <div class="row" style="background: #5297f8; border-radius: 5px; margin: 0px; padding-left: 40px;"><a title="Pando Store" href="%20https://pandostores.com" target="_blank"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/image/Pando_logo+1.png" width="278" height="59" /></a></div>
                             <div>
-                            <p>Dear {email_check.name}</p>
+                            <p>Dear {jdata.get('name')}</p>
                             <br />
                             <p>We have Received Your Request. And our concerned team will get back to you soon.</p>
                         </div>"""
