@@ -37,8 +37,8 @@ def get_rating_avg(product):
         return 0
 
 
-def get_rating_permission(product):
-    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', request.env.user.partner_id.id), ('order_id.state', '=', 'sale')])
+def get_rating_permission(partner_id,product):
+    result = request.env['sale.order.line'].sudo().search([('product_id', '=', product.id), ('order_id.partner_id', '=', partner_id), ('order_id.state', '=', 'sale')])
     if result:
         return True
     else:
@@ -160,7 +160,7 @@ def get_product_details(warehouse, records):
                      "sold": i.sale_count_pando,
                      "rating": round(i.rating_count, 2),
                      'review': request.env['rating.rating'].sudo().search_count([('rating_product_id', '=', i.id)]),
-                     "rating_permission": get_rating_permission(i),
+                     # "rating_permission": get_rating_permission(i),
                      "marketplace_seller_id": i.marketplace_seller_id.id,
                      "marketplace_seller_name": i.marketplace_seller_id.name,
                      "additional_info": i.additional_info if i.additional_info else '',
@@ -263,6 +263,10 @@ class OdooAPI(http.Controller):
             # records = request.env[model].sudo().search([('id', '=', int(product_id))])
             records = request.env[model].sudo().search([('id', '=', int(product_id)), ('is_product_publish', '=', True), ('is_published', '=', True), ('type', '=', 'product'), (
                 'marketplace_status', 'in', ['approved'])])
+            rating_permission = False
+            if 'partner_id' in params:
+                partner_id = params['partner_id']
+                rating_permission = get_rating_permission(partner_id, product_id)
             if not records:
                 msg = {"message": "Product Is not Publish or Approve.", "status_code": 400}
                 return return_Response_error(msg)
@@ -381,6 +385,7 @@ class OdooAPI(http.Controller):
             "next": next_page,
             "total_pages": total_page_number,
             "products": temp,
+            'rating_permission': rating_permission,
             'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
         return return_Response(res)

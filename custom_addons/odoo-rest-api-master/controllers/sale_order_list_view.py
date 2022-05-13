@@ -154,6 +154,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'categ_name':rec.product_id.categ_id.name if rec.product_id.categ_id.name != False else '',
                 "additional_info": rec.product_id.additional_info if rec.product_id.additional_info else '',
                 "shipping_return": rec.product_id.shipping_return if rec.product_id.shipping_return else '',
+                "shipping_status": rec.shipping_Details if rec.shipping_Details else ''
             })
             count += rec.product_uom_qty
         request.session['count'] = count
