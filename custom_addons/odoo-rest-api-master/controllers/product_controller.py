@@ -266,7 +266,7 @@ class OdooAPI(http.Controller):
             rating_permission = False
             if 'partner_id' in params:
                 partner_id = int(params['partner_id'])
-                rating_permission = get_rating_permission(partner_id, product_id)
+                rating_permission = get_rating_permission(partner_id, records)
             if not records:
                 msg = {"message": "Product Is not Publish or Approve.", "status_code": 400}
                 return return_Response_error(msg)
