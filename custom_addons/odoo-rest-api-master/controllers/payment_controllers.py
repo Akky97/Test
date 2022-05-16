@@ -1,4 +1,4 @@
-from odoo import http, _, exceptions, SUPERUSER_ID,registry
+from odoo import http, _, exceptions, SUPERUSER_ID, registry
 from odoo.http import request
 import datetime
 import base64
@@ -24,7 +24,7 @@ def refund_payment(transaction_id, amount):
             if not amount:
                 amount = int(transaction.amount) * 100
             res = stripe.Refund.create(payment_intent=transaction.payment_intent, amount=amount)
-            #res = stripe.Refund.create(payment_intent=transaction.payment_intent)
+            # res = stripe.Refund.create(payment_intent=transaction.payment_intent)
             print(res)
     return res
 
@@ -159,20 +159,8 @@ def dispatch_order(order):
 def create_invoice(transaction_id, order):
     res = payment_validate(transaction_id, order)
     result = dispatch_order(order)
-    # try:
-    #     db_name = odoo.tools.config.get('db_name')
-    #     db_registry = registry(db_name)
-    #     # with db_registry.cursor() as cr:
-    #     cr, uid = db_registry.cursor(), request.session.uid
-    #     cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-    #     Model = request.env(cr, uid)['sale.order']
-    #     order = Model.search([('id', '=', order.id)])
-    #     order.sudo().write({'shipping_Details': 'ordered'})
-    #     cr.commit()
-    #     cr.close()
-    # except psycopg2.Error:
-    #     pass
-    # order.sudo().write({'shipping_Details': 'ordered'})
+    for line in order.order_line:
+        line.sudo().write({'shipping_Details': 'ordered'})
     if res:
         invoice = order._create_invoices(final=True)
         if invoice:
@@ -573,6 +561,7 @@ class WebsiteSale(WebsiteSale):
             jdata = json.loads(request.httprequest.stream.read())
         except:
             jdata = {}
+        order = request.env['sale.order'].sudo()
         try:
             website = request.env['website'].sudo().browse(1)
             if 'partner_id' in jdata:
@@ -614,8 +603,8 @@ class WebsiteSale(WebsiteSale):
         # except (SyntaxError, QueryFormatError) as e:
         #     return error_response(e, e.msg)
         except Exception as e:
-            if jdata:
-                if 'transaction_id' in jdata and jdata.get('transaction_id'):
+            if jdata and order:
+                if 'transaction_id' in jdata and jdata.get('transaction_id') and order.state == 'draft':
                     res = refund_payment(jdata.get('transaction_id'), amount=None)
         return return_Response_error(res)
 
