@@ -32,7 +32,7 @@ class ProductTemplate(models.Model):
     def reject(self):
         res = super(ProductTemplate, self).reject()
         vals = {
-            "seller_id": self.env.user.partner_id.id,
+            "seller_id": self.marketplace_seller_id.id,
             "vendor_message": f"""{self.name} is Rejected by Admin Successfully""",
             "model": "product.template",
             "title": "Product"
