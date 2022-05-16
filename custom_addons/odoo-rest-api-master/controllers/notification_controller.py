@@ -1,3 +1,5 @@
+import datetime
+
 from odoo import http, _, exceptions, fields
 from odoo.http import request
 import requests
@@ -67,7 +69,10 @@ class OdooAPI(http.Controller):
                              'approve_by': i.approve_by.id if i.approve_by.id != False else '',
                              'approve_by_name': i.approve_by.name if i.approve_by.name != False else '',
                              "title": i.title if i.title != False else '',
-                             "model": i.model if i.model != False else ''})
+                             "model": i.model if i.model != False else '',
+                             "is_read": i.is_read,
+                             "days": (datetime.datetime.now()-i.create_date).days
+                             })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
