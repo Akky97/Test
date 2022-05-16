@@ -32,8 +32,9 @@ class SignupAPI(AuthSignupHome):
             otp = jdata.get('otp')
             confirm_password = jdata.get('confirm_password')
             user_type = jdata.get('user_type')
+            country_id = jdata.get('country_id')
             qcontext.update({"login": email, "name": name, "password": password,
-                             "confirm_password": confirm_password,"user_type":user_type})
+                             "confirm_password": confirm_password, "user_type": user_type, "country_id": int(country_id)})
             email_veri = request.env['email.verification'].sudo().search([('email', '=', email)], limit=1,order='create_date desc')
             if email_veri and int(email_veri.otp) == int(otp):
                 pass
@@ -59,6 +60,11 @@ class SignupAPI(AuthSignupHome):
                     res = {"message": "Account Successfully Created", "status_code": 200}
                     user = request.env["res.users"].sudo().search([("login", "=", qcontext.get('login'))])
                     if user:
+                        user.partner_id.sudo().write({
+                            'city': '',
+                            'state_id': False,
+                            'country_id': int(jdata.get('country_id'))
+                        })
                         vals = {
                             "seller_id": user.partner_id.id,
                             "vendor_message": f"""You are successfully Signed Up""",
