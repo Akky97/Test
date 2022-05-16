@@ -61,6 +61,8 @@ class SignupAPI(AuthSignupHome):
                     user = request.env["res.users"].sudo().search([("login", "=", qcontext.get('login'))])
                     if user:
                         user.partner_id.sudo().write({
+                            'street': '',
+                            'mobile': '',
                             'city': '',
                             'state_id': False,
                             'country_id': int(jdata.get('country_id'))

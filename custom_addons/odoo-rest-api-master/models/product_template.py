@@ -2,6 +2,22 @@ from odoo import api, fields, models, _
 from odoo.http import request, route, Controller
 
 
+class MarketplaceStock(models.Model):
+    _inherit = "marketplace.stock"
+
+    def approve(self):
+        res = super(MarketplaceStock, self).approve()
+        vals = {
+            # "product_id": self.product_id.id,
+            "seller_id": self.product_id.marketplace_seller_id.id,
+            "approve_by": self.env.user.id,
+            "vendor_message": f"""Inventory Request For {self.product_id.name} Is Approved By Admin""",
+            "model": "marketplace.stock",
+            "title": "Product Inventory"
+        }
+        self.env['notification.center'].sudo().create(vals)
+        return res
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -12,6 +28,17 @@ class ProductTemplate(models.Model):
     image_name = fields.Char('Image URL')
     img_attach = fields.Html('Image', compute="_get_img_html")
     img_multi_attach = fields.Html('Image', compute="_get_multi_img_html")
+
+    def reject(self):
+        res = super(ProductTemplate, self).reject()
+        vals = {
+            "seller_id": self.env.user.partner_id.id,
+            "vendor_message": f"""{self.name} is Rejected by Admin Successfully""",
+            "model": "product.template",
+            "title": "Product"
+        }
+        self.env['notification.center'].sudo().create(vals)
+        return res
 
     def _get_multi_img_html(self):
         for res in self:

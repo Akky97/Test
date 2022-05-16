@@ -304,7 +304,8 @@ class AccessToken(http.Controller):
             'session_id': request.session.sid,
             'partner_id': request.env.user.partner_id.id,
             'r': r,
-            'deviceToken': deviceToken
+            'deviceToken': deviceToken,
+            'country_id': request.env.user.partner_id.country_id.id
         })
 
     @http.route('/api/vendor/auth/token', methods=['POST'], type='http', auth='none', csrf=False, cors='*')
