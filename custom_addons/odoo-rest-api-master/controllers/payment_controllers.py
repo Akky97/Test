@@ -22,8 +22,9 @@ def refund_payment(transaction_id, amount):
         )
         if res.status == 'succeeded':
             if not amount:
-                amount = transaction.amount
+                amount = int(transaction.amount) * 100
             res = stripe.Refund.create(payment_intent=transaction.payment_intent, amount=amount)
+            #res = stripe.Refund.create(payment_intent=transaction.payment_intent)
             print(res)
     return res
 
@@ -252,7 +253,7 @@ def checkout_check_address(order):
 
 
 def get_shipping_method():
-    result = request.env['delivery.carrier'].sudo().search([])
+    result = request.env['delivery.carrier'].sudo().search([('is_published', '=', True)])
     deliveryMethod=[]
     for res in result:
         vals={
