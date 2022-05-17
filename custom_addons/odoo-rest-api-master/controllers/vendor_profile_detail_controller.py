@@ -1595,8 +1595,9 @@ class OdooAPI(http.Controller):
                 line = request.env['sale.order.line'].sudo().search([('id', '=', int(line_id))])
                 if "status" in params and params.get('status') and line:
                     line.sudo().write({'shipping_Details': params['status']})
-                error = {"message": "Status is not present in the request", "status": 400}
-                return return_Response_error(error)
+                else:
+                    error = {"message": "Status is not present in the request", "status": 400}
+                    return return_Response_error(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {"message": "Status Updated Successfully", "status": 200}
