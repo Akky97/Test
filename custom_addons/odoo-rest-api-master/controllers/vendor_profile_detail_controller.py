@@ -896,7 +896,8 @@ class OdooAPI(http.Controller):
             page = int(params["page"])
             offset = (page - 1) * 10
         if "status" in params:
-            domain.append(('marketplace_state', 'in', [params['status']]))
+            # domain.append(('marketplace_state', 'in', [params['status']]))
+            domain.append(('shipping_Details', 'in', [params['status']]))
         try:
             jdata = json.loads(request.httprequest.stream.read())
         except:

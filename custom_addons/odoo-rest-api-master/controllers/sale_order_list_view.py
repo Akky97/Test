@@ -556,6 +556,9 @@ class WebsiteSale(WebsiteSale):
                         product_custom_attribute_values=None,
                         no_variant_attribute_values=None
                     )
+                    line = request.env['sale.order.line'].sudo().search([('order_id','=',sale_order.id), ('product_id','=',int(product_id))], limit=1)
+                    if not line.shipping_Details == 'draft':
+                        line.sudo().write({'shipping_Details': 'draft'})
             else:
                 error = {"message": "Parameters Should not Empty", "status": 400}
                 return return_Response_error(error)

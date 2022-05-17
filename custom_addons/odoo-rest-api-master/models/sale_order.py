@@ -31,7 +31,7 @@ class SaleOrderLine(models.Model):
                                   store=True, compute_sudo=True,
                                   help="Sales Order item should generate a task and/or a project, depending "
                                        "on the product settings.")
-    shipping_Details = fields.Selection([('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
+    shipping_Details = fields.Selection([('draft','Draft'),('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
                                          ('shipped', 'Shipped')], string='Shipping Status')
 
     @api.depends('product_id')
