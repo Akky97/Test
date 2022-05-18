@@ -523,18 +523,13 @@ class WebsiteSale(WebsiteSale):
                 if sale_order.state != 'draft':
                     request.session['sale_order_id'] = None
                     sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
-                    vals = {
-                        "seller_id": request.env.user.partner_id.id,
-                        "vendor_message": f"""{sale_order.name} Order Place Successfully""",
-                        "model": "sale.order",
-                        "title": "Sale Order Created"
-                    }
-
-                    request.env['notification.center'].sudo().create(vals)
+                    vendor_message = f"""{sale_order.name} Order Place Successfully"""
+                    generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                          model="sale.order", title="Sale Order Created")
                     user = request.env.user
                     tokenObject = request.env['device.token'].sudo()
                     tokens = tokenObject.search([('user_id', '=', user.id)])
-                    send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+                    send_notification("Sale Order Created", vendor_message, user, tokens, None)
 
                 if product_id:
                     if set_qty > 0:
@@ -824,17 +819,14 @@ class WebsiteSale(WebsiteSale):
                     if 'id' in rec:
                         order.sudo().write({'partner_shipping_id': rec['id']})
                     if 'message' in rec:
-                        vals = {
-                            "seller_id": request.env.user.partner_id.id,
-                            "vendor_message": """Your Address Created Successfully""",
-                            "model": "res.partner",
-                            "title": "Address"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
+                        vendor_message = "Your Address Created Successfully"
+                        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                              model="res.partner", title="Address")
+
                         user = request.env.user
                         tokenObject = request.env['device.token'].sudo()
                         tokens = tokenObject.search([('user_id', '=', user.id)])
-                        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+                        send_notification("Address", vendor_message, user, tokens, None)
 
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
@@ -889,17 +881,14 @@ class WebsiteSale(WebsiteSale):
                     dict['parent_id'] = request.env.user.partner_id.id
                     rec = create_new_address(dict)
                     if 'message' in rec:
-                        vals = {
-                            "seller_id": request.env.user.partner_id.id,
-                            "vendor_message": """Your Address Created Successfully""",
-                            "model": "res.partner",
-                            "title": "Address"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
+                        vendor_message = "Your Address Created Successfully"
+                        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                              model="res.partner", title="Address")
+
                         user = request.env.user
                         tokenObject = request.env['device.token'].sudo()
                         tokens = tokenObject.search([('user_id', '=', user.id)])
-                        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+                        send_notification("Address", vendor_message, user, tokens, None)
                         message = {"message": rec['message'], "status": 200}
                         return return_Response(message)
                 else:

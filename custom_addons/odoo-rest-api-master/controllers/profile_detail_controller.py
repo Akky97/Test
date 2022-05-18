@@ -146,17 +146,13 @@ class OdooAPI(http.Controller):
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        vals = {
-            "seller_id": request.env.user.partner_id.id,
-            "vendor_message": """Profile Updated Successfully""",
-            "model": "res.partner",
-            "title": "Address"
-        }
-        request.env['notification.center'].sudo().create(vals)
+        vendor_message = "Profile Updated Successfully"
+        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                              model="res.partner", title="Address")
         user = request.env.user
         tokenObject = request.env['device.token'].sudo()
         tokens = tokenObject.search([('user_id', '=', user.id)])
-        send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+        send_notification("Address", vendor_message, user, tokens, None)
 
         res = {
             "result": "Record Updated Successfully", "status": 200
@@ -188,13 +184,9 @@ class OdooAPI(http.Controller):
                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        vals = {
-            "seller_id": request.env.user.partner_id.id,
-            "vendor_message": """Profile Deleted Successfully""",
-            "model": "res.partner",
-            "title": "Address"
-        }
-        request.env['notification.center'].sudo().create(vals)
+        vendor_message = "Profile Deleted Successfully"
+        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                              model="res.partner", title="Address")
 
         res = {
             "result": "Record Deleted Successfully", "status": 200

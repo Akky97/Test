@@ -10,6 +10,7 @@ from .error_or_response_parser import *
 import logging
 import json
 import random
+from .notification_controller import *
 
 _logger = logging.getLogger(__name__)
 
@@ -67,13 +68,9 @@ class SignupAPI(AuthSignupHome):
                             'state_id': False,
                             'country_id': int(jdata.get('country_id'))
                         })
-                        vals = {
-                            "seller_id": user.partner_id.id,
-                            "vendor_message": f"""You are successfully Signed Up""",
-                            "model": "res.partner",
-                            "title": "Customer Signup"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
+                        vendor_message = "You are successfully Signed Up"
+                        generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
+                                              model="res.partner", title="Customer Signup")
 
                     email_get = request.env['email.verification'].sudo().search([('email', '=', email)],order='create_date desc',limit=1)
                     email_get.sudo().unlink()

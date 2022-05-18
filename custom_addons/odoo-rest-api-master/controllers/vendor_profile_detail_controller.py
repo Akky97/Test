@@ -9,6 +9,7 @@ from odoo import http, _, exceptions, fields, registry, SUPERUSER_ID, api
 from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED
 from datetime import timedelta, time
 from odoo.tools.float_utils import float_round
+from .notification_controller import *
 from .sale_order_list_view import *
 import werkzeug
 _logger = logging.getLogger(__name__)
@@ -324,13 +325,9 @@ class AuthSignupHome(Website):
                         user.partner_id.sudo().write(partnerVals)
                         user.partner_id.set_to_pending()
                         res = {"message": "Account Successfully Created", "status_code": 200}
-                        vals = {
-                            "seller_id":user.partner_id.id,
-                            "vendor_message":f"""You are successfully Signed Up""",
-                            "model":"res.partner",
-                            "title":"Seller Signup"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
+                        vendor_message = f"You are successfully Signed Up"
+                        generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
+                                              model="res.partner", title="Seller Signup")
                         email_get = request.env['email.verification'].sudo().search([('email', '=', email)], order='create_date desc', limit=1)
                         email_get.sudo().unlink()
                         return return_Response(res)
@@ -450,13 +447,10 @@ class OdooAPI(http.Controller):
                 }
                 user.sudo().write(userVals)
                 user.partner_id.sudo().write(partnerVals)
-                vals = {
-                    "seller_id": user.partner_id.id,
-                    "vendor_message": "Your Profile Is Successfully Updated",
-                    "model": "res.partner",
-                    "title": "Seller Record Update"
-                }
-                request.env['notification.center'].sudo().create(vals)
+                vendor_message = "Your Profile Is Successfully Updated"
+                generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
+                                      model="res.partner", title="Seller Record Update")
+
                 res = {"message": "Record Successfully Updated", "status_code": 200}
                 return return_Response(res)
             else:
@@ -723,13 +717,9 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         if idList:
-            vals = {
-                'seller_id': request.env.user.partner_id.id,
-                'vendor_message': f"{name} Created Successfully",
-                'model': "product.template",
-                'title': "Product Template"
-            }
-            request.env['notification.center'].sudo().create(vals)
+            vendor_message = f"{name} Created Successfully"
+            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                  model="product.template", title="Product Template")
 
         res = {
             'message': "Product created Successfully",
@@ -1128,14 +1118,9 @@ class OdooAPI(http.Controller):
                     })
                     if object:
                         object.request()
-                        vals = {
-                            "seller_id": request.env.user.partner_id.id,
-                            "vendor_message": f"""Inventory Update Request For {product.name} Sent Successfully""",
-                            "model": "marketplace.stock",
-                            "title": "Requested For Inventory Update"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
-
+                        vendor_message = f"""Inventory Update Request For {product.name} Sent Successfully""",
+                        title = "Requested For Inventory Update"
+                        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="marketplace.stock",title=title)
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
@@ -1306,13 +1291,9 @@ class OdooAPI(http.Controller):
                     #     dict["attribute_line_ids"]= lst
                     resId = record.product_tmpl_id.sudo().write(dict)
                     if resId:
-                        vals = {
-                            'seller_id': request.env.user.partner_id.id,
-                            'vendor_message': f"""{record.name} Updated Successfully""",
-                            'model': "product.template",
-                            'title': "Product Template"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
+                        vendor_message = f"{record.name} Updated Successfully"
+                        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                              model="product.template", title="Product Template")
                         record.product_tmpl_id.reject()
                         record.product_tmpl_id.set_pending()
                 else:
@@ -1358,13 +1339,10 @@ class OdooAPI(http.Controller):
                 user.sudo().write(userVals)
                 # user.partner_id.set_to_pending()
                 res = {"message": "Picking Address Created Successfully", "status_code": 200}
-                vals = {
-                    "seller_id": user.partner_id.id,
-                    "vendor_message": f"""Picking Address Created Successfully""",
-                    "model": "pickup.address",
-                    "title": "Picking Address Create"
-                }
-                request.env['notification.center'].sudo().create(vals)
+                vendor_message = f"Picking Address Created Successfully"
+                generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
+                                      model="pickup.address", title="Picking Address Create")
+
                 return return_Response(res)
         except Exception as e:
             msg = {"message": "Something Went Wrong", "status_code": 400}
@@ -1393,13 +1371,10 @@ class OdooAPI(http.Controller):
                     picking_address.sudo().write(pickingVals)
                     # user.partner_id.set_to_pending()
                     res = {"message": "Picking Address Updated Successfully", "status_code": 200}
-                    vals = {
-                        "seller_id": uid.partner_id.id,
-                        "vendor_message": f"""Picking Address Updated Successfully""",
-                        "model": "pickup.address",
-                        "title": "Picking Address Update"
-                    }
-                    request.env['notification.center'].sudo().create(vals)
+                    vendor_message = "Picking Address Updated Successfully"
+                    generate_notification(seller_id=uid.partner_id.id, vendor_message=vendor_message,
+                                          model="pickup.address", title="Picking Address Update")
+
                     return return_Response(res)
                 else:
                     msg = {"message": "Picking Address Not Found", "status_code": 400}

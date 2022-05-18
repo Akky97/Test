@@ -7,6 +7,19 @@ from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 
 
+def generate_notification(seller_id=False, approve_by=False, vendor_message=False, model=False,
+                          title=False, image_data=False, product_id=False):
+    vals = {"seller_id": seller_id,
+            "approve_by": approve_by,
+            "vendor_message": vendor_message,
+            "model": model,
+            "title": title,
+            "image_data": image_data,
+            "product_id": product_id
+            }
+    request.env['notification.center'].sudo().create(vals)
+
+
 def send_notification(title, message, user, deviceToken, image=None):
     serverToken = request.env['ir.config_parameter'].sudo().search([('key', '=', 'firebase_credentials')],
                                                                    limit=1).value

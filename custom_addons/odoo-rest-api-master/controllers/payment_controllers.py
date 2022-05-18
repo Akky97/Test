@@ -611,18 +611,15 @@ class WebsiteSale(WebsiteSale):
                     check = check_transaction_status(int(jdata.get('transaction_id')),device_name)
                     if check:
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
-                        vals = {
-                            "seller_id": partner.id,
-                            "vendor_message": f"""{order.name} Order Confirmed Successfully""",
-                            "model": "sale.order",
-                            "title": "Sale Order Confirmed"
-                        }
-                        request.env['notification.center'].sudo().create(vals)
+                        vendor_message = f"""{order.name} Order Confirmed Successfully"""
+                        generate_notification(seller_id=partner.id, vendor_message=vendor_message,
+                                              model="sale.order", title="Sale Order Confirmed")
+
                         user = request.env.user
                         tokenObject = request.env['device.token'].sudo()
                         tokens = tokenObject.search([('user_id', '=', user.id)])
                         if tokens:
-                            send_notification(vals['title'], vals['vendor_message'], user, tokens, None)
+                            send_notification("Sale Order Confirmed", vendor_message, user, tokens, None)
                         res = {"message": 'Success', 'status': 200}
                         return return_Response(res)
                     else:
