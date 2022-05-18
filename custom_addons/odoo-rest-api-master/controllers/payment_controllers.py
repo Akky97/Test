@@ -656,7 +656,7 @@ class WebsiteSale(WebsiteSale):
                     'order_id': line.order_id.id,
                     'product_id': line.product_id.id,
                     'seller_id': line.product_id.marketplace_seller_id.id,
-                    'partner_id': line.partner_id.id,
+                    'partner_id': line.order_id.partner_id.id,
                     'reason': jdata.get('reason')
                 }
                 if int(jdata.get('product_uom_qty')) <= (line.qty_delivered - line.return_qty):
