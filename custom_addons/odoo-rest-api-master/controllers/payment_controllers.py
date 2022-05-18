@@ -716,3 +716,37 @@ class WebsiteSale(WebsiteSale):
                             return return_Response_error(msg)
         except Exception as e:
             return error_response(e, e.msg)
+
+    @validate_token
+    @http.route('/api/v1/v/get_return_order/<id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def get_return_order(self, id=None, **params):
+        temp = []
+        try:
+            if not id:
+                msg = {"message": "Seller Id Is Missing In Parameter.", "status_code": 400}
+                return return_Response_error(msg)
+            domain = [('seller_id', '=', int(id))]
+            if "state" in params:
+                domain.append(('state', '=', params.get('state')))
+            return_order = request.env['return.policy'].sudo().search(domain)
+            if return_order:
+                for rec in return_order:
+                    temp.append({
+                        'order_line': rec.order_line.id,
+                        'order_line_name': rec.order_id.name,
+                        'order_id': rec.order_id.id,
+                        'order_name': rec.order_id.name,
+                        'product_id': rec.product_id.id,
+                        'product_name': rec.product_id.name,
+                        'partner_id': rec.partner_id.id,
+                        'partner_name': rec.partner_id.name,
+                        'reason': rec.reason,
+                        'qty': rec.product_uom_qty,
+                        'status': rec.state
+                    })
+        except Exception as e:
+            return error_response(e, e.msg)
+        res = {
+            "record": temp, "count": len(temp), 'status': 200
+        }
+        return return_Response(res)
