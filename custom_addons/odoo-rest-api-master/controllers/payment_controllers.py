@@ -757,10 +757,7 @@ class WebsiteSale(WebsiteSale):
         temp = []
         try:
             domain = [('partner_id', '=', request.env.user.partner_id.id)]
-            if not id:
-                msg = {"message": "Customer Id Is Missing In Parameter.", "status_code": 400}
-                return return_Response_error(msg)
-            else:
+            if id:
                 domain = [('id', '=', int(id))]
             return_order = request.env['return.policy'].sudo().search(domain)
             if return_order:
