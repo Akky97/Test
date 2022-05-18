@@ -27,6 +27,9 @@
                 <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="after">
                     <field name="shipping_Details" readonly="1" force_save="1"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']//tree//field[@name='qty_invoiced']" position="after">
+                    <field name="return_qty" readonly="1" force_save="1"/>
+                </xpath>
             </field>
         </record>
     </data>

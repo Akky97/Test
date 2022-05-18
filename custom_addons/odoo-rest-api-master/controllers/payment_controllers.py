@@ -327,8 +327,39 @@ class WebsiteSale(WebsiteSale):
                 partner = request.env.user.partner_id
                 order_id = request.env['sale.order'].sudo().search([('state', '=', 'draft'), ('partner_id', '=', partner.id), ('website_id', '=', website.id)], order='write_date DESC', limit=1)
                 if jdata.get('delivery_id'):
+                    SaleOrderLine = request.env['sale.order.line']
+                    delivery_lines = request.env['sale.order.line'].sudo().search([('order_id', 'in', order_id.ids), ('is_delivery', '=', True)])
+                    if delivery_lines:
+                        to_delete = delivery_lines.filtered(lambda x: x.qty_invoiced == 0)
+                        if not to_delete:
+                            res = {"message": ('You can not update the shipping costs on an order where it was already invoiced!\n\nThe following delivery lines (product, invoiced quantity and price) have already been processed:\n\n')
+                                + '\n'.join(['- %s: %s x %s' % (
+                                line.product_id.with_context(display_default_code=False).display_name, line.qty_invoiced,
+                                line.price_unit) for line in delivery_lines]), "status": 400}
+                            return return_Response_error(res)
+                        to_delete.unlink()
+
                     delivery_id = request.env['delivery.carrier'].sudo().search([('id', '=', int(jdata.get('delivery_id')))])
-                    order_id.set_delivery_line(delivery_id, delivery_id.fixed_price)
+                    values = {
+                        'order_id': order_id.id,
+                        'name': 'Delivery Charges',
+                        'product_uom_qty': 1,
+                        'product_uom': delivery_id.product_id.uom_id.id,
+                        'product_id': delivery_id.product_id.id,
+                        # 'tax_id': [(6, 0, taxes_ids)],
+                        'is_delivery': True,
+                        'price_unit': delivery_id.product_id.list_price
+                    }
+                    sol = SaleOrderLine.sudo().create(values)
+
+                    # order_id._cart_update(
+                    #     product_id=delivery_id.product_id.id,
+                    #     add_qty=1,
+                    #     set_qty=1,
+                    #     product_custom_attribute_values=None,
+                    #     no_variant_attribute_values=None
+                    # )
+                    # order_id.set_delivery_line(delivery_id, delivery_id.fixed_price)
                     r = order_id.sudo().write({
                         'recompute_delivery_price': False,
                         'delivery_message': delivery_id.fixed_price})
@@ -603,8 +634,88 @@ class WebsiteSale(WebsiteSale):
         # except (SyntaxError, QueryFormatError) as e:
         #     return error_response(e, e.msg)
         except Exception as e:
+            res = {}
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id') and order.state == 'draft':
                     res = refund_payment(jdata.get('transaction_id'), amount=None)
-        return return_Response_error(res)
+            return return_Response_error(res)
 
+    @validate_token
+    @http.route('/api/v1/c/return_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def return_order(self, **params):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        order = request.env['sale.order'].sudo()
+        try:
+            if not jdata.get('order_line') or not jdata.get('reason') or not jdata.get('product_uom_qty'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+            line = request.env['sale.order.line'].sudo().search([('id', '=', int(jdata.get('order_line')))])
+            if line:
+                vals = {
+                    'order_line': line.id,
+                    'order_id': line.order_id.id,
+                    'product_id': line.product_id.id,
+                    'seller_id': line.product_id.marketplace_seller_id.id,
+                    'partner_id': line.product_id.id,
+                    'reason': jdata.get('reason')
+                }
+                if int(jdata.get('product_uom_qty')) <= (line.qty_delivered - line.return_qty):
+                    vals['product_uom_qty'] = int(jdata.get('product_uom_qty'))
+                else:
+                    msg = {"message": "Return Qty Must be less then or equal to the dispatched qty", "status_code": 400}
+                    return return_Response_error(msg)
+                for rec in line.order_id.transaction_ids:
+                    if rec.state == 'done':
+                        vals['payment_intent'] = rec.payment_intent
+                result = request.env['return.policy'].sudo().create(vals)
+                if result:
+                    res = {
+                        "result": 'Return Order Created Successfully', 'status': 200
+                    }
+                    return return_Response(res)
+                else:
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+        except Exception as e:
+            return error_response(e, e.msg)
+
+
+    @validate_token
+    @http.route('/api/v1/v/update_return_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def update_return_order(self, **params):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        try:
+            if not jdata.get('return_id') or not jdata.get('state'):
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+            return_order = request.env['return.policy'].sudo().search([('id', '=', int(jdata.get('return_id')))])
+            if return_order:
+                if jdata.get('state') == 'picking':
+                    return_order.confirm()
+                if jdata.get('state') == 'in-stock':
+                    return_order.update_stock()
+                if jdata.get('state') == 'refund':
+                    res = stripe.PaymentIntent.retrieve(
+                        return_order.payment_intent,
+                    )
+                    if res.status == 'succeeded':
+                        amount = int(return_order.order_line.price_unit) * return_order.product_uom_qty * 100
+                        result = stripe.Refund.create(payment_intent=return_order.payment_intent, amount=amount)
+                        if result.status == 'succeeded':
+                            return_order.refund()
+                            return_order.payment_info = result
+                            res = {
+                                "result": 'Refund Successfully Created', 'status': 200
+                            }
+                            return return_Response(res)
+                        else:
+                            msg = {"message": "Something Went Wrong", "status_code": 400}
+                            return return_Response_error(msg)
+        except Exception as e:
+            return error_response(e, e.msg)

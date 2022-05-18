@@ -1602,3 +1602,23 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         res = {"message": "Status Updated Successfully", "status": 200}
         return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/update_product_qc_status/<line_id>', type='http', auth='public', methods=['POST'], csrf=False,
+                cors='*')
+    def update_product_qc_status(self, line_id=None, **params):
+        try:
+            if not line_id:
+                error = {"message": "Line_id is not present in the request", "status": 400}
+                return return_Response_error(error)
+            else:
+                line = request.env['sale.order.line'].sudo().search([('id', '=', int(line_id))])
+                if line:
+                    line.product_id.sudo().write({'status': 'pending'})
+                else:
+                    error = {"message": "Something Went Wrong", "status": 400}
+                    return return_Response_error(error)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {"message": "Status Updated Successfully", "status": 200}
+        return return_Response(res)

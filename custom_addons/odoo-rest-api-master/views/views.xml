@@ -1,5 +1,67 @@
 <odoo>
-  <data>
+<!--  <data>-->
+    <record id="return_order_form" model="ir.ui.view">
+        <field name="name">return.policy.form</field>
+        <field name="model">return.policy</field>
+        <field name="arch" type="xml">
+            <form string="return">
+                <header>
+                    <button name="confirm" type="object" string="Confirm" attrs="{'invisible':[('state', 'in', ('picked', 'in-stock', 'refund', False))]}" class="btn-primary"/>
+                    <button name="update_stock" type="object" string="Approve" attrs="{'invisible':[('state', 'in', ('draft','in-stock','refund',False))]}" groups="odoo_marketplace.marketplace_officer_group" class="btn-primary"/>
+<!--                    <button name="cancel" type="object" string="Reject" attrs="{'invisible':[('state', 'in', ('draft','cancel', False))]}" groups="odoo_marketplace.marketplace_officer_group"/>-->
+                    <button name="refund" type="object" attrs="{'invisible':[('state', 'in', ('picked', 'refund','draft', False))]}" string="Refund Amount"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,picked,in-stock,refund"/>
+                </header>
 
-  </data>
+                <sheet>
+                    <group>
+                        <field name="order_line" />
+                        <field name="order_id" />
+                        <field name="product_id" />
+                        <field name="seller_id" />
+                        <field name="partner_id" />
+                        <field name="reason" />
+                        <field name="payment_intent" />
+                        <field name="product_uom_qty" />
+
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="return_order_tree_view" model="ir.ui.view">
+			<field name="name">return.policy.tree</field>
+			<field name="model">return.policy</field>
+			<field name="arch" type="xml">
+				<tree string="Return Order" >
+					<field name="order_line" />
+                    <field name="order_id" />
+                    <field name="product_id" />
+                    <field name="seller_id" />
+                    <field name="partner_id" />
+<!--                    <field name="reason" />-->
+<!--                    <field name="payment_intent" />-->
+                    <field name="product_uom_qty" />
+                    <field name="state" />
+				</tree>
+			</field>
+		</record>
+
+
+    <record id="return_order" model="ir.actions.act_window">
+        <field name="name">Return Order</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">return.policy</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Return Order's Are Available
+            </p>
+        </field>
+    </record>
+<menuitem id="return_order_id" name="Return Order" action="return_order"  parent="website.menu_website_global_configuration" groups="base.group_user"/>
+
+<!--  </data>-->
 </odoo>
