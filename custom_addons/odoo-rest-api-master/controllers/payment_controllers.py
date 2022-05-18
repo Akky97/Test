@@ -656,7 +656,7 @@ class WebsiteSale(WebsiteSale):
                     'order_id': line.order_id.id,
                     'product_id': line.product_id.id,
                     'seller_id': line.product_id.marketplace_seller_id.id,
-                    'partner_id': line.product_id.id,
+                    'partner_id': line.partner_id.id,
                     'reason': jdata.get('reason')
                 }
                 if int(jdata.get('product_uom_qty')) <= (line.qty_delivered - line.return_qty):
@@ -676,7 +676,7 @@ class WebsiteSale(WebsiteSale):
                 else:
                     msg = {"message": "Something Went Wrong.", "status_code": 400}
                     return return_Response_error(msg)
-        except Exception as e:
+        except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
 
@@ -714,8 +714,9 @@ class WebsiteSale(WebsiteSale):
                         else:
                             msg = {"message": "Something Went Wrong", "status_code": 400}
                             return return_Response_error(msg)
-        except Exception as e:
+        except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
+
 
     @validate_token
     @http.route('/api/v1/v/get_return_order/<id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
@@ -744,7 +745,7 @@ class WebsiteSale(WebsiteSale):
                         'qty': rec.product_uom_qty,
                         'status': rec.state
                     })
-        except Exception as e:
+        except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
             "record": temp, "count": len(temp), 'status': 200
@@ -775,7 +776,7 @@ class WebsiteSale(WebsiteSale):
                         'qty': rec.product_uom_qty,
                         'status': rec.state
                     })
-        except Exception as e:
+        except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
             "record": temp, "count": len(temp), 'status': 200
