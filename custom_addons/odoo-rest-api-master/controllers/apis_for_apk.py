@@ -9,6 +9,7 @@ import psycopg2
 
 def get_product_data(records):
     temp = []
+    s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
     base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
     website = request.env['website'].sudo().browse(1)
     warehouse = request.env['stock.warehouse'].sudo().search(
@@ -44,7 +45,7 @@ def get_product_data(records):
             'id': rec.id,
             'name': rec.name + variant_name,
             'image': base_image.get(
-                'image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+                'image_url') if 'image_url' in base_image else s3_image.value,
             'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
             "stock": rec.with_context(warehouse=warehouse.id).virtual_available if rec.with_context(
                 warehouse=warehouse.id).virtual_available > 0 else 0.0,
@@ -87,7 +88,7 @@ def get_sale_order_line(order_id=None, order_line_id=None):
     saleOrderLine = []
     count = 0
     base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-
+    s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
     solObject = request.env['sale.order.line'].sudo()
     if order_id:
         solObject = solObject.search([('order_id','=',order_id)])
@@ -119,7 +120,7 @@ def get_sale_order_line(order_id=None, order_line_id=None):
                 'price_total': rec.price_total if rec.price_total != False else 0.0,
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
                 # "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
-                'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+                'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 # 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
             })
@@ -219,6 +220,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         try:
+            s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
@@ -248,7 +250,7 @@ class WebsiteSale(WebsiteSale):
 
                     temp.append({"id": i.id, "name": i.name,
                                  # 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                 'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+                                 'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                                  'description': i.description if i.description != False else '',
                                  # "stock": i.qty_available,

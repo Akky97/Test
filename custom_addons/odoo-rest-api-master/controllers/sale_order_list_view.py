@@ -34,6 +34,7 @@ def check_product_availablity(order, product_id, qty, temp):
 
 
 def get_sale_order_line(order_id=None, order_line_id = None):
+    s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
     saleOrderLine = []
     count = 0
     solObject = request.env['sale.order.line'].sudo()
@@ -129,7 +130,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else 0.0,
                 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else 0.0,
                 # "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
-                'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+                'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                 "sm_pictures": image,
                 "featured": rec.product_id.website_ribbon_id.html if rec.product_id.website_ribbon_id.html != False else '',
                 "seller_ids": sellers,
@@ -651,6 +652,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         try:
+            s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             website = request.env['website'].sudo().browse(1)
             warehouse = request.env['stock.warehouse'].sudo().search(
@@ -730,8 +732,8 @@ class WebsiteSale(WebsiteSale):
                         sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
                     temp.append({"id": i.id, "name": i.name,
-                                 'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
-                                 'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                                 'url': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
+                                 'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                                  'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
                                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                                  'description': i.description if i.description != False else '',
@@ -760,8 +762,8 @@ class WebsiteSale(WebsiteSale):
                                  "additional_info": i.additional_info if i.additional_info else '',
                                  "shipping_return": i.shipping_return if i.shipping_return else '',
                                  "pictures": [{
-                                    'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
-                                    'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" }]
+                                    'url': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
+                                    'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value}]
                                 })
 
         except (SyntaxError, QueryFormatError) as e:

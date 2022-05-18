@@ -85,6 +85,7 @@ class VariantApprovalWizard(models.TransientModel):
     _inherit = 'variant.approval.wizard'
 
     def approve_selected_variant(self):
+        s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
         product_id = self.product_id
         product_id.sudo().write({"status": "approved", "sale_ok": True})
         product_id.check_state_send_mail()
@@ -99,7 +100,7 @@ class VariantApprovalWizard(models.TransientModel):
                     'image_name': j.image_name
                 }
         img = base_image.get(
-            'image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
+            'image_url') if 'image_url' in base_image else s3_image.value
         vals = {
             "product_id": product_id.id,
             "seller_id": product_id.marketplace_seller_id.id,

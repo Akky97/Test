@@ -71,12 +71,13 @@ class OdooAPI(http.Controller):
         try:
             record_count = request.env[model].sudo().search_count(domain)
             records = request.env[model].sudo().search(domain, limit=limit, offset=offset, order='id DESC')
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'notification_image')], limit=1)
             temp = []
             for i in records:
                 temp.append({"id": i.id,
                              "product_id": i.product_id.id if i.product_id.id != False else '',
                              "product_name": i.product_id.name if i.product_id.name != False else '',
-                             'image': i.image_data if i.image_data != False else 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1652177979bell.png',
+                             'image': i.image_data if i.image_data != False else base_url.value,
                              'seller_id': i.seller_id.id, 'seller_name': i.seller_id.name,
                              'vendor_message': i.vendor_message if i.vendor_message != False else '',
                              'approve_by': i.approve_by.id if i.approve_by.id != False else '',
@@ -110,13 +111,14 @@ class OdooAPI(http.Controller):
             return error_response(e, msg)
         try:
             record = request.env[model].sudo().search([('id', '=', int(id))])
+            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'notification_image')], limit=1)
             vals = {}
             if record:
                 vals = {
                     "id": record.id,
                     "product_id": record.product_id.id if record.product_id.id != False else '',
                     "product_name": record.product_id.name if record.product_id.name != False else '',
-                    'image': record.image_data if record.image_data != False else 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1652177979bell.png',
+                    'image': record.image_data if record.image_data != False else base_url.value,
                     'seller_id': record.seller_id.id,
                     'seller_name': record.seller_id.name,
                     'vendor_message': record.vendor_message if record.vendor_message != False else '',

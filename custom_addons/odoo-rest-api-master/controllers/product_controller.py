@@ -47,6 +47,7 @@ def get_rating_permission(partner_id,product):
 
 def get_product_details(warehouse, records):
     base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+    s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
     temp = []
     for i in records:
         image = []
@@ -129,7 +130,6 @@ def get_product_details(warehouse, records):
 
         # End here
 
-
         for n in i.seller_ids:
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
@@ -171,7 +171,6 @@ def get_product_details(warehouse, records):
                             'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" }]
                      })
     return temp
-
 
 
 class OdooAPI(http.Controller):

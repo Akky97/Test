@@ -9,5 +9,13 @@
             <field name="key">firebase_credentials</field>
             <field name="value">AAAA6QPLDgc:APA91bF8VS2yicpLHHwoSMbxylS-CDJ8sqssGFe8--v2A0eLp9VLi3isSU1KaJbjdVMBJ75X6HXeZ9q2VzczLBqsXYHfT-NocEZbGtGQhijgSMqYp8OYyUHlrmLE8Ii90vzZuiW3reGU</field>
         </record>
+        <record id="notification_image" model="ir.config_parameter">
+            <field name="key">notification_image</field>
+            <field name="value">https://pandomall.s3.ap-southeast-1.amazonaws.com/1652177979bell.png</field>
+        </record>
+        <record id="product_image" model="ir.config_parameter">
+            <field name="key">product_image</field>
+            <field name="value">https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019</field>
+        </record>
     </data>
 </odoo>

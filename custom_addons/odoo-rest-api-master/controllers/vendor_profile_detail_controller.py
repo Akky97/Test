@@ -86,6 +86,7 @@ def get_rating_avg(product):
 
 def get_product_details(website, warehouse, base_url,records):
     temp = []
+    s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
     for i in records:
         image = []
         category = []
@@ -165,8 +166,8 @@ def get_product_details(website, warehouse, base_url,records):
             sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
 
         temp.append({"id": i.id, "name": i.product_tmpl_id.name+variant_name,
-                     'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
-                     'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                     'url': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
+                     'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                      'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
                      'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                      'description': i.description if i.description != False else '',
@@ -202,8 +203,8 @@ def get_product_details(website, warehouse, base_url,records):
                      "country_name": i.product_tmpl_id.country_id.name if i.product_tmpl_id.country_id.name else '',
                      "pictures": [
                          {
-                            'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
-                            'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" }]
+                            'url': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
+                            'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value}]
                      })
     return temp
 
@@ -922,6 +923,7 @@ class OdooAPI(http.Controller):
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         warehouse = request.env['stock.warehouse'].sudo().search(
             [('company_id', '=', website.company_id.id)], limit=1)
+        s3_image = request.env['ir.config_parameter'].sudo().search([('key', '=', 'product_image')], limit=1)
         try:
             temp=[]
             for rec in records:
@@ -954,7 +956,7 @@ class OdooAPI(http.Controller):
                     "date": str(rec.order_id.date_order),
                     "create_date": str(rec.order_id.create_date),
                     "quantity": rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
-                    "image": base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
+                    "image": base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                     "image_name": base_image.get('image_name') if 'image_name' in base_image else "",
                     "multi_image": image,
                     "stock": rec.product_id.with_context(warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
