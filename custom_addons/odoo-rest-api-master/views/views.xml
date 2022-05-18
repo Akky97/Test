@@ -15,14 +15,14 @@
 
                 <sheet>
                     <group>
-                        <field name="order_line" readonly="1"/>
-                        <field name="order_id" readonly="1"/>
-                        <field name="product_id" readonly="1"/>
-                        <field name="seller_id" readonly="1"/>
-                        <field name="partner_id" readonly="1"/>
-                        <field name="reason" readonly="1"/>
-                        <field name="payment_intent" readonly="1"/>
-                        <field name="product_uom_qty" readonly="1"/>
+                        <field name="order_line" readonly="1" force_save="1"/>
+                        <field name="order_id" readonly="1" force_save="1"/>
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="seller_id" readonly="1" force_save="1"/>
+                        <field name="partner_id" readonly="1" force_save="1"/>
+                        <field name="reason" readonly="1" force_save="1"/>
+                        <field name="payment_intent" readonly="1" force_save="1"/>
+                        <field name="product_uom_qty" readonly="1" force_save="1"/>
                     </group>
 
                 </sheet>
