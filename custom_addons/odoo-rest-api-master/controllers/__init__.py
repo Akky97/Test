@@ -18,3 +18,4 @@ from . import image_upload_in_s3
 from . import ticket_creation
 from . import rating_controller
 from . import notification_controller
+from . import mass_mailing

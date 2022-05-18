@@ -64,7 +64,6 @@ class ReturnOrder(models.Model):
             self.state = 'refund'
             self.order_line.is_return = True
 
-
     @api.onchange('order_line')
     def update_data(self):
         if self.order_line:
@@ -72,7 +71,6 @@ class ReturnOrder(models.Model):
             self.product_id = self.order_line.product_id.id
             self.seller_id = self.order_line.product_id.marketplace_seller_id.id
             self.partner_id = self.order_line.product_id.id
-
 
 
 class SaleOrderLine(models.Model):
@@ -89,6 +87,7 @@ class SaleOrderLine(models.Model):
 
     return_qty = fields.Integer(string='Return Qty')
     is_return = fields.Boolean(string="Is Return", default=False)
+
     @api.depends('product_id')
     def _compute_is_stockable(self):
         for so_line in self:
