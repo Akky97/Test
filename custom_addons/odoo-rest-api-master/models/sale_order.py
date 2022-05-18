@@ -26,6 +26,7 @@ def next_by_code(self, sequence_code, sequence_date=None, company=False):
 
 class ReturnOrder(models.Model):
     _name = "return.policy"
+    _description = "Return Policy"
 
     product_id = fields.Many2one('product.product', string='Product')
     order_id = fields.Many2one('sale.order', string='Sale Order')

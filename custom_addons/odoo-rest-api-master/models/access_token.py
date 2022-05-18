@@ -18,6 +18,7 @@ def nonce(length=40, prefix='access_token'):
 
 class APIAccessToken(models.Model):
     _name = 'api.access_token'
+    _description = "Access Token"
 
     token = fields.Char('Access Token', required=True)
     user_id = fields.Many2one('res.users', string='User', required=True)
@@ -100,6 +101,7 @@ class Users(models.Model):
 
 class PickupAddress(models.Model):
     _name = 'pickup.address'
+    _description = "Pickup Address"
 
     user_id = fields.Many2one('res.users', string='User Reference')
     country_id = fields.Many2one('res.country', string="Country")
@@ -111,6 +113,7 @@ class PickupAddress(models.Model):
 
 class DeviceToken(models.Model):
     _name = 'device.token'
+    _description = "Device Token"
 
     user_id = fields.Many2one('res.users', string='User')
     token = fields.Char('Token')

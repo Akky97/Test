@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class NotificationCenter(models.Model):
     _name = "notification.center"
+    _description = "Notification Center"
 
     product_id = fields.Many2one('product.template', string='Product')
     seller_id = fields.Many2one("res.partner", string="Seller")

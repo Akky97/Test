@@ -19,7 +19,8 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'website_sale', 'project', 'sale_project', 'payment', 'odoo_marketplace', 'sale'],
+    'depends': ['base', 'product', 'website_sale', 'project', 'sale_project', 'payment',
+                'odoo_marketplace', 'sale', 'mass_mailing'],
 
     # always loaded
     'data': [
