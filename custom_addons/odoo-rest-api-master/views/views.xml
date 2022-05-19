@@ -62,5 +62,19 @@
     </record>
 <menuitem id="return_order_id" name="Return Order" action="return_order"  parent="website.menu_website_global_configuration" groups="base.group_user"/>
 
+
+<!--Added a boolean field in Rating view -->
+    <record id="product_rating_inherit_view" model="ir.ui.view">
+        <field name="model">rating.rating</field>
+        <field name="inherit_id" ref="rating.rating_rating_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='feedback']" position="after">
+                <field name="show_on_about_us" />
+            </xpath>
+        </field>
+    </record>
+    <menuitem id="rating_view" name="Product Rating" action="rating.rating_rating_view"  parent="website.menu_website_global_configuration" groups="base.group_user"/>
+<!--End here-->
+    
 <!--  </data>-->
 </odoo>

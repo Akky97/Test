@@ -20,7 +20,7 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'product', 'website_sale', 'project', 'sale_project', 'payment',
-                'odoo_marketplace', 'sale', 'mass_mailing'],
+                'odoo_marketplace', 'sale', 'mass_mailing', 'rating'],
 
     # always loaded
     'data': [

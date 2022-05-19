@@ -40,6 +40,11 @@ class ReturnOrder(models.Model):
                                              ('refund', 'Refund'), ('cancel', 'Cancel')], string='Return Status', default='draft')
     product_uom_qty = fields.Integer(string='Product Qty')
 
+    def cancel(self):
+        self.ensure_one()
+        if self.state:
+            self.state = 'cancel'
+
     def confirm(self):
         self.ensure_one()
         if self.state:

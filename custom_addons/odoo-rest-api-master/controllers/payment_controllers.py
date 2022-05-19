@@ -695,6 +695,8 @@ class WebsiteSale(WebsiteSale):
             if return_order:
                 if jdata.get('state') == 'picking':
                     return_order.confirm()
+                if jdata.get('state') == 'cancel':
+                    return_order.cancel()
                 if jdata.get('state') == 'in-stock':
                     return_order.update_stock()
                 if jdata.get('state') == 'refund':
@@ -716,7 +718,10 @@ class WebsiteSale(WebsiteSale):
                             return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-
+        res = {
+            "result": 'Success', 'status': 200
+        }
+        return return_Response(res)
 
     @validate_token
     @http.route(['/api/v1/v/get_return_order', '/api/v1/v/get_return_order/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
