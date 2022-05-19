@@ -427,7 +427,14 @@ class SaleOrderController(http.Controller):
             if not partner_id:
                 error = {"message": "Partner id is not present in the request", "status": 400}
                 return return_Response_error(error)
-            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))])
+            limit = 0
+            offset = 0
+            if "page" in params and params.get('page'):
+                limit = 10
+                page = int(params["page"])
+                offset = (page - 1) * 10
+            record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id))])
+            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))], order='id desc', limit=limit, offset=offset)
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
@@ -461,6 +468,7 @@ class SaleOrderController(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "total_count":record_count,
             "count": len(sale_order_data),
             "result": sale_order_data
         }
