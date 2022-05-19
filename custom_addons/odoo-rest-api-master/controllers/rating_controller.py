@@ -164,7 +164,7 @@ class PortalChatter(PortalChatter):
                 cors='*')
     def product_rating_display(self, id=None, **params):
         try:
-            domain = []
+            domain = [('show_on_about_us', '=', True)]
             if id:
                 domain = [('rating_product_id', '=', int(id))]
             limit = 0
