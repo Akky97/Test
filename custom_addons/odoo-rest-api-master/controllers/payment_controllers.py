@@ -640,6 +640,11 @@ class WebsiteSale(WebsiteSale):
             if not jdata.get('order_line') or not jdata.get('reason') or not jdata.get('product_uom_qty'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
+            res = request.env['return.policy'].sudo().search([('order_line', '=', int(jdata.get('order_line'))), ('state', 'in', ['draft', 'picked', 'in-stock'])], limit=1)
+            if res:
+                msg = {"message": f"One Return Order Is being Process and It's in {res.state} State", "status_code": 400}
+                return return_Response_error(msg)
+
             line = request.env['sale.order.line'].sudo().search([('id', '=', int(jdata.get('order_line')))])
             if line:
                 vals = {
