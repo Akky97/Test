@@ -726,9 +726,16 @@ class WebsiteSale(WebsiteSale):
             domain = [('seller_id', '=', request.env.user.partner_id.id)]
             if id:
                 domain.append(('id', '=', int(id)))
-            if "state" in params:
+            if "state" in params and params.get('state'):
                 domain.append(('state', '=', params.get('state')))
-            return_order = request.env['return.policy'].sudo().search(domain)
+            limit = 0
+            offset = 0
+            if "page" in params and params.get('page'):
+                limit = 5
+                page = int(params["page"])
+                offset = (page - 1) * 5
+            record_count = request.env['return.policy'].sudo().search_count(domain)
+            return_order = request.env['return.policy'].sudo().search(domain, order='id DESC', limit=limit, offset=offset)
             if return_order:
                 for rec in return_order:
                     temp.append({
@@ -747,19 +754,27 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "total_count": record_count,
             "record": temp, "count": len(temp), 'status': 200
         }
         return return_Response(res)
 
     @validate_token
-    @http.route(['/api/v1/c/get_return_order','/api/v1/c/get_return_order/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route(['/api/v1/c/get_return_order', '/api/v1/c/get_return_order/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_own_return_order(self, id=None, **params):
         temp = []
         try:
             domain = [('partner_id', '=', request.env.user.partner_id.id)]
             if id:
                 domain = [('id', '=', int(id))]
-            return_order = request.env['return.policy'].sudo().search(domain)
+            limit = 0
+            offset = 0
+            if "page" in params and params.get('page'):
+                limit = 5
+                page = int(params["page"])
+                offset = (page - 1) * 5
+            record_count = request.env['return.policy'].sudo().search_count(domain)
+            return_order = request.env['return.policy'].sudo().search(domain, order='id DESC', limit=limit, offset=offset)
             if return_order:
                 for rec in return_order:
                     temp.append({
@@ -778,6 +793,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "total_count": record_count,
             "record": temp, "count": len(temp), 'status': 200
         }
         return return_Response(res)
