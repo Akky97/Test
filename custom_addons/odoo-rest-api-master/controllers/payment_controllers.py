@@ -192,7 +192,7 @@ def updatePriceList(pricelist, order):
         values = {'pricelist_id': pricelist}
         order.write(values)
         for line in order.order_line:
-            if line.exists():
+            if line.exists() and not line.is_delivery:
                 order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
 
 
@@ -351,15 +351,6 @@ class WebsiteSale(WebsiteSale):
                         'price_unit': delivery_id.product_id.list_price
                     }
                     sol = SaleOrderLine.sudo().create(values)
-
-                    # order_id._cart_update(
-                    #     product_id=delivery_id.product_id.id,
-                    #     add_qty=1,
-                    #     set_qty=1,
-                    #     product_custom_attribute_values=None,
-                    #     no_variant_attribute_values=None
-                    # )
-                    # order_id.set_delivery_line(delivery_id, delivery_id.fixed_price)
                     r = order_id.sudo().write({
                         'recompute_delivery_price': False,
                         'delivery_message': delivery_id.fixed_price})
