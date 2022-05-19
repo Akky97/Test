@@ -186,12 +186,12 @@ class OdooAPI(http.Controller):
         if "country_id" in params and params.get('country_id'):
             domain.append(('country_id', '=', int(params.get('country_id'))))
 
-        if "query" in params:
+        if "query" in params and params.get('query'):
             query = params["query"]
         else:
             query = "{*}"
         search = ''
-        if "orderBy" in params:
+        if "orderBy" in params and params.get('orderBy'):
             orders = params["orderBy"]
             if orders == 'rating':
                 search = 'rating_count DESC'
@@ -204,7 +204,7 @@ class OdooAPI(http.Controller):
                 domain.append(('website_ribbon_id.html', '=', 'Sale'))
         limit = 0
         offset = 0
-        if "page" in params:
+        if "page" in params and params.get('page'):
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
@@ -263,7 +263,7 @@ class OdooAPI(http.Controller):
             records = request.env[model].sudo().search([('id', '=', int(product_id)), ('is_product_publish', '=', True), ('is_published', '=', True), ('type', '=', 'product'), (
                 'marketplace_status', 'in', ['approved'])])
             rating_permission = False
-            if 'partner_id' in params:
+            if 'partner_id' in params and params.get('partner_id'):
                 partner_id = int(params['partner_id'])
                 rating_permission = get_rating_permission(partner_id, records)
             if not records:
@@ -400,7 +400,7 @@ class OdooAPI(http.Controller):
             return error_response(e, msg)
 
         search = ''
-        if "orderBy" in params:
+        if "orderBy" in params and params.get('orderBy'):
             orders = params["orderBy"]
             if orders == 'rating':
                 pass
@@ -410,12 +410,12 @@ class OdooAPI(http.Controller):
                 search = 'sale_count_pando DESC'
         limit = 0
         offset = 0
-        if "page" in params:
+        if "page" in params and params.get('page'):
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
 
-        if "search" in params:
+        if "search" in params and params.get('search'):
             search_data = params["search"]
             domain.append(('name', 'ilike', search_data))
 
@@ -576,19 +576,19 @@ class OdooAPI(http.Controller):
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
-        if "query" in params:
+        if "query" in params and params.get('query'):
             query = params["query"]
         else:
             query = "{*}"
-        if "order" in params:
+        if "order" in params and params.get('order'):
             orders = params["order"]
         else:
             orders = ""
-        if "limit" in params:
+        if "limit" in params and params.get('limit'):
             limit = int(params["limit"])
         else:
             limit = ""
-        if "offset" in params:
+        if "offset" in params and params.get('offset'):
             offset = int(params["offset"])
         else:
             offset = ""
@@ -684,7 +684,7 @@ class OdooAPI(http.Controller):
         try:
             domain = [('is_product_publish', '=', True), ('is_published', '=', True), ('type', '=', 'product'), ('marketplace_status', 'in', ['approved'])]
             categ_id = []
-            if 'search' in params:
+            if 'search' in params and params.get('search'):
                 model = 'product.public.category'
                 try:
                     categ_id = request.env[model].sudo().search([('name', 'ilike', params['search'])]).ids

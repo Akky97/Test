@@ -719,14 +719,13 @@ class WebsiteSale(WebsiteSale):
 
 
     @validate_token
-    @http.route('/api/v1/v/get_return_order/<id>', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route(['/api/v1/v/get_return_order', '/api/v1/v/get_return_order/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def get_return_order(self, id=None, **params):
         temp = []
         try:
-            if not id:
-                msg = {"message": "Seller Id Is Missing In Parameter.", "status_code": 400}
-                return return_Response_error(msg)
-            domain = [('seller_id', '=', int(id))]
+            domain = [('seller_id', '=', request.env.user.partner_id.id)]
+            if id:
+                domain.append(('id', '=', int(id)))
             if "state" in params:
                 domain.append(('state', '=', params.get('state')))
             return_order = request.env['return.policy'].sudo().search(domain)

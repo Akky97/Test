@@ -740,10 +740,10 @@ class OdooAPI(http.Controller):
             return error_response(e, msg)
         search = ''
 
-        if "search" in params:
+        if "search" in params and params.get('search'):
             domain.append(('name', 'ilike', params['search']))
 
-        if "orderBy" in params:
+        if "orderBy" in params and params.get('orderBy'):
             orders = params["orderBy"]
             if orders == 'rating':
                 pass
@@ -752,13 +752,13 @@ class OdooAPI(http.Controller):
             elif orders == 'featured':
                 search = 'sale_count_pando DESC'
 
-        if "status" in params:
+        if "status" in params and params.get('status'):
             domain.append(('marketplace_status', 'in', [params['status']]))
 
 
         limit = 0
         offset = 0
-        if "page" in params:
+        if "page" in params and params.get('page'):
             limit = 10
             page = int(params["page"])
             offset = (page - 1) * 10
@@ -880,13 +880,13 @@ class OdooAPI(http.Controller):
 
         limit = 0
         offset = 0
-        if "search" in params:
+        if "search" in params and params.get('search'):
             domain.append(('name', 'ilike', params['search']))
-        if "page" in params:
+        if "page" in params and params.get('page'):
             limit = 10
             page = int(params["page"])
             offset = (page - 1) * 10
-        if "status" in params:
+        if "status" in params and params.get('status'):
             # domain.append(('marketplace_state', 'in', [params['status']]))
             domain.append(('shipping_Details', 'in', [params['status']]))
         try:
@@ -1140,11 +1140,11 @@ class OdooAPI(http.Controller):
         try:
             domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
             model = 'marketplace.stock'
-            if "status" in kw:
+            if "status" in kw and kw.get('status'):
                 domain.append(('state','in',[kw.get('status')]))
             limit = 0
             offset = 0
-            if "page" in kw:
+            if "page" in kw and kw.get('page'):
                 limit = 10
                 page = int(kw["page"])
                 offset = (page - 1) * 10

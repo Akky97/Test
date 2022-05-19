@@ -34,8 +34,8 @@ class ReturnOrder(models.Model):
     seller_id = fields.Many2one("res.partner", string="Seller")
     partner_id = fields.Many2one("res.partner", string="Customer")
     reason = fields.Text(String="Reason")
-    payment_info = fields.Text(String="Reason")
-    payment_intent = fields.Char(String="Reason")
+    payment_info = fields.Text(String="Payment Intent")
+    payment_intent = fields.Char(String="Payment Data")
     state = fields.Selection([('draft', 'Draft'), ('picked', 'Picked'), ('in-stock', 'In-Stock'),
                                              ('refund', 'Refund'), ('cancel', 'Cancel')], string='Return Status', default='draft')
     product_uom_qty = fields.Integer(string='Product Qty')
@@ -71,7 +71,7 @@ class ReturnOrder(models.Model):
             self.order_id = self.order_line.order_id.id
             self.product_id = self.order_line.product_id.id
             self.seller_id = self.order_line.product_id.marketplace_seller_id.id
-            self.partner_id = self.order_line.product_id.id
+            self.partner_id = self.order_line.order_id.partner_id.id
 
 
 class SaleOrderLine(models.Model):
