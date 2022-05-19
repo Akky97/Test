@@ -160,14 +160,21 @@ class PortalChatter(PortalChatter):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
-    @http.route('/api/v1/c/product.rating.display/<id>', type='http', auth='public', methods=['POST'], csrf=False,
+    @http.route(['/api/v1/c/product.rating.display', '/api/v1/c/product.rating.display/<id>'], type='http', auth='public', methods=['POST'], csrf=False,
                 cors='*')
     def product_rating_display(self, id=None, **params):
         try:
-            if not id:
-                error = {"message": "id is not present in the request", "status": 400}
-                return return_Response_error(error)
-            rating = request.env['rating.rating'].sudo().search([('rating_product_id','=',int(id))], order='id desc')
+            domain = []
+            if id:
+                domain = [('rating_product_id', '=', int(id))]
+            limit = 0
+            offset = 0
+            if "page" in params and params.get('page'):
+                limit = 10
+                page = int(params["page"])
+                offset = (page - 1) * 10
+            rating_count = request.env['rating.rating'].sudo().search_count(domain)
+            rating = request.env['rating.rating'].sudo().search(domain, order='id desc', limit=limit, offset=offset)
             temp = []
             res_id = request.env['ir.attachment'].sudo()
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -176,13 +183,13 @@ class PortalChatter(PortalChatter):
                 res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                                ('res_field', '=', 'image_1920'),
                                                ('res_id', 'in', [rec.partner_id.id])])
-                # res_id.sudo().write({"public": True})
                 vals = {
                     'partnerId': rec.partner_id.id,
                     'partnerName': rec.partner_id.name,
                     'rating': rec.rating,
                     'rating_text': rec.rating_text,
-                    'feedback': rec.feedback
+                    'feedback': rec.feedback,
+                    'show_on_about_us': rec.show_on_about_us
                 }
                 if res_id:
                     vals['image'] = base_url.value + '/web/image/' + str(res_id.id)
@@ -191,6 +198,7 @@ class PortalChatter(PortalChatter):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "total_count": rating_count,
             'count': len(temp),
             'ratingList': temp,
             }
