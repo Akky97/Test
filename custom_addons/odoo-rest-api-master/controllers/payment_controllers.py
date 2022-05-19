@@ -739,6 +739,7 @@ class WebsiteSale(WebsiteSale):
             if return_order:
                 for rec in return_order:
                     temp.append({
+                        'id': rec.id,
                         'order_line': rec.order_line.id,
                         'order_line_name': rec.order_id.name,
                         'order_id': rec.order_id.id,
@@ -778,6 +779,7 @@ class WebsiteSale(WebsiteSale):
             if return_order:
                 for rec in return_order:
                     temp.append({
+                        'id': rec.id,
                         'order_line': rec.order_line.id,
                         'order_line_name': rec.order_id.name,
                         'order_id': rec.order_id.id,
