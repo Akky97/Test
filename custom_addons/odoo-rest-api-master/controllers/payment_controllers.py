@@ -742,7 +742,7 @@ class WebsiteSale(WebsiteSale):
                     temp.append({
                         'id': rec.id,
                         'order_line': rec.order_line.id,
-                        'order_line_name': rec.order_id.name,
+                        'order_line_name': rec.order_line.name,
                         'order_id': rec.order_id.id,
                         'order_name': rec.order_id.name,
                         'product_id': rec.product_id.id,
@@ -782,7 +782,7 @@ class WebsiteSale(WebsiteSale):
                     temp.append({
                         'id': rec.id,
                         'order_line': rec.order_line.id,
-                        'order_line_name': rec.order_id.name,
+                        'order_line_name': rec.order_line.name,
                         'order_id': rec.order_id.id,
                         'order_name': rec.order_id.name,
                         'product_id': rec.product_id.id,

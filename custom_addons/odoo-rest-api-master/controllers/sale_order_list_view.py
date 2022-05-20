@@ -155,7 +155,8 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'categ_name':rec.product_id.categ_id.name if rec.product_id.categ_id.name != False else '',
                 "additional_info": rec.product_id.additional_info if rec.product_id.additional_info else '',
                 "shipping_return": rec.product_id.shipping_return if rec.product_id.shipping_return else '',
-                "shipping_status": rec.shipping_Details if rec.shipping_Details else ''
+                "shipping_status": rec.shipping_Details if rec.shipping_Details else '',
+                "retunr_state": rec.return_state if rec.return_state else ''
             })
             count += rec.product_uom_qty
         request.session['count'] = count
@@ -429,12 +430,21 @@ class SaleOrderController(http.Controller):
                 return return_Response_error(error)
             limit = 0
             offset = 0
+            rec = False
+            if "search" in params and params.get('search'):
+                rec = request.env['sale.order.line'].sudo().search(['|',('order_id.name', '=', params.get('search')), ('name', 'ilike', params.get('search'))]).order_id.ids
             if "page" in params and params.get('page'):
                 limit = 10
                 page = int(params["page"])
                 offset = (page - 1) * 10
-            record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id))])
-            records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))], order='id desc', limit=limit, offset=offset)
+            if rec:
+                record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id)), ('id', 'in', rec)])
+                records = request.env[model].sudo().search([('partner_id', '=', int(partner_id)), ('id', 'in', rec)], order='id desc', limit=limit, offset=offset)
+            else:
+                record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id))])
+                records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))], order='id desc', limit=limit, offset=offset)
+
+
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)

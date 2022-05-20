@@ -44,16 +44,19 @@ class ReturnOrder(models.Model):
         self.ensure_one()
         if self.state:
             self.state = 'cancel'
+            self.order_line.return_state = 'cancel'
 
     def confirm(self):
         self.ensure_one()
         if self.state:
             self.state = 'picked'
+            self.order_line.return_state = 'picked'
 
     def update_stock(self):
         self.ensure_one()
         if self.state:
             self.state = 'in-stock'
+            self.order_line.return_state = 'in-stock'
             location_id = self.order_id.warehouse_id.lot_stock_id.id
             stockQuant = self.env['stock.quant'].sudo().search([('product_id', '=', self.product_id.id), ('location_id', '=', location_id)])
             for rec in stockQuant:
@@ -69,6 +72,7 @@ class ReturnOrder(models.Model):
         if self.state:
             self.state = 'refund'
             self.order_line.is_return = True
+            self.order_line.return_state = 'refund'
 
     @api.onchange('order_line')
     def update_data(self):
