@@ -90,10 +90,11 @@ class SaleOrderLine(models.Model):
                                   store=True, compute_sudo=True,
                                   help="Sales Order item should generate a task and/or a project, depending "
                                        "on the product settings.")
-    shipping_Details = fields.Selection([('draft','Draft'), ('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
-                                         ('shipped', 'Shipped'),('delivered', 'Delivered'), ('cancel', 'Cancel')], string='Shipping Status')
-    return_state = fields.Selection([('draft','Draft'), ('picked', 'Picked'), ('in-stock', 'In-Stock'),
-                                             ('refund', 'Refund'), ('cancel', 'Cancel')], string='Return Status')
+    shipping_Details = fields.Selection([('draft', 'Draft'), ('ordered', 'Ordered'), ('in_transit', 'In-Transit'),
+                                         ('shipped', 'Shipped'), ('delivered', 'Delivered'), ('cancel', 'Cancel')],
+                                        string='Shipping Status')
+    return_state = fields.Selection([('draft', 'Draft'), ('picked', 'Picked'), ('in-stock', 'In-Stock'),
+                                     ('refund', 'Refund'), ('cancel', 'Cancel')], string='Return Status')
 
     return_qty = fields.Integer(string='Return Qty')
     is_return = fields.Boolean(string="Is Return", default=False)
