@@ -208,6 +208,10 @@ class OdooAPI(http.Controller):
             limit = 12
             page = int(params["page"])
             offset = (page - 1) * 12
+
+        if 'attr' in params and params.get('attr'):
+            domain.append(('product_template_attribute_value_ids.product_attribute_value_id', 'in', params.get('attr')))
+
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
