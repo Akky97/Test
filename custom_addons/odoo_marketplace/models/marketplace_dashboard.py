@@ -99,6 +99,16 @@ class marketplace_dashboard(models.Model):
             else:
                 rec.count_product_approved = 0
 
+    # Reapproval functionality
+    def _get_reapprove_count(self):
+        for rec in self:
+            if rec.state == 'seller':
+                obj = self.env['res.partner'].search(
+                    [('seller', '=', True), ('state', '=', 'reapproval')])
+                rec.count_product_reapprove = len(obj)
+            else:
+                rec.count_product_reapprove = 0
+
     def _get_pending_count(self):
         for rec in self:
             if rec.state == 'product':
@@ -177,7 +187,6 @@ class marketplace_dashboard(models.Model):
             else:
                 rec.count_product_rejected = 0
 
-
     def _get_cancelled_count(self):
         for rec in self:
             if rec.state == 'order':
@@ -199,6 +208,8 @@ class marketplace_dashboard(models.Model):
         [('product', 'Product'), ('seller', 'Seller'), ('order', 'Order'), ('payment', 'Payment'),('stock', 'Stock')])
     count_product_new = fields.Integer(compute='_get_new_count')
     count_product_approved = fields.Integer(compute='_get_approved_count')
+    # Reapproval functionality
+    count_product_reapprove = fields.Integer(compute='_get_reapprove_count')
     count_product_pending = fields.Integer(compute='_get_pending_count')
     count_product_rejected = fields.Integer(compute='_get_rejected_count')
     count_product_cancelled = fields.Integer(compute='_get_cancelled_count')

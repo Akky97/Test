@@ -5,6 +5,10 @@ from odoo.http import request, route, Controller
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    # Reapproval functionality
+    state = fields.Selection(selection_add=[('reapproval', 'Re-Approval')])
+    # end
+
     def approve(self):
         self.ensure_one()
         if self.seller:

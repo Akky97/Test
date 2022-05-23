@@ -156,6 +156,19 @@
             <field name="view_id" ref="wk_seller_kanban_view"/>
             <field name="search_view_id" ref="wk_seller_view_filter"/>
         </record>
+        <!--Reapproval functionality-->
+        <record id="wk_seller_reapprove_action" model="ir.actions.act_window">
+            <field name="name">Sellers</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="binding_view_types">form</field>
+            <field name="domain">[('seller','=',True),('state','=','reapproval'),('active','=',True)]</field>
+
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_id" ref="wk_seller_kanban_view"/>
+            <field name="search_view_id" ref="wk_seller_view_filter"/>
+        </record>
+        <!--end-->
 
         <record id="wk_seller_all_sale_order_line_action" model="ir.actions.act_window">
             <field name="name">Sale Order</field>
@@ -244,6 +257,27 @@
             <field name="view_id" ref="odoo_marketplace.wk_seller_form_view"/>
             <field name="act_window_id" ref="odoo_marketplace.wk_seller_pending_action"/>
         </record>
+        <!--Reapproval functionality-->
+        <record id="wk_seller_dashboard_reapprove_kanban_action" model="ir.actions.act_window.view">
+            <field name="view_mode">kanban</field>
+            <field name="sequence">1</field>
+            <field name="view_id" ref="odoo_marketplace.wk_seller_kanban_view"/>
+            <field name="act_window_id" ref="odoo_marketplace.wk_seller_reapprove_action"/>
+        </record>
+        <record id="wk_seller_dashboard_reapprove_tree_action" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="sequence">2</field>
+            <field name="view_id" ref="odoo_marketplace.wk_seller_tree_view"/>
+            <field name="act_window_id" ref="odoo_marketplace.wk_seller_reapprove_action"/>
+        </record>
+         <record id="wk_seller_dashboard_reapprove_form_action" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="sequence">3</field>
+            <field name="view_id" ref="odoo_marketplace.wk_seller_form_view"/>
+            <field name="act_window_id" ref="odoo_marketplace.wk_seller_reapprove_action"/>
+        </record>
+        <!--end-->
+
         <record id="wk_seller_dashboard_approve_kanban_action" model="ir.actions.act_window.view">
             <field name="view_mode">kanban</field>
             <field name="sequence">1</field>
@@ -466,6 +500,9 @@
                     <field name="count_product_new"/>
                     <field name="count_product_approved"/>
                     <field name="count_product_cancelled"/>
+                    <!--Reapproval functionality-->
+                    <field name="count_product_reapprove"/>
+                    <!--end-->
                     <field name="is_seller"/>
                     <templates>
                         <t t-name="kanban-box">
@@ -543,6 +580,14 @@
                                                         <span class="o_value"><t t-esc="record.count_product_rejected.raw_value"/></span>
                                                         <span class="o_label" >Rejected</span>
                                                     </a>
+                                                    <!--Reapproval functionality-->
+                                                    <a class="wk_kanban_button_box text-white" name="%(wk_seller_reapprove_action)d"
+														type="action" style="background-color:#f0ad4e">
+                                                        <span class="o_value"><t t-esc="record.count_product_reapprove.raw_value"/></span>
+                                                        <span class="o_label">Re-Approve</span>
+                                                    </a>
+                                                    <!--end-->
+
                                                 </div>
 
 												<div t-if="record.state.raw_value =='order'">

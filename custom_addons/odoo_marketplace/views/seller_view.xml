@@ -328,6 +328,14 @@
                                                         <field name="state"/>
                                                     </font>
                                                 </li>
+                                                <!--Reapproval functionality-->
+                                                <li t-if="record.state.raw_value  === 'reapproval'">
+                                                    <b>Status: </b>
+                                                    <font color='orange'>
+                                                        <field name="state"/>
+                                                    </font>
+                                                </li>
+                                                <!--end-->
                                                 <li t-if="record.mobile.raw_value">
                                                     <b>Mobile: </b>
                                                     <field name="mobile"/>

@@ -50,5 +50,30 @@
                 </xpath>
             </field>
         </record>
+        <!--Reapproval functionality-->
+        <record id="view_partner_form_inherit_pando" model="ir.ui.view">
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="odoo_marketplace.wk_seller_form_view"/>
+            <field name="arch" type="xml">
+                <field name="state" position="attributes">
+                    <attribute name="statusbar_visible">new,pending,approved,denied,reapproval</attribute>
+                </field>
+                <xpath expr="//button[@name='approve']" position="replace">
+                    <button name="approve" string="Approve" type="object" states="pending,reapproval"
+                            groups="odoo_marketplace.marketplace_officer_group" class="btn-primary"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_filter_inherit_pando" model="ir.ui.view">
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="odoo_marketplace.wk_seller_view_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='pending']" position="after">
+                    <filter string="Re-Approval" name="reapproval" domain="[('state','=','reapproval')]"/>
+                </xpath>
+            </field>
+        </record>
+       <!--Reapproval functionality end-->
     </data>
 </odoo>

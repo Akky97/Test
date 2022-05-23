@@ -209,6 +209,15 @@ def get_product_details(website, warehouse, base_url,records):
     return temp
 
 
+def set_to_reapproval(self):
+    for rec in self.with_user(SUPERUSER_ID):
+        if rec.seller:
+            if self.env['res.config.settings'].get_mp_global_field_value("auto_approve_seller"):
+                rec.approve()
+            else:
+                rec.state = "reapproval"
+
+
 class AuthSignupHome(Website):
 
     @http.route('/api/v1/v/vendor_signup', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
@@ -1339,7 +1348,7 @@ class OdooAPI(http.Controller):
                     })]
                 }
                 user.sudo().write(userVals)
-                # user.partner_id.set_to_pending()
+                set_to_reapproval(self=user.partner_id)
                 res = {"message": "Picking Address Created Successfully", "status_code": 200}
                 vendor_message = f"Picking Address Created Successfully"
                 generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
@@ -1371,6 +1380,7 @@ class OdooAPI(http.Controller):
                         'zip': jdata.get('zip') or picking_address.zip
                     }
                     picking_address.sudo().write(pickingVals)
+                    set_to_reapproval(self=uid.partner_id)
                     # user.partner_id.set_to_pending()
                     res = {"message": "Picking Address Updated Successfully", "status_code": 200}
                     vendor_message = "Picking Address Updated Successfully"
