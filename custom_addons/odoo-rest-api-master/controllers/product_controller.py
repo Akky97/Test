@@ -209,8 +209,12 @@ class OdooAPI(http.Controller):
             page = int(params["page"])
             offset = (page - 1) * 12
 
-        if 'attr' in params and params.get('attr'):
-            domain.append(('product_template_attribute_value_ids.product_attribute_value_id', 'in', params.get('attr')))
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        if jdata and 'attr' in jdata:
+            domain.append(('product_template_attribute_value_ids.product_attribute_value_id', 'in', jdata.get('attr')))
 
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
