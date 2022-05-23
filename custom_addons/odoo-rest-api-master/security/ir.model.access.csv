@@ -7,3 +7,5 @@ pando_images,pando.images,model_pando_images,,1,1,1,1
 notification_center,notification.center,model_notification_center,,1,1,1,1
 device_token,device.token,model_device_token,,1,1,1,1
 return_policy,return.policy,model_return_policy,,1,1,1,1
+delivery_tracking,delivery.tracking,model_delivery_tracking,,1,1,1,1
+delivery_address,delivery.address,model_delivery_address,,1,1,1,1
