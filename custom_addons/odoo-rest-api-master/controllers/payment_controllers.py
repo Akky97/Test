@@ -192,7 +192,7 @@ def updatePriceList(pricelist, order):
         values = {'pricelist_id': pricelist}
         order.write(values)
         for line in order.order_line:
-            if line.exists() and not line.is_delivery:
+            if line.exists():
                 order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
 
 
@@ -400,7 +400,7 @@ class WebsiteSale(WebsiteSale):
             return error_response(e, e.msg)
         res = {
             "result": values,
-            "status":200
+            "status": 200
         }
         return return_Response(res)
 

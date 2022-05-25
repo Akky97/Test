@@ -13,6 +13,8 @@ class deliveryTracking(models.Model):
     customer_id = fields.Many2one('res.partner', string="customer")
     order_id = fields.Many2one('sale.order', string='Sale Order')
     deliveryLine = fields.One2many('delivery.address', 'delivery_id', string='Delivery Lines')
+    is_dispatch = fields.Boolean('Is Dispatched by Sender', default=False)
+    is_received = fields.Boolean('Is Received by Receiver', default=False)
 
 
 class deliveryAddress(models.Model):
@@ -21,8 +23,11 @@ class deliveryAddress(models.Model):
 
     delivery_id = fields.Many2one('delivery.tracking', string='Sale Order')
     date_time = fields.Datetime(string='Dispatch Date')
-    location = fields.Char(string='Office Location')
+    location = fields.Char(string='From Location')
+    to_location = fields.Char(string='To Location')
     event = fields.Selection([('item-bagged', 'Item-Bagged'), ('item-received', 'Item-Received'), ('item-dispatched', 'Item-Dispatched')], string='Event')
+    is_dispatch = fields.Boolean('Is Dispatched by Sender')
+    is_received = fields.Boolean('Is Received by Receiver')
 
 
 

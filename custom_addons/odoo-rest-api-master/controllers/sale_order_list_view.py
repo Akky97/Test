@@ -83,6 +83,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 data = []
                 for c in k.product_template_attribute_value_ids:
                     id.append(c.attribute_id.id)
+                variant_name = ''
                 for attr_id in list(set(id)):
                     for b in k.product_template_attribute_value_ids:
                         if attr_id == b.attribute_id.id:
@@ -94,6 +95,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                                 values.append({"id": b.id, "name": b.name, "slug": None,
                                                "pivot": {"components_variants_variant_id": k.id,
                                                          "component_id": b.id}})
+                            variant_name += '(' + b.name + ')'
                     data.append({attribute_name: values})
                     values = []
                 res_data = {"id": k.id, "price": k.list_price,
@@ -120,7 +122,7 @@ def get_sale_order_line(order_id=None, order_line_id = None):
                 'id': rec.id if rec.id != False else "",
                 'name': rec.name if rec.name != False else "",
                 'product_id': rec.product_id.id if rec.product_id.id != False else "",
-                'product_name': rec.product_id.name if rec.product_id.name != False else "",
+                'product_name': rec.product_id.name+variant_name if rec.product_id.name != False else "",
                 'price_unit': rec.price_unit if rec.price_unit != False else 0.0,
                 'price_subtotal': rec.price_subtotal if rec.price_subtotal != False else 0.0,
                 'price_tax': rec.price_tax if rec.price_tax != False else 0.0,

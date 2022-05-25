@@ -10,11 +10,15 @@ _logger = logging.getLogger(__name__)
 
 def deliveryLine(line):
     temp = []
+    line = request.env['delivery.address'].sudo().search([('id','in',line.ids)], order='id desc')
     for l in line:
         temp.append({
             'date_time': str(l.date_time),
             'location': l.location,
-            'event': l.event
+            'to_location': l.to_location,
+            'event': l.event,
+            'is_dispatch': l.is_dispatch,
+            'is_received': l.is_received
         })
     return temp
 class PandoBanner(http.Controller):
@@ -55,7 +59,7 @@ class PandoBanner(http.Controller):
             jdata = {}
         try:
             seller = request.env.user.partner_id.id
-            if not jdata.get('order_id') or not jdata.get('location') or not jdata.get('event'):
+            if not jdata.get('order_id') or not jdata.get('from_location') or not jdata.get('to_location') or not jdata.get('event'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             order = request.env['sale.order'].sudo().search([('id', '=', int(jdata.get('order_id')))])
@@ -70,10 +74,13 @@ class PandoBanner(http.Controller):
                             'picking_id': picking.id,
                             'customer_id': order.partner_id.id,
                             'order_id': order.id,
+                            'is_dispatch': True,
                             'deliveryLine': [(0, 0, {
                                 'date_time': datetime.datetime.now(),
-                                'location': jdata.get('location'),
-                                'event': jdata.get('event')
+                                'location': jdata.get('from_location'),
+                                'to_location': jdata.get('to_location'),
+                                'event': jdata.get('event'),
+                                'is_dispatch': True
                             })]
                         }
                         result = request.env['delivery.tracking'].sudo().create(vals)
@@ -99,22 +106,28 @@ class PandoBanner(http.Controller):
     def get_delivery_tracking(self, order_id=None, **params):
         try:
             temp = []
-            customer = 3 or request.env.user.partner_id.id
+            customer = request.env.user.partner_id.id
             if not order_id:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             if order_id:
                 order = request.env['sale.order'].sudo().search([('id','=', int(order_id))])
-                tracking = request.env['delivery.tracking'].sudo().search([('order_id', '=', int(order_id)), ('customer_id', '=', customer)])
+                domain = [('order_id', '=', int(order_id)), ('customer_id', '=', customer)]
+                if "id" in params and params.get('id'):
+                    domain.append(('id', '=', int(params.get('id'))))
+                tracking = request.env['delivery.tracking'].sudo().search(domain, order='id desc')
                 if tracking:
                     for track in tracking:
                         vals = {
+                            'id': track.id,
                             'seller_name': track.seller_id.name,
                             'dispatch_date': str(track.dispatch_date),
                             'source_address': get_address(track.source_address),
                             'destination_address': get_address(track.destination_address),
                             'customer_id': get_address(track.customer_id),
                             'order_name': order.name,
+                            'is_dispatch': track.is_dispatch,
+                            'is_received': track.is_received,
                             'deliveryLine': deliveryLine(track.deliveryLine)
                         }
                         temp.append(vals)
@@ -141,24 +154,31 @@ class PandoBanner(http.Controller):
                 jdata = json.loads(request.httprequest.stream.read())
             except:
                 jdata = {}
-            if not jdata.get('location') or not jdata.get('event'):
+            if not jdata.get('from_location') or not jdata.get('to_location') or not jdata.get('event'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             tracking = request.env['delivery.tracking'].sudo().search([('id', '=', int(deliveryid))])
             if tracking:
                 delVals = {
-                        'delivery_id': tracking.id,
-                        'date_time': datetime.datetime.now(),
-                        'location': jdata.get('location'),
-                        'event': jdata.get('event')
+                    'delivery_id': tracking.id,
+                    'date_time': datetime.datetime.now(),
+                    'location': jdata.get('from_location'),
+                    'to_location': jdata.get('to_location'),
+                    'event': jdata.get('event'),
+                    'is_received': True if jdata.get('is_received') else False
                 }
-                request.env['delivery.address'].sudo().create(delVals)
-                res = {"message": "Delivery Status Updated", "status_code": 200}
-                # vendor_message = f"Delivery Status"
-                # generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
-                #                       model="pickup.address", title="Picking Address Create")
-
-                return return_Response(res)
+                rec = request.env['delivery.address'].sudo().create(delVals)
+                if rec:
+                    if rec.is_received:
+                        tracking.sudo().write({'is_received': True})
+                    res = {"message": "Delivery Status Updated", "status_code": 200}
+                    return return_Response(res)
+                else:
+                    msg = {"message": "Something Went Wrong", "status_code": 400}
+                    return return_Response_error(msg)
+            else:
+                msg = {"message": "No Result Found", "status_code": 400}
+                return return_Response_error(msg)
         except Exception as e:
             msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
