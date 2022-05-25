@@ -494,6 +494,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "record": temp,
             "status": 200
@@ -524,6 +525,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "record": temp,
             "status": 200
@@ -556,6 +558,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "record": temp,
             "status": 200
@@ -582,6 +585,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp
         }
@@ -614,6 +618,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "result": res
         }
         return return_Response(res)
@@ -635,6 +640,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp
         }
@@ -657,6 +663,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp
         }
@@ -732,6 +739,7 @@ class OdooAPI(http.Controller):
                                   model="product.template", title="Product Template")
 
         res = {
+            "isSucess": True,
             'message': "Product created Successfully",
             'productList': idList,
             'status': 200
@@ -807,6 +815,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_count": record_count,
             "count": len(temp),
             "prev": prev_page,
@@ -838,6 +847,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "products": temp,
             'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
@@ -867,6 +877,7 @@ class OdooAPI(http.Controller):
                 total_sales_unit += rec.product_uom_qty
                 total_earning += rec.price_subtotal
             res={
+                "isSucess": True,
                 'total_count': total_count,
                 'total_sales_unit': total_sales_unit,
                 'total_earning': total_earning,
@@ -977,6 +988,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_order": record_count,
             "count": len(temp),
             "prev": prev_page,
@@ -1023,6 +1035,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "products": vals,
             'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
@@ -1195,6 +1208,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_count": record_count,
             "count": len(temp),
             "products": temp,
@@ -1228,6 +1242,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "products": temp
         }
@@ -1424,6 +1439,7 @@ class OdooAPI(http.Controller):
             msg = {"message": "Something Went Wrong", "status_code": 400}
             return return_Response_error(msg)
         res = {
+            "isSucess": True,
             'count': len(temp),
             'record': temp,
             'status': 200
@@ -1522,6 +1538,7 @@ class OdooAPI(http.Controller):
                         temp.append(vals)
                         total += rec.price_total
                 res = {
+                    "isSucess": True,
                     'record': temp,
                     'totalAmount': round(total, 2),
                     'status': 200
@@ -1565,6 +1582,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "prod_name": prod_name,
             "prod_sale_count": prod_sale_count
         }
