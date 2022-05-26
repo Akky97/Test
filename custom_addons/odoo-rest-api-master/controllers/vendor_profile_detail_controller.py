@@ -1662,3 +1662,25 @@ class OdooAPI(http.Controller):
             "status": 200
         }
         return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/delivery.tracking', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def delivery_tracking_list(self, **kw):
+        try:
+            domain = [("seller_id", "=", request.env.user.partner_id.id)]
+            if "order" in kw:
+                domain.append(('order_id', '=', kw.get('order')))
+            model = 'delivery.tracking'
+            tracking = request.env[model].sudo().search(domain)
+            temp = []
+            for track in tracking:
+                temp.append({'id': track.id, 'order_id': track.order_id.id, 'name': track.order_id.name})
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "isSucess": True,
+            "count": len(temp),
+            "result": temp,
+            "status": 200
+        }
+        return return_Response(res)
