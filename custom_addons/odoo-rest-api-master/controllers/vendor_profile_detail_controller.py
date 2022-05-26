@@ -246,6 +246,13 @@ class AuthSignupHome(Website):
                     'address') or not jdata.get('email'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
+            if jdata.get('supplier_phone'):
+                country_id = request.env['res.country'].sudo().search([('id', '=', int(jdata.get('supplier_country_id')))])
+                if country_id:
+                    my_number = phonenumbers.parse(str(jdata.get('supplier_phone')), country_id.code)
+                    if not phonenumbers.is_valid_number(my_number):
+                        error = {"message": "Please Enter Correct Phone Number", "status": 400}
+                        return return_Response_error(error)
 
             email = jdata.get('email')
             name = jdata.get('name')

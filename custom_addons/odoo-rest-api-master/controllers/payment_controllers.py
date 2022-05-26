@@ -186,6 +186,7 @@ def create_invoice(transaction_id, order):
                 template.sudo().send_mail(invoice.id, force_send=True)
 
 
+
 def updatePriceList(pricelist, order):
     if order and pricelist:
         request.session['website_sale_current_pl'] = pricelist
@@ -600,6 +601,7 @@ class WebsiteSale(WebsiteSale):
                     if 'device_name' in jdata and jdata.get('device_name'):
                         device_name = jdata.get('device_name')
                     check = check_transaction_status(int(jdata.get('transaction_id')),device_name)
+                    transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
                     if check:
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
                         vendor_message = f"""{order.name} Order Confirmed Successfully"""
@@ -611,7 +613,7 @@ class WebsiteSale(WebsiteSale):
                         tokens = tokenObject.search([('user_id', '=', user.id)])
                         if tokens:
                             send_notification("Sale Order Confirmed", vendor_message, user, tokens, None)
-                        res = {"message": 'Success', 'status': 200}
+                        res = {"payment_method":transaction.acquirer_id.name,"payment_intent": transaction.payment_intent,"message": 'Success', 'status': 200}
                         return return_Response(res)
                     else:
                         msg = {"message": "Something Went Wrong.", "status_code": 400}

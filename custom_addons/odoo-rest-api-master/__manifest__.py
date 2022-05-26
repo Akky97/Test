@@ -38,7 +38,8 @@
         'security/ir.model.access.csv',
         'views/email_template.xml',
         'views/notification_center_view.xml',
-        'data/pando_data.xml'
+        'data/pando_data.xml',
+        'views/report_invoice_pando.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

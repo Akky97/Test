@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="pando_invoice_report"  inherit_id="account.report_invoice_document">
+            <xpath expr="//p[@name='payment_communication']" position="after">
+                <p t-if="o.pando_transaction_id" name="payment_method">
+                    Payment transaction Method : <b><span t-field="o.pando_transaction_id.acquirer_id.name"/></b>
+                </p>
+                <p t-if="o.pando_transaction_id" name="payment_reference">
+                    Payment Reference ID : <b><span t-field="o.pando_transaction_id.payment_intent"/></b>
+                </p>
+            </xpath>
+        </template>
+    </data>
+</odoo>
