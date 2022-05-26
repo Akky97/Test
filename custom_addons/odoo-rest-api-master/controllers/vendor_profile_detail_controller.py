@@ -304,8 +304,8 @@ class AuthSignupHome(Website):
                                 'country_id': jdata.get('country_id'),
                                 'address': jdata.get('address'),
                                 'city': jdata.get('city'),
+                                # 'zip': jdata.get('zip'),
                                 'state_id': jdata.get('state_id')
-                                # 'zip': jdata.get('zip')
                             })]
                         }
                         gst_number = jdata.get('gst_number')
@@ -453,7 +453,8 @@ class OdooAPI(http.Controller):
                     'mobile': jdata.get('supplier_phone') or user.partner_id.mobile,
                     'city': jdata.get('supplier_city') or user.partner_id.city,
                     'street': jdata.get('supplier_address') or user.partner_id.street,
-                    'zip': jdata.get('zip') or user.partner_id.zip
+                    'zip': jdata.get('zip') or user.partner_id.zip,
+                    'street2': jdata.get('street') or user.partner_id.street2
                 }
                 user.sudo().write(userVals)
                 user.partner_id.sudo().write(partnerVals)
@@ -859,6 +860,7 @@ class OdooAPI(http.Controller):
     def vendor_dashboard(self, **params):
         try:
             domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
+            domain2 = [('seller_id', '=', request.env.user.partner_id.id)]
             model = 'sale.order.line'
             try:
                 jdata = json.loads(request.httprequest.stream.read())
@@ -866,12 +868,18 @@ class OdooAPI(http.Controller):
                 jdata = {}
             if jdata and jdata.get('from_date') and jdata.get('to_date'):
                 domain.append(('order_id.date_order', '>=', jdata.get('from_date')))
+                domain2.append(('create_date', '>=', jdata.get('from_date')))
                 domain.append(('order_id.date_order', '<=', jdata.get('to_date')))
+                domain2.append(('create_date', '<=', jdata.get('to_date')))
+
             records = request.env[model].sudo().search(domain)
             total_sales_unit = 0
             total_earning = 0
             total_count = 0
-            total_return = 0
+            total_return_count = 0
+            total_return = request.env['return.policy'].sudo().search(domain2)
+            for rec in total_return:
+                total_return_count += rec.product_uom_qty
             for rec in records:
                 total_count += 1
                 total_sales_unit += rec.product_uom_qty
@@ -881,7 +889,7 @@ class OdooAPI(http.Controller):
                 'total_count': total_count,
                 'total_sales_unit': total_sales_unit,
                 'total_earning': total_earning,
-                'total_return': total_return
+                'total_return': total_return_count
             }
             return return_Response(res)
 

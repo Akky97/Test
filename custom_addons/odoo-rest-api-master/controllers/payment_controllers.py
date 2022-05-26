@@ -739,6 +739,14 @@ class WebsiteSale(WebsiteSale):
             return_order = request.env['return.policy'].sudo().search(domain, order='id DESC', limit=limit, offset=offset)
             if return_order:
                 for rec in return_order:
+                    result = request.env['pando.images'].sudo().search([('product_id', '=', rec.product_id.id)])
+                    if not result:
+                        result = request.env['pando.images'].sudo().search(
+                            [('product_id.product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)])
+                    base_image = ''
+                    for j in result:
+                        if j.type != 'multi_image':
+                            base_image = j.image_url
                     temp.append({
                         'id': rec.id,
                         'order_line': rec.order_line.id,
@@ -747,6 +755,7 @@ class WebsiteSale(WebsiteSale):
                         'order_name': rec.order_id.name,
                         'product_id': rec.product_id.id,
                         'product_name': rec.product_id.name,
+                        'product_image': base_image,
                         'partner_id': rec.partner_id.id,
                         'partner_name': rec.partner_id.name,
                         'reason': rec.reason,
@@ -756,6 +765,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSuccess": True,
             "total_count": record_count,
             "record": temp, "count": len(temp), 'status': 200
         }
@@ -779,6 +789,14 @@ class WebsiteSale(WebsiteSale):
             return_order = request.env['return.policy'].sudo().search(domain, order='id DESC', limit=limit, offset=offset)
             if return_order:
                 for rec in return_order:
+                    result = request.env['pando.images'].sudo().search([('product_id', '=', rec.product_id.id)])
+                    if not result:
+                        result = request.env['pando.images'].sudo().search(
+                            [('product_id.product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)])
+                    base_image = ''
+                    for j in result:
+                        if j.type != 'multi_image':
+                            base_image = j.image_url
                     temp.append({
                         'id': rec.id,
                         'order_line': rec.order_line.id,
@@ -787,6 +805,7 @@ class WebsiteSale(WebsiteSale):
                         'order_name': rec.order_id.name,
                         'product_id': rec.product_id.id,
                         'product_name': rec.product_id.name,
+                        'product_image': base_image,
                         'partner_id': rec.partner_id.id,
                         'partner_name': rec.partner_id.name,
                         'reason': rec.reason,
@@ -796,6 +815,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSuccess": True,
             "total_count": record_count,
             "record": temp, "count": len(temp), 'status': 200
         }
