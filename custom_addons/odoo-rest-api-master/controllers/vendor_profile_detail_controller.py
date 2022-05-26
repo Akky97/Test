@@ -1642,3 +1642,23 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         res = {"message": "Status Updated Successfully", "status": 200}
         return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/v/sale.order', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def sale_order_list(self, **kw):
+        try:
+            domain = [("marketplace_seller_id", "=", request.env.user.partner_id.id)]
+            model = 'stock.picking'
+            saleList = request.env[model].sudo().search(domain)
+            temp = []
+            for order in saleList:
+                temp.append({'id': order.sale_id.id, 'name': order.sale_id.name})
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "isSucess": True,
+            "count": len(temp),
+            "result": temp,
+            "status": 200
+        }
+        return return_Response(res)
