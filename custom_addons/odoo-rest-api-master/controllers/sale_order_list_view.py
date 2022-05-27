@@ -452,6 +452,10 @@ class SaleOrderController(http.Controller):
         try:
             sale_order_data = []
             for i in records:
+                delivery_tracking = False
+                for line in i.order_line:
+                    if line.shipping_Details == 'delivered':
+                        delivery_tracking = True
                 base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
                 url = ''
                 if i.invoice_ids:
@@ -472,7 +476,8 @@ class SaleOrderController(http.Controller):
                     'url': url,
                     'symbol': i.currency_id.symbol if i.currency_id.symbol != False else "",
                     'complaint_date_validity': str(complaint_date_validity),
-                    'check_validity': check_date
+                    'check_validity': check_date,
+                    'delivery_tracking': delivery_tracking
                 }
                 sale_order_data.append(value)
 

@@ -83,6 +83,10 @@ class PandoBanner(http.Controller):
                                 'is_dispatch': True
                             })]
                         }
+                        check = request.env['delivery.tracking'].sudo().search([('seller_id', '=', seller), ('order_id', '=', order.id)])
+                        if check:
+                            msg = {"message": "You Can't Create Multiple Tracking For a Single Order", "status_code": 400}
+                            return return_Response_error(msg)
                         result = request.env['delivery.tracking'].sudo().create(vals)
                         if result:
                             res = {
