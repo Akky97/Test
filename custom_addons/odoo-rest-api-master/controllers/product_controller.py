@@ -411,7 +411,7 @@ class OdooAPI(http.Controller):
         if "orderBy" in params and params.get('orderBy'):
             orders = params["orderBy"]
             if orders == 'rating':
-                pass
+                search = 'rating_count DESC'
             elif orders == 'new':
                 search = 'create_date DESC'
             elif orders == 'featured':
