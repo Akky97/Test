@@ -1667,7 +1667,10 @@ class OdooAPI(http.Controller):
     @http.route('/api/v1/v/delivery.tracking', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
     def delivery_tracking_list(self, **kw):
         try:
-            domain = [("seller_id", "=", request.env.user.partner_id.id)]
+            if "customer" in kw:
+                domain = [("customer_id", "=", request.env.user.partner_id.id)]
+            else:
+                domain = [("seller_id", "=", request.env.user.partner_id.id)]
             if "order" in kw:
                 domain.append(('order_id', '=', kw.get('order')))
             model = 'delivery.tracking'
