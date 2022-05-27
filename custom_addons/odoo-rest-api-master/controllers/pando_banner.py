@@ -106,13 +106,20 @@ class PandoBanner(http.Controller):
     def get_delivery_tracking(self, order_id=None, **params):
         try:
             temp = []
-            customer = request.env.user.partner_id.id
             if not order_id:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
+
             if order_id:
                 order = request.env['sale.order'].sudo().search([('id','=', int(order_id))])
-                domain = [('order_id', '=', int(order_id)), ('customer_id', '=', customer)]
+                domain = [('order_id', '=', int(order_id))]
+                if "user" in params:
+                    seller = request.env.user.partner_id.id
+                    domain.append(('seller_id', '=', seller))
+                else:
+                    customer = request.env.user.partner_id.id
+                    domain.append(('customer_id', '=', customer))
+
                 if "id" in params and params.get('id'):
                     domain.append(('id', '=', int(params.get('id'))))
                 tracking = request.env['delivery.tracking'].sudo().search(domain, order='id desc')
