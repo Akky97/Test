@@ -276,7 +276,9 @@ class ControllerREST(http.Controller):
                 vals = {"sale_order_line_id": i.id if i.id != False else '',
                         "sale_order_line_name": i.name if i.name != False else '',
                         "product_id": i.product_id.id if i.product_id.id != False else '',
-                        "product_name": i.product_id.name if i.product_id.name != False else ''
+                        "product_name": i.product_id.name if i.product_id.name != False else '',
+                        "shipping_status": i.shipping_Details if i.shipping_Details else '',
+                        "return_state": i.return_state if i.return_state else ''
                         }
                 temp.append(vals)
             res = {
