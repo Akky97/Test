@@ -984,6 +984,7 @@ class OdooAPI(http.Controller):
 
                 vals={
                     "id": rec.id,
+                    "orderId": rec.order_id.id,
                     "order_id": rec.order_id.name,
                     "product_id": rec.product_id.id,
                     "product_name": rec.product_id.name,
