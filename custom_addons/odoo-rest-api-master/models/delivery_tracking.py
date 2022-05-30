@@ -15,6 +15,7 @@ class deliveryTracking(models.Model):
     deliveryLine = fields.One2many('delivery.address', 'delivery_id', string='Delivery Lines')
     is_dispatch = fields.Boolean('Is Dispatched by Sender', default=False)
     is_received = fields.Boolean('Is Received by Receiver', default=False)
+    tracking_location = fields.Selection([('warehouse', 'Warehouse'), ('courier', 'Courier'), ('office', 'Office'), ('other', 'Other')], string='Traking Location')
 
 
 class deliveryAddress(models.Model):
@@ -28,6 +29,7 @@ class deliveryAddress(models.Model):
     event = fields.Selection([('item-bagged', 'Item-Bagged'), ('item-received', 'Item-Received'), ('item-dispatched', 'Item-Dispatched')], string='Event')
     is_dispatch = fields.Boolean('Is Dispatched by Sender')
     is_received = fields.Boolean('Is Received by Receiver')
+    tracking_location = fields.Selection([('warehouse', 'Warehouse'), ('courier', 'Courier'), ('office', 'Office'), ('other', 'Other')], string='Traking Location')
 
 
 

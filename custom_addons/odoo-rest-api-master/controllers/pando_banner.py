@@ -8,9 +8,10 @@ from .error_or_response_parser import *
 from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
 
+
 def deliveryLine(line):
     temp = []
-    line = request.env['delivery.address'].sudo().search([('id','in',line.ids)], order='id desc')
+    line = request.env['delivery.address'].sudo().search([('id', 'in', line.ids)], order='id desc')
     for l in line:
         temp.append({
             'date_time': str(l.date_time),
@@ -18,9 +19,12 @@ def deliveryLine(line):
             'to_location': l.to_location,
             'event': l.event,
             'is_dispatch': l.is_dispatch,
-            'is_received': l.is_received
+            'is_received': l.is_received,
+            'tracking_location': l.tracking_location
         })
     return temp
+
+
 class PandoBanner(http.Controller):
 
     @http.route('/api/v1/c/pando.banner', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
@@ -59,7 +63,7 @@ class PandoBanner(http.Controller):
             jdata = {}
         try:
             seller = request.env.user.partner_id.id
-            if not jdata.get('order_id') or not jdata.get('from_location') or not jdata.get('to_location') or not jdata.get('event'):
+            if not jdata.get('order_id') or not jdata.get('from_location') or not jdata.get('to_location') or not jdata.get('event') or not jdata.get('trackingLocation'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             order = request.env['sale.order'].sudo().search([('id', '=', int(jdata.get('order_id')))])
@@ -75,12 +79,14 @@ class PandoBanner(http.Controller):
                             'customer_id': order.partner_id.id,
                             'order_id': order.id,
                             'is_dispatch': True,
+                            'tracking_location': jdata.get('trackingLocation'),
                             'deliveryLine': [(0, 0, {
                                 'date_time': datetime.datetime.now(),
                                 'location': jdata.get('from_location'),
                                 'to_location': jdata.get('to_location'),
                                 'event': jdata.get('event'),
-                                'is_dispatch': True
+                                'is_dispatch': True,
+                                'tracking_location': jdata.get('trackingLocation')
                             })]
                         }
                         check = request.env['delivery.tracking'].sudo().search([('seller_id', '=', seller), ('order_id', '=', order.id)])
@@ -139,6 +145,7 @@ class PandoBanner(http.Controller):
                             'order_name': order.name,
                             'is_dispatch': track.is_dispatch,
                             'is_received': track.is_received,
+                            'trackingLocation': track.tracking_location,
                             'deliveryLine': deliveryLine(track.deliveryLine)
                         }
                         temp.append(vals)
@@ -165,7 +172,7 @@ class PandoBanner(http.Controller):
                 jdata = json.loads(request.httprequest.stream.read())
             except:
                 jdata = {}
-            if not jdata.get('from_location') or not jdata.get('to_location') or not jdata.get('event'):
+            if not jdata.get('from_location') or not jdata.get('to_location') or not jdata.get('event') or not jdata.get('trackingLocation'):
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             tracking = request.env['delivery.tracking'].sudo().search([('id', '=', int(deliveryid))])
@@ -176,12 +183,16 @@ class PandoBanner(http.Controller):
                     'location': jdata.get('from_location'),
                     'to_location': jdata.get('to_location'),
                     'event': jdata.get('event'),
-                    'is_received': True if jdata.get('is_received') else False
+                    'is_received': True if jdata.get('is_received') else False,
+                    'tracking_location': jdata.get('trackingLocation')
                 }
                 rec = request.env['delivery.address'].sudo().create(delVals)
                 if rec:
                     if rec.is_received:
-                        tracking.sudo().write({'is_received': True})
+                        vals = {'is_received': True, 'tracking_location': jdata.get('trackingLocation')}
+                    else:
+                        vals = {'tracking_location': jdata.get('trackingLocation')}
+                    tracking.sudo().write(vals)
                     res = {"message": "Delivery Status Updated", "status_code": 200}
                     return return_Response(res)
                 else:
