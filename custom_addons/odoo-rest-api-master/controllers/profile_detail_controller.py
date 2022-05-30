@@ -161,6 +161,20 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
     @validate_token
+    @http.route('/api/v1/c/res.partner.view.delete', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def profile_image_delete(self, **params):
+        try:
+            request.env.user.partner_id.sudo().write({
+                'image_1920': ''
+            })
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "result": "Profile Deleted Successfully", "status": 200
+        }
+        return return_Response(res)
+
+    @validate_token
     @http.route(['/api/v1/c/delete/res.partner.view/', '/api/v1/c/delete/res.partner.view/<id>/'], type='http', auth='public',
                 methods=['GET'], csrf=False, cors='*')
     def profile_detail_delete(self, id=None, **params):
