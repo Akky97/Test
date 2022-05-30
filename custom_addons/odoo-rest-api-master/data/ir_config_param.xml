@@ -17,5 +17,10 @@
             <field name="key">product_image</field>
             <field name="value">https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019</field>
         </record>
+
+        <record id="strip_key" model="ir.config_parameter">
+            <field name="key">strip_key</field>
+            <field name="value">sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tHoDtKICnLlNEc6GEpGdXVFw3QBetvkGW00rsDPcDUV</field>
+        </record>
     </data>
 </odoo>

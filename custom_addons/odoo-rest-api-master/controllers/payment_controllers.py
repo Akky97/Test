@@ -14,6 +14,8 @@ stripe.api_key = SECRET_KEY
 
 
 def refund_payment(transaction_id, amount):
+    stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+    stripe.api_key = stripe_key.value
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     res = {}
     if transaction:
@@ -30,6 +32,9 @@ def refund_payment(transaction_id, amount):
 
 
 def check_transaction_status(transaction_id, device_name=None):
+    stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+    stripe.api_key = stripe_key.value
+    
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     if transaction:
         res = stripe.PaymentIntent.retrieve(
@@ -48,6 +53,9 @@ def check_transaction_status(transaction_id, device_name=None):
 
 
 def create_checkout_session(jdata):
+    stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+    stripe.api_key = stripe_key.value
+
     checkout_session = {}
     if jdata:
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
@@ -681,6 +689,9 @@ class WebsiteSale(WebsiteSale):
     @validate_token
     @http.route('/api/v1/v/update_return_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def update_return_order(self, **params):
+        stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+        stripe.api_key = stripe_key.value
+
         try:
             jdata = json.loads(request.httprequest.stream.read())
         except:

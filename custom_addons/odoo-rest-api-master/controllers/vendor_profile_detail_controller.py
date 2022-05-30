@@ -422,15 +422,6 @@ class OdooAPI(http.Controller):
                 res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                                ('res_field', '=', 'image_1920'),
                                                ('res_id', 'in', [user.partner_id.id])])
-                if 'image' in jdata:
-                    image = jdata.get('image')
-                    jdata.pop('image')
-                    res_id.sudo().write({
-                        'name': 'image_1920',
-                        'checksum': image,
-                        'datas': image,
-                        'type': 'binary'
-                    })
 
                 userVals = {
                     'account_number': jdata.get('account_number') or user.account_number,
@@ -444,6 +435,7 @@ class OdooAPI(http.Controller):
                     'supplier_city': jdata.get('supplier_city') or user.supplier_city,
                     'supplier_address': jdata.get('supplier_address') or user.supplier_address
                 }
+
                 gst_number = jdata.get('gst_number')
                 if gst_number:
                     rec = check_gst_number(gst_number, userVals.get('supplier_state_id'))
@@ -463,6 +455,9 @@ class OdooAPI(http.Controller):
                     'zip': jdata.get('zip') or user.partner_id.zip,
                     'street2': jdata.get('street') or user.partner_id.street2
                 }
+                if 'image' in jdata:
+                    partnerVals['image_1920'] = jdata.get('image')
+
                 user.sudo().write(userVals)
                 user.partner_id.sudo().write(partnerVals)
                 vendor_message = "Your Profile Is Successfully Updated"
