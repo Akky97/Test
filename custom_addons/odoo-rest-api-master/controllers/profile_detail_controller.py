@@ -64,7 +64,8 @@ class OdooAPI(http.Controller):
                              "zip": i.zip if i.zip != False else "",
                              "country_id": i.country_id.id if i.country_id.id != False else "",
                              "country_name": i.country_id.name if i.country_id.name != False else "",
-                             "image": base_url.value + '/web/image/' + str(res_id.id),
+                             # "image": base_url.value + '/web/image/' + str(res_id.id),
+                             "image": base_url.value + '/web/image/res.partner/' + str(i.id) + "/image_1920",
                              "type": i.type,
                              "website": i.website if i.website != False else "", "other_addresses": other_addresses})
         except (SyntaxError, QueryFormatError) as e:
