@@ -128,7 +128,11 @@ class SignupAPI(AuthSignupHome):
 </div>"""
                 template.sudo().send_mail(3, force_send=True)
                 vals = {'email': email, 'otp': otp}
-                data = request.env['email.verification'].sudo().create(vals)
+                rec = request.env['email.verification'].sudo().search([('email', '=', email)])
+                if rec:
+                    data = request.env['email.verification'].sudo().write(vals)
+                else:
+                    data = request.env['email.verification'].sudo().create(vals)
                 res = {"message": "OTP sent Successfully!!", "status_code": 200}
                 return return_Response(res)
         except Exception as e:

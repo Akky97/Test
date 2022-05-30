@@ -103,14 +103,15 @@ class OdooAPI(http.Controller):
                 jdata = {}
             if jdata:
                 if 'image' in jdata:
-                    image = jdata.get('image')
-                    jdata.pop('image')
-                    res_id.sudo().write({
-                        'name': 'image_1920',
-                        'checksum': image,
-                        'datas': image,
-                        'type': 'binary'
-                    })
+                    dict['image_1920'] = jdata.get('image')
+                    # image = jdata.get('image')
+                    # jdata.pop('image')
+                    # res_id.sudo().write({
+                    #     'name': 'image_1920',
+                    #     'checksum': image,
+                    #     'datas': image,
+                    #     'type': 'binary'
+                    # })
                 dict['name'] = jdata.get('name') or records.name or ''
                 dict['email'] = jdata.get('email') or records.email or ''
                 dict['mobile'] = jdata.get('mobile') or records.mobile or ''
