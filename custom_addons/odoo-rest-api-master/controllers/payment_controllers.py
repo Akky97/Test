@@ -85,8 +85,7 @@ def create_checkout_session(jdata):
                 ],
                 customer_email=request.env.user.login,
                 mode='payment',
-                # success_url='https://pandostores.com/shop/success',
-                success_url='http://localhost:4400/shop/success',
+                success_url='https://pandostores.com/shop/success',
                 cancel_url='https://pandostores.com/shop/cart',
             )
             if checkout_session and checkout_session.payment_intent and jdata.get('id'):
