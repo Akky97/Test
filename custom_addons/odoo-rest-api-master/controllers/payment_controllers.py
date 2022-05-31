@@ -9,8 +9,6 @@ from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
 from .notification_controller import *
 import stripe
-SECRET_KEY = 'sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tHoDtKICnLlNEc6GEpGdXVFw3QBetvkGW00rsDPcDUV'
-stripe.api_key = SECRET_KEY
 
 
 def refund_payment(transaction_id, amount):
@@ -31,16 +29,28 @@ def refund_payment(transaction_id, amount):
     return res
 
 
-def check_transaction_status(transaction_id, device_name=None):
-    stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
-    stripe.api_key = stripe_key.value
-    
+def update_transaction_data(transaction_id, from_address, to_address, hash_data, mode):
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     if transaction:
+        transaction.sudo().write({
+            'from_address': from_address,
+            'to_address': to_address,
+            'hash_data': hash_data,
+            'mode': mode
+        })
+        return True
+    return False
+
+
+def check_transaction_status(transaction_id, device_name=None, mode=None):
+    stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+    stripe.api_key = stripe_key.value
+    transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
+    if transaction and transaction.payment_intent:
         res = stripe.PaymentIntent.retrieve(
             transaction.payment_intent,
         )
-        vals ={'payment_data': res}
+        vals ={'payment_data': res, 'mode': mode}
         if device_name:
             vals['device_name'] = device_name
         transaction.sudo().write(vals)
@@ -500,20 +510,20 @@ class WebsiteSale(WebsiteSale):
                     # Payment Acquirer List
                     stripe = []
                     for pa in paymentAcquirer:
-                        if pa.name == 'Stripe':
-                            val = {
-                                'id': pa.id,
-                                'name': pa.name
-                            }
-                            stripe.append(val)
-                        else:
-                            val = {
-                                'id': pa.id,
-                                'name': pa.name
-                            }
-                            payAcquirer.append(val)
-                    if stripe:
-                        payAcquirer = stripe
+                        # if pa.name == 'Stripe':
+                        #     val = {
+                        #         'id': pa.id,
+                        #         'name': pa.name
+                        #     }
+                        #     stripe.append(val)
+                        # else:
+                        val = {
+                            'id': pa.id,
+                            'name': pa.name
+                        }
+                        payAcquirer.append(val)
+                    # if stripe:
+                    #     payAcquirer = stripe
 
                     # End Here
                     # Sale Order Details
@@ -532,7 +542,7 @@ class WebsiteSale(WebsiteSale):
                         'order': sale_order,
                         'shippingAddress': get_address(order.partner_shipping_id),
                         'invoiceAddress': get_address(order.partner_invoice_id),
-                        'payAcquirer':payAcquirer
+                        'payAcquirer': payAcquirer
                     }
                     #         End hete
             else:
@@ -560,7 +570,10 @@ class WebsiteSale(WebsiteSale):
             except:
                 jdata = {}
             if jdata:
-                acquirer_id = jdata.get('acquirer_id') or False
+                if not jdata.get('acquirer_id') or not jdata.get('mode'):
+                    msg = {"message": "Something Went Wrong", "status_code": 400}
+                    return return_Response_error(msg)
+                acquirer_id = jdata.get('acquirer_id')
                 if acquirer_id:
                     payTransferData = create_transaction(acquirer_id)
                     finalResult['transactionId'] = payTransferData['id']
@@ -569,9 +582,10 @@ class WebsiteSale(WebsiteSale):
                             msg = {"message": payTransferData.get('message'), "status_code": 400}
                             return return_Response_error(msg)
                         finalResult['transactionId'] = payTransferData.get('id')
-                        result = create_checkout_session(payTransferData)
-                        if result:
-                            finalResult['url'] = result.url
+                        if jdata.get('mode') == 'Stripe':
+                            result = create_checkout_session(payTransferData)
+                            if result:
+                                finalResult['url'] = result.url
                 else:
                     msg = {"message": "Payment Method Is Missing", "status_code": 400}
                     return return_Response_error(msg)
@@ -608,7 +622,14 @@ class WebsiteSale(WebsiteSale):
                     device_name = None
                     if 'device_name' in jdata and jdata.get('device_name'):
                         device_name = jdata.get('device_name')
-                    check = check_transaction_status(int(jdata.get('transaction_id')),device_name)
+                    if 'mode' in jdata and jdata.get('mode'):
+                        if jdata.get('mode') == 'Stripe':
+                            check = check_transaction_status(int(jdata.get('transaction_id')),device_name, mode=jdata.get('mode'))
+                        if jdata.get('mode') == 'Meta Mask':
+                            if not jdata.get('from_address') or not jdata.get('to_address') or not jdata.get('hash_data'):
+                                msg = {"message": "From Add, To Add and hash is missing.", "status_code": 400}
+                                return return_Response_error(msg)
+                            check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'))
                     transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
                     if check:
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
@@ -632,6 +653,7 @@ class WebsiteSale(WebsiteSale):
         # except (SyntaxError, QueryFormatError) as e:
         #     return error_response(e, e.msg)
         except Exception as e:
+            # This is for strip payment only
             res = {}
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id') and order.state == 'draft':

@@ -7,6 +7,7 @@ class ResPartner(models.Model):
 
     # Reapproval functionality
     state = fields.Selection(selection_add=[('reapproval', 'Re-Approval')])
+    is_image_remove = fields.Boolean('Is Image Remove')
     # end
 
     def approve(self):

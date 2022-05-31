@@ -1,10 +1,5 @@
-import datetime
-
 from odoo import http, _, exceptions
 from odoo.http import request
-import logging
-from .exceptions import QueryFormatError
-from .error_or_response_parser import *
 from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
 

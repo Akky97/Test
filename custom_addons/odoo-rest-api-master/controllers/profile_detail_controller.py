@@ -50,7 +50,8 @@ class OdooAPI(http.Controller):
                              "zip": j.zip if j.zip != False else "",
                              "country_id": j.country_id.id if j.country_id.id != False else "",
                              "country_name": j.country_id.name if j.country_id.name != False else "",
-                             "image": base_url.value + '/web/image/' + str(res_id.id),
+                             # "image": base_url.value + '/web/image/' + str(res_id.id),
+                             "image": base_url.value + '/web/image/res.partner/' + str(i.id) + "/image_1920",
                              "website": j.website if j.website != False else "",
                              "type": j.type})
                 temp.append({"id": i.id, "name": i.name, "phone": i.phone if i.phone != False else "",
@@ -67,6 +68,7 @@ class OdooAPI(http.Controller):
                              # "image": base_url.value + '/web/image/' + str(res_id.id),
                              "image": base_url.value + '/web/image/res.partner/' + str(i.id) + "/image_1920",
                              "type": i.type,
+			      "is_image_remove": i.is_image_remove,
                              "website": i.website if i.website != False else "", "other_addresses": other_addresses})
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
@@ -105,6 +107,7 @@ class OdooAPI(http.Controller):
             if jdata:
                 if 'image' in jdata:
                     dict['image_1920'] = jdata.get('image')
+                    dict['is_image_remove'] = True
                     # image = jdata.get('image')
                     # jdata.pop('image')
                     # res_id.sudo().write({
@@ -166,7 +169,8 @@ class OdooAPI(http.Controller):
     def profile_image_delete(self, **params):
         try:
             request.env.user.partner_id.sudo().write({
-                'image_1920': ''
+                'image_1920': '',
+                'is_image_remove': True
             })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)

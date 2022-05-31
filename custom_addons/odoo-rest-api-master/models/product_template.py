@@ -79,8 +79,10 @@ class PaymentTransaction(models.Model):
     payment_intent = fields.Char('Payment Intent Id')
     payment_data = fields.Char('Payment Data')
     device_name = fields.Text('Device Name')
-
-
+    from_address = fields.Char('From Address')
+    to_address = fields.Char('To Address')
+    hash_data = fields.Char('Hash Data')
+    mode = fields.Selection([('Stripe', 'Stripe'), ('Meta Mask', 'Meta Mask')], string='Mode Of Payment')
 class VariantApprovalWizard(models.TransientModel):
     _inherit = 'variant.approval.wizard'
 

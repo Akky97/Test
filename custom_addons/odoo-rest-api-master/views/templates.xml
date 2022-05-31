@@ -5,7 +5,11 @@
             <field name="inherit_id" ref="payment.transaction_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='acquirer_id']" position="after">
-                    <field name="payment_intent"/>
+                    <field name="payment_intent" attrs="{'invisible': [('mode', '=', 'Meta Mask')]}"/>
+                    <field name="from_address" attrs="{'invisible': [('mode', '=', 'Stripe')]}"/>
+                    <field name="to_address" attrs="{'invisible': [('mode', '=', 'Stripe')]}"/>
+                    <field name="hash_data" attrs="{'invisible': [('mode', '=', 'Stripe')]}"/>
+                    <field name="mode" invisible="1"/>
 <!--                    <field name="date"/>-->
                 </xpath>
 
