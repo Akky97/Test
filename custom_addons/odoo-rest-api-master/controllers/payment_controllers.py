@@ -201,7 +201,7 @@ def create_invoice(transaction_id, order):
             #     template.attachment_ids = [(6,0, data_id.ids)]
             outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
             template.email_from = outgoing_server_name
-            template.email_to = request.env.user.login
+            # template.email_to = request.env.user.login
             template.sudo().send_mail(invoice.id, force_send=True)
 
 
