@@ -107,7 +107,7 @@ class OdooAPI(http.Controller):
             if jdata:
                 if 'image' in jdata:
                     dict['image_1920'] = jdata.get('image')
-                    dict['is_image_remove'] = True
+                    dict['is_image_remove'] = False
                     # image = jdata.get('image')
                     # jdata.pop('image')
                     # res_id.sudo().write({
