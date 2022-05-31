@@ -183,7 +183,7 @@ def create_invoice(transaction_id, order):
         invoice = order._create_invoices(final=True)
         if invoice:
             res = invoice.action_post()
-            template = request.env.ref('odoo-rest-api-master.email_template_edi_invoice_extra')
+            # template = request.env.ref('odoo-rest-api-master.email_template_edi_invoice_extra')
             # data, data_format = request.env.ref('account.account_invoices').sudo()._render_qweb_pdf([invoice.id])
             # data_record = base64.b64encode(data)
             # if template:
@@ -198,10 +198,10 @@ def create_invoice(transaction_id, order):
             #     }
             #     data_id = request.env['ir.attachment'].sudo().create(ir_values)
             #     template.attachment_ids = [(6,0, data_id.ids)]
-            outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
-            template.email_from = outgoing_server_name
-            template.email_to = request.env.user.login
-            template.sudo().send_mail(invoice.id, force_send=True)
+            # outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
+            # template.email_from = outgoing_server_name
+            # template.email_to = request.env.user.login
+            # template.sudo().send_mail(invoice.id, force_send=True)
 
 
 
