@@ -175,7 +175,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": "Profile Deleted Successfully", "status": 200
+            "result": "Profile Image Deleted Successfully", "status": 200
         }
         return return_Response(res)
 

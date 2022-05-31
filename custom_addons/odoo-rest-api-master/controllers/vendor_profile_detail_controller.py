@@ -457,6 +457,7 @@ class OdooAPI(http.Controller):
                 }
                 if 'image' in jdata:
                     partnerVals['image_1920'] = jdata.get('image')
+                    partnerVals['is_image_remove'] = False
 
                 user.sudo().write(userVals)
                 user.partner_id.sudo().write(partnerVals)
