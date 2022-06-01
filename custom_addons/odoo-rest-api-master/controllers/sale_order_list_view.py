@@ -205,9 +205,9 @@ def get_address(id):
                            "country_id": id.country_id.id if id.country_id.id != False else "",
                            "country_name": id.country_id.name if id.country_id.name != False else "",
                            "website": id.website if id.website != False else "",
-                           "image":  base_url.value + '/web/image/' + str(res_id.id),
+                           # "image":  base_url.value + '/web/image/' + str(res_id.id),
                            "is_image_remove": id.is_image_remove,
-                           # "image": base_url.value + '/web/image/res.partner/' + str(res_id.id) + "/image_1920",
+                           "image": base_url.value + '/web/image/res.partner/' + str(id.id) + "/image_1920",
 
                    }
     return address
