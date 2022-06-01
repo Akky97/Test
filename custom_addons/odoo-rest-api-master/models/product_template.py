@@ -136,7 +136,7 @@ class PaymentTransaction(models.Model):
                     if txns['blockHash'] is not None:
                         data = w.eth.wait_for_transaction_receipt(rec.hash_data)
                         if data['status'] == 1:
-                            create_invoice(record.id, order)
+                            create_invoice(rec.id, order)
 
 
 class VariantApprovalWizard(models.TransientModel):

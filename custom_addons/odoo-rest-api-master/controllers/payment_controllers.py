@@ -10,6 +10,10 @@ _logger = logging.getLogger(__name__)
 from .notification_controller import *
 import stripe
 
+from web3 import Web3
+
+w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+
 
 def refund_payment(transaction_id, amount):
     stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
@@ -586,6 +590,33 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
+    @http.route('/api/v1/get_transaction_details', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def get_transaction_details(self, **params):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        try:
+            if jdata:
+                if not jdata.get('hash_data'):
+                    msg = {"message": "Hash is missing from the parameter.", "status_code": 400}
+                    return return_Response_error(msg)
+            txns = w.eth.get_transaction(jdata.get('hash_data'))
+            if txns['blockHash'] is None:
+                msg = {"message": "Pending-Transaction not Confirmed", "status_code": 400}
+                return return_Response_error(msg)
+            else:
+                data = w.eth.wait_for_transaction_receipt(jdata.get('hash_data'))
+                if data['status'] == 1:
+                    msg = {"message": "Transaction Confirmed", "status_code": 200}
+                    return return_Response(msg)
+                else:
+                    msg = {"message": "Transaction not Confirmed", "status_code": 400}
+                    return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @validate_token
     @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def confirm_order_send_mail(self, **params):
         try:
@@ -605,7 +636,7 @@ class WebsiteSale(WebsiteSale):
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
             if jdata and order:
-                if 'transaction_id' in jdata and jdata.get('transaction_id'):
+                if 'transaction_id' in jdata and jdata.get('transaction_id') and 'is_payment_done' in jdata:
                     device_name = None
                     if 'device_name' in jdata and jdata.get('device_name'):
                         device_name = jdata.get('device_name')
@@ -621,11 +652,10 @@ class WebsiteSale(WebsiteSale):
                                 order.sudo().write({
                                     'in_process': True
                                 })
+                            if 'is_payment_done' not in jdata:
                                 res = {"message": 'Success', 'status': 200}
                                 return return_Response(res)
-                            else:
-                                msg = {"message": "Something Went Wrong.", "status_code": 400}
-                                return return_Response_error(msg)
+                            
                     transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
                     if check:
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
