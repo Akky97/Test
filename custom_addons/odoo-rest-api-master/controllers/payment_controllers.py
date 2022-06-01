@@ -600,11 +600,11 @@ class WebsiteSale(WebsiteSale):
             if jdata:
                 if not jdata.get('hash_data'):
                     msg = {"message": "Hash is missing from the parameter.", "status_code": 400}
-                    return return_Response_error(msg)
+                    return return_Response(msg)
             txns = w.eth.get_transaction(jdata.get('hash_data'))
             if txns['blockHash'] is None:
                 msg = {"message": "Pending-Transaction not Confirmed", "status_code": 400}
-                return return_Response_error(msg)
+                return return_Response(msg)
             else:
                 data = w.eth.wait_for_transaction_receipt(jdata.get('hash_data'))
                 if data['status'] == 1:
@@ -612,7 +612,7 @@ class WebsiteSale(WebsiteSale):
                     return return_Response(msg)
                 else:
                     msg = {"message": "Transaction not Confirmed", "status_code": 400}
-                    return return_Response_error(msg)
+                    return return_Response(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
