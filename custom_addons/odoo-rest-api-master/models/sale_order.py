@@ -123,4 +123,7 @@ class ProjectTaskPando(models.Model):
         result = super(ProjectTaskPando, self).create(vals_list)
         return result
 
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
 
+    in_process = fields.Boolean('in Process', default=False)

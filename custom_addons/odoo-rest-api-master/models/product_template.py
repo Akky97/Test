@@ -1,6 +1,11 @@
+import datetime
+
 from odoo import api, fields, models, _
 from odoo.http import request, route, Controller
 
+from web3 import Web3
+
+w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
 
 class MarketplaceStock(models.Model):
     _inherit = "marketplace.stock"
@@ -73,6 +78,43 @@ class ProductProduct(models.Model):
     rating_count = fields.Float('Rating Count')
 
 
+def payment_validate(transaction_id, order):
+    res = False
+    transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
+    if transaction:
+        res = transaction.sudo().write({
+            'state': 'done',
+            'date': datetime.datetime.now()
+        })
+        if res:
+            res = order.action_confirm()
+    return res
+
+
+def dispatch_order(order):
+    stockPicking = request.env['stock.picking'].sudo().search([('sale_id', '=', order.id)])
+    for rec in stockPicking:
+        stockMoveLine = request.env['stock.move.line'].sudo().search([('picking_id', '=', rec.id)])
+        for res in stockMoveLine:
+            res.sudo().write({'qty_done': res.product_uom_qty})
+        rec.button_validate()
+
+
+def create_invoice(transaction_id, order):
+    res = payment_validate(transaction_id, order)
+    result = dispatch_order(order)
+    for line in order.order_line:
+        line.sudo().write({'shipping_Details': 'ordered'})
+    if res:
+        invoice = order._create_invoices(final=True)
+        if invoice:
+            res = invoice.action_post()
+            template = request.env.ref('account.email_template_edi_invoice')
+            outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
+            template.email_from = outgoing_server_name
+            template.sudo().send_mail(invoice.id, force_send=True)
+
+
 class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
@@ -83,6 +125,20 @@ class PaymentTransaction(models.Model):
     to_address = fields.Char('To Address')
     hash_data = fields.Char('Hash Data')
     mode = fields.Selection([('Stripe', 'Stripe'), ('Meta Mask', 'Meta Mask')], string='Mode Of Payment')
+
+    def meta_mask_confirm_sale_order(self):
+        record = self.env['payment.transaction'].sudo().search([('state', '=', 'pending'), ('acquirer_id.name', '=', 'Meta Mask')], order='id desc')
+        for rec in record:
+            sales = rec.sale_order_ids
+            for order in sales:
+                if order.state == 'draft' and order.in_process and rec.hash_data:
+                    txns = w.eth.get_transaction(rec.hash_data)
+                    if txns['blockHash'] is not None:
+                        data = w.eth.wait_for_transaction_receipt(rec.hash_data)
+                        if data['status'] == 1:
+                            create_invoice(record.id, order)
+
+
 class VariantApprovalWizard(models.TransientModel):
     _inherit = 'variant.approval.wizard'
 

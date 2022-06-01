@@ -2,4 +2,16 @@
     <data>
 
     </data>
+
+    <record id="meta_mask_scheduler_action" model="ir.cron">
+        <field name="name">Meta Mask Payment</field>
+        <field name="model_id" ref="model_payment_transaction"/>
+        <field name="state">code</field>
+        <field name="code">model.meta_mask_confirm_sale_order()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
 </odoo>

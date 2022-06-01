@@ -39,7 +39,8 @@
         'views/email_template.xml',
         'views/notification_center_view.xml',
         'data/pando_data.xml',
-        'views/report_invoice_pando.xml'
+        'views/report_invoice_pando.xml',
+        'demo/demo.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
