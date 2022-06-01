@@ -636,7 +636,7 @@ class WebsiteSale(WebsiteSale):
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
             if jdata and order:
-                if 'transaction_id' in jdata and jdata.get('transaction_id') and 'is_payment_done' in jdata:
+                if 'transaction_id' in jdata and jdata.get('transaction_id'):
                     device_name = None
                     if 'device_name' in jdata and jdata.get('device_name'):
                         device_name = jdata.get('device_name')
@@ -652,7 +652,7 @@ class WebsiteSale(WebsiteSale):
                                 order.sudo().write({
                                     'in_process': True
                                 })
-                            if 'is_payment_done' not in jdata:
+                            if jdata.get('is_payment_done'):
                                 res = {"message": 'Success', 'status': 200}
                                 return return_Response(res)
                             
