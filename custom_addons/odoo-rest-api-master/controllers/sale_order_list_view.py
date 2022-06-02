@@ -188,11 +188,16 @@ def optional_products(order_id=None):
 def get_address(id):
     address ={}
     if id:
+        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+        if id.is_image_remove:
+            image = 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1654085542image_1920.png'
+        else:
+            image = base_url.value + '/web/image/res.partner/' + str(id.id) + "/image_1920"
+
         res_id = request.env['ir.attachment'].sudo()
         res_id = res_id.sudo().search([('res_model', '=', 'res.partner'),
                                        ('res_field', '=', 'image_1920'),
                                        ('res_id', 'in', [id])])
-        base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
         address = {"id": id.id, "name": id.name, "phone": id.phone if id.phone != False else "",
                            "mobile": id.mobile if id.mobile != False else "",
                            "email": id.email if id.email != False else "",
@@ -207,7 +212,7 @@ def get_address(id):
                            "website": id.website if id.website != False else "",
                            # "image":  base_url.value + '/web/image/' + str(res_id.id),
                            "is_image_remove": id.is_image_remove,
-                           "image": base_url.value + '/web/image/res.partner/' + str(id.id) + "/image_1920",
+                           "image": image,
 
                    }
     return address
