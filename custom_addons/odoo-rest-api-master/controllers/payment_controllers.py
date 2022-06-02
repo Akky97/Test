@@ -385,7 +385,7 @@ class WebsiteSale(WebsiteSale):
             website = request.env['website'].sudo().browse(1)
             # website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -422,7 +422,7 @@ class WebsiteSale(WebsiteSale):
             website = request.env['website'].sudo().browse(1)
             # website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -457,7 +457,7 @@ class WebsiteSale(WebsiteSale):
                 return return_Response_error(error)
             website = request.env['website'].sudo().browse(1)
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -486,7 +486,7 @@ class WebsiteSale(WebsiteSale):
             website = request.env['website'].sudo().browse(1)
             # website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -631,7 +631,7 @@ class WebsiteSale(WebsiteSale):
                 partner = request.env['res.partner'].sudo().search([('id', '=', int(jdata.get('partner_id')))])
             else:
                 partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -648,11 +648,14 @@ class WebsiteSale(WebsiteSale):
                                 msg = {"message": "From Add, To Add and hash is missing.", "status_code": 400}
                                 return return_Response_error(msg)
                             check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'))
-                            if check:
+                            # if check:
+                            #     order.sudo().write({
+                            #         'in_process': True
+                            #     })
+                            if not jdata.get('is_payment_done'):
                                 order.sudo().write({
                                     'in_process': True
                                 })
-                            if not jdata.get('is_payment_done'):
                                 res = {"message": 'Success', 'status': 200}
                                 return return_Response(res)
                             

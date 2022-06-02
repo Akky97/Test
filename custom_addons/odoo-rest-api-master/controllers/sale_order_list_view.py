@@ -509,7 +509,7 @@ class WebsiteSale(WebsiteSale):
             sale_order = []
             website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -815,7 +815,7 @@ class WebsiteSale(WebsiteSale):
             dict = {}
             website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
