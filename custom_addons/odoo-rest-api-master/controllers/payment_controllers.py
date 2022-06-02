@@ -40,8 +40,7 @@ def update_transaction_data(transaction_id, from_address, to_address, hash_data,
             'from_address': from_address,
             'to_address': to_address,
             'hash_data': hash_data,
-            'mode': mode,
-            'state': 'pending'
+            'mode': mode
         })
         return True
     return False
@@ -126,7 +125,7 @@ def create_transaction(acquirer_id):
     # website = request.website
     website = request.env['website'].sudo().browse(1)
     partner = request.env.user.partner_id
-    order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+    order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                      ('partner_id', '=', partner.id),
                                                      ('website_id', '=', website.id)],
                                                     order='write_date DESC', limit=1)
@@ -334,7 +333,7 @@ class WebsiteSale(WebsiteSale):
                     return return_Response_error(res)
                 website = request.env['website'].sudo().browse(1)
                 partner = request.env.user.partner_id
-                order_id = request.env['sale.order'].sudo().search([('state', '=', 'draft'), ('partner_id', '=', partner.id), ('website_id', '=', website.id)], order='write_date DESC', limit=1)
+                order_id = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'), ('partner_id', '=', partner.id), ('website_id', '=', website.id)], order='write_date DESC', limit=1)
                 if jdata.get('delivery_id'):
                     SaleOrderLine = request.env['sale.order.line']
                     delivery_lines = request.env['sale.order.line'].sudo().search([('order_id', 'in', order_id.ids), ('is_delivery', '=', True)])
@@ -385,7 +384,7 @@ class WebsiteSale(WebsiteSale):
             website = request.env['website'].sudo().browse(1)
             # website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -422,7 +421,7 @@ class WebsiteSale(WebsiteSale):
             website = request.env['website'].sudo().browse(1)
             # website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -457,7 +456,7 @@ class WebsiteSale(WebsiteSale):
                 return return_Response_error(error)
             website = request.env['website'].sudo().browse(1)
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -486,7 +485,7 @@ class WebsiteSale(WebsiteSale):
             website = request.env['website'].sudo().browse(1)
             # website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -598,21 +597,38 @@ class WebsiteSale(WebsiteSale):
             jdata = {}
         try:
             if jdata:
-                if not jdata.get('hash_data'):
+                if not jdata.get('hash_data') or not jdata.get('transaction_id'):
                     msg = {"message": "Hash is missing from the parameter.", "status_code": 400}
                     return return_Response_error(msg)
+            transaction_id = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
             txns = w.eth.get_transaction(jdata.get('hash_data'))
+            if not txns['value']:
+                transaction_id.sudo().write({
+                    'state': 'cancel'
+                })
+                msg = {"message": "Transaction Canceled", "status_code": 300}
+                return return_Response(msg)
             if txns['blockHash'] is None:
+                if not transaction_id.state == 'pending':
+                    transaction_id.sudo().write({
+                        'state': 'pending'
+                    })
                 msg = {"message": "Pending-Transaction not Confirmed", "status_code": 400}
-                return return_Response_error(msg)
+                return return_Response(msg)
             else:
                 data = w.eth.wait_for_transaction_receipt(jdata.get('hash_data'))
-                if data['status'] == 1:
+                if data['status'] == 1 and data['value'] > 0:
+                    transaction_id.sudo().write({
+                        'state': 'done'
+                    })
                     msg = {"message": "Transaction Confirmed", "status_code": 200}
                     return return_Response(msg)
                 else:
+                    transaction_id.sudo().write({
+                        'state': 'cancel'
+                    })
                     msg = {"message": "Transaction not Confirmed", "status_code": 400}
-                    return return_Response_error(msg)
+                    return return_Response(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
@@ -631,13 +647,15 @@ class WebsiteSale(WebsiteSale):
                 partner = request.env['res.partner'].sudo().search([('id', '=', int(jdata.get('partner_id')))])
             else:
                 partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
             if jdata and order:
                 if 'transaction_id' in jdata and jdata.get('transaction_id'):
                     device_name = None
+                    transaction = request.env['payment.transaction'].sudo().search(
+                        [('id', '=', int(jdata.get('transaction_id')))])
                     if 'device_name' in jdata and jdata.get('device_name'):
                         device_name = jdata.get('device_name')
                     if 'mode' in jdata and jdata.get('mode'):
@@ -648,18 +666,13 @@ class WebsiteSale(WebsiteSale):
                                 msg = {"message": "From Add, To Add and hash is missing.", "status_code": 400}
                                 return return_Response_error(msg)
                             check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'))
-                            # if check:
-                            #     order.sudo().write({
-                            #         'in_process': True
-                            #     })
-                            if not jdata.get('is_payment_done'):
+                            if transaction.state == 'pending':
                                 order.sudo().write({
                                     'in_process': True
                                 })
                                 res = {"message": 'Success', 'status': 200}
                                 return return_Response(res)
                             
-                    transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
                     if check:
                         invoice = create_invoice(int(jdata.get('transaction_id')), order)
                         vendor_message = f"""{order.name} Order Confirmed Successfully"""
@@ -881,6 +894,34 @@ class WebsiteSale(WebsiteSale):
         res = {
             "isSuccess": True,
             "total_count": record_count,
+            "record": temp, "count": len(temp), 'status': 200
+        }
+        return return_Response(res)
+
+    @validate_token
+    @http.route(['/api/v1/c/transaction_list/<order_id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    def transaction_list(self, order_id=None, **params):
+        temp = []
+        try:
+            if not id:
+                msg = {"message": "OrderId is missing from parameter", "status_code": 400}
+                return return_Response_error(msg)
+            domain = [('sale_order_ids', '=', int(order_id))]
+            return_order = request.env['payment.transaction'].sudo().search(domain, order='id DESC')
+            if return_order:
+                for rec in return_order:
+                    temp.append({
+                        'id': rec.id,
+                        'amount': rec.amount,
+                        'state': rec.state,
+                        'from_address': rec.from_address,
+                        'to_address': rec.to_address,
+                        'hash_data': rec.hash_data
+                    })
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "isSuccess": True,
             "record": temp, "count": len(temp), 'status': 200
         }
         return return_Response(res)

@@ -230,7 +230,7 @@ def sale_get_order(self, force_create=False, code=None, update_pricelist=False, 
         # self.ensure_one()
         # partner = self.env.user.partner_id
         partner = request.env['res.partner'].sudo().search([('id', '=', partner_id)])
-        order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+        order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
                                                          ('partner_id', '=', partner.id),
                                                          ('website_id', '=', website)],
                                                         order='write_date DESC', limit=1)
@@ -509,7 +509,7 @@ class WebsiteSale(WebsiteSale):
             sale_order = []
             website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
@@ -815,7 +815,7 @@ class WebsiteSale(WebsiteSale):
             dict = {}
             website = request.website
             partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([('state', '=', 'draft'),
+            order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
                                                              ('partner_id', '=', partner.id),
                                                              ('website_id', '=', website.id)],
                                                             order='write_date DESC', limit=1)
