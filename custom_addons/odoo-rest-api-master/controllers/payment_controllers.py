@@ -615,9 +615,13 @@ class WebsiteSale(WebsiteSale):
                     })
                 msg = {"message": "Pending-Transaction not Confirmed", "status_code": 400}
                 return return_Response(msg)
+            if txns['value'] == 0:
+                msg = {"message": "Transaction is Canceled or Reject", "status_code": 200}
+                return return_Response(msg)
+
             else:
                 data = w.eth.wait_for_transaction_receipt(jdata.get('hash_data'))
-                if data['status'] == 1 and data['value'] > 0:
+                if data['status'] == 1:
                     transaction_id.sudo().write({
                         'state': 'done'
                     })
