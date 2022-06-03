@@ -619,15 +619,13 @@ class WebsiteSale(WebsiteSale):
             transaction_id = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
             txns = w.eth.get_transaction(jdata.get('hash_data'))
             if not txns:
-                transaction_id.sudo().write({
-                    'state': 'cancel'
-                })
+                for rec in transaction_id.sale_order_ids:
+                    rec.action_cancel()
                 msg = {"message": "Transaction Canceled", "status_code": 300}
                 return return_Response(msg)
             if txns['value'] == 0:
-                transaction_id.sudo().write({
-                    'state': 'cancel'
-                })
+                for rec in transaction_id.sale_order_ids:
+                    rec.action_cancel()
                 msg = {"message": "Transaction Canceled", "status_code": 300}
                 return return_Response(msg)
             if txns['blockHash'] is None:
@@ -646,16 +644,14 @@ class WebsiteSale(WebsiteSale):
                     msg = {"message": "Transaction Confirmed", "status_code": 200}
                     return return_Response(msg)
                 else:
-                    transaction_id.sudo().write({
-                        'state': 'cancel'
-                    })
+                    for rec in transaction_id.sale_order_ids:
+                        rec.action_cancel()
                     msg = {"message": "Transaction not Confirmed", "status_code": 400}
                     return return_Response(msg)
         except Exception as e:
             if transaction_id:
-                transaction_id.sudo().write({
-                    'state': 'cancel'
-                })
+                for rec in transaction_id.sale_order_ids:
+                    rec.action_cancel()
             msg = {"message": "Transaction Canceled", "status_code": 300}
             return return_Response(msg)
 
