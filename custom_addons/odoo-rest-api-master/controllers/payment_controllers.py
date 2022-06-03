@@ -591,6 +591,7 @@ class WebsiteSale(WebsiteSale):
     @validate_token
     @http.route('/api/v1/get_transaction_details', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_transaction_details(self, **params):
+        transaction_id = False
         try:
             jdata = json.loads(request.httprequest.stream.read())
         except:
@@ -635,8 +636,15 @@ class WebsiteSale(WebsiteSale):
                     })
                     msg = {"message": "Transaction not Confirmed", "status_code": 400}
                     return return_Response(msg)
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
+        except Exception as e:
+            if transaction_id:
+                transaction_id.sudo().write({
+                    'state': 'cancel'
+                })
+            msg = {"message": "Transaction Canceled", "status_code": 300}
+            return return_Response(msg)
+
+
 
     @validate_token
     @http.route('/api/v1/c/confirm_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
