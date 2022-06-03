@@ -30,3 +30,17 @@ class ResPartner(models.Model):
                     "image_data": img
                     }
             request.env['notification.center'].sudo().create(vals)
+
+    def _compute_last_website_so_id(self):
+        SaleOrder = self.env['sale.order']
+        for partner in self:
+            is_public = any(u._is_public() for u in partner.with_context(active_test=False).user_ids)
+            website = request.env['website'].sudo().browse(1)
+            if website and not is_public:
+                partner.last_website_so_id = SaleOrder.search([
+                    ('partner_id', '=', partner.id),
+                    ('website_id', '=', website.id),
+                    ('state', '=', 'draft'),('in_process', '=', False)
+                ], order='write_date desc', limit=1)
+            else:
+                partner.last_website_so_id = SaleOrder  # Not in a website context or public User

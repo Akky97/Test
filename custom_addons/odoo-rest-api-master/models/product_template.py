@@ -132,11 +132,14 @@ class PaymentTransaction(models.Model):
             sales = rec.sale_order_ids
             for order in sales:
                 if order.state == 'draft' and order.in_process and rec.hash_data:
-                    txns = w.eth.get_transaction(rec.hash_data)
-                    if txns['blockHash'] is not None:
-                        data = w.eth.wait_for_transaction_receipt(rec.hash_data)
-                        if data['status'] == 1:
-                            create_invoice(rec.id, order)
+                    try:
+                        txns = w.eth.get_transaction(rec.hash_data)
+                        if txns['blockHash'] is not None:
+                            data = w.eth.wait_for_transaction_receipt(rec.hash_data)
+                            if data['status'] == 1:
+                                create_invoice(rec.id, order)
+                    except Exception as e:
+                        print(e)
 
 
 class VariantApprovalWizard(models.TransientModel):
