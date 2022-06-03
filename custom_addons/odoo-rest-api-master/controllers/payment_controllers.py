@@ -602,7 +602,7 @@ class WebsiteSale(WebsiteSale):
                     return return_Response_error(msg)
             transaction_id = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
             txns = w.eth.get_transaction(jdata.get('hash_data'))
-            if not txns['value']:
+            if txns['value'] == 0:
                 transaction_id.sudo().write({
                     'state': 'cancel'
                 })
@@ -615,10 +615,6 @@ class WebsiteSale(WebsiteSale):
                     })
                 msg = {"message": "Pending-Transaction not Confirmed", "status_code": 400}
                 return return_Response(msg)
-            if txns['value'] == 0:
-                msg = {"message": "Transaction is Canceled or Reject", "status_code": 200}
-                return return_Response(msg)
-
             else:
                 data = w.eth.wait_for_transaction_receipt(jdata.get('hash_data'))
                 if data['status'] == 1:
