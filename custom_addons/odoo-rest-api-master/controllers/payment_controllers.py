@@ -939,9 +939,12 @@ class WebsiteSale(WebsiteSale):
                         'id': rec.id,
                         'amount': rec.amount,
                         'state': rec.state,
+                        'payment_method_id': rec.acquirer_id.id,
+                        'payment_mode': rec.acquirer_id.name,
                         'from_address': rec.from_address,
                         'to_address': rec.to_address,
-                        'hash_data': rec.hash_data
+                        'hash_data': rec.hash_data,
+                        'payment_intent': rec.payment_intent
                     })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
