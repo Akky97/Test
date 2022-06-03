@@ -420,6 +420,12 @@ class SaleOrderController(http.Controller):
                     'url': url,
                     'symbol': records.currency_id.symbol if records.currency_id.symbol != False else "",
                 }
+                for rec in records.transaction_ids:
+                    value['payment_mode'] = rec.acquirer_id.name
+                    if value['payment_mode'] == 'Stripe':
+                        value['payment_transaction_id'] = rec.payment_intent or ''
+                    else:
+                        value['payment_transaction_id'] = rec.hash_data or ''
             else:
                 error = {"message": "Order List Is Empty", "status": 400}
                 return return_Response_error(error)
