@@ -7,7 +7,8 @@
                     Payment transaction Method : <b><span t-field="o.pando_transaction_id.acquirer_id.name"/></b>
                 </p>
                 <p t-if="o.pando_transaction_id" name="payment_reference">
-                    Payment Reference ID : <b><span t-field="o.pando_transaction_id.payment_intent"/></b>
+                    Payment Reference ID : <b><span t-if="o.pando_transaction_id.acquirer_id.name == 'Stripe'" t-field="o.pando_transaction_id.payment_intent"/>
+                <span t-if="o.pando_transaction_id.acquirer_id.name == 'Meta Mask'" t-field="o.pando_transaction_id.hash_data"/></b>
                 </p>
             </xpath>
         </template>

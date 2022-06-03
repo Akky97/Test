@@ -35,15 +35,30 @@ def refund_payment(transaction_id, amount):
 
 def update_transaction_data(transaction_id, from_address, to_address, hash_data, mode):
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
-    if transaction:
-        transaction.sudo().write({
-            'from_address': from_address,
-            'to_address': to_address,
-            'hash_data': hash_data,
-            'mode': mode
-        })
-        return True
-    return False
+    try:
+        if transaction:
+            transaction.sudo().write({
+                'from_address': from_address,
+                'to_address': to_address,
+                'hash_data': hash_data,
+                'mode': mode
+            })
+            txns = w.eth.get_transaction(hash_data)
+            if not txns:
+                return False
+            if txns['value'] == 0:
+                return False
+            if txns['blockHash'] is None:
+                return True
+            else:
+                data = w.eth.wait_for_transaction_receipt(hash_data)
+                if data['status'] == 1:
+                    return True
+                else:
+                    return False
+    except Exception as e:
+        return False
+    return True
 
 
 def check_transaction_status(transaction_id, device_name=None, mode=None):
@@ -680,7 +695,7 @@ class WebsiteSale(WebsiteSale):
                                 msg = {"message": "From Add, To Add and hash is missing.", "status_code": 400}
                                 return return_Response_error(msg)
                             check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'))
-                            if transaction.state == 'pending':
+                            if transaction.state == 'pending' and check:
                                 order.sudo().write({
                                     'in_process': True
                                 })
