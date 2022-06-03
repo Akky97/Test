@@ -454,11 +454,11 @@ class SaleOrderController(http.Controller):
 
             if "search" in params and params.get('search'):
                 rec = request.env['sale.order.line'].sudo().search(['|',('order_id.name', '=', params.get('search')), ('name', 'ilike', params.get('search'))]).order_id.ids
-                record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id)), ('id', 'in', rec)])
-                records = request.env[model].sudo().search([('partner_id', '=', int(partner_id)), ('id', 'in', rec)], order='id desc', limit=limit, offset=offset)
+                record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id)), ('id', 'in', rec), ('state', 'not in', ['cancel'])])
+                records = request.env[model].sudo().search([('partner_id', '=', int(partner_id)), ('id', 'in', rec), ('state', 'not in', ['cancel'])], order='id desc', limit=limit, offset=offset)
             else:
-                record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id))])
-                records = request.env[model].sudo().search([('partner_id', '=', int(partner_id))], order='id desc',
+                record_count = request.env[model].sudo().search_count([('partner_id', '=', int(partner_id)), ('state', 'not in', ['cancel'])])
+                records = request.env[model].sudo().search([('partner_id', '=', int(partner_id)), ('state', 'not in', ['cancel'])], order='id desc',
                                                            limit=limit, offset=offset)
 
         except KeyError as e:
