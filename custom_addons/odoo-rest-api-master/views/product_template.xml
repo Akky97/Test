@@ -12,10 +12,10 @@
                 </xpath>
                 <xpath expr="//page[@name='variants']" position="after">
                 <page name="addition_info" string="Additional Information">
-                    <field name="additional_info" widget="html"/>
+                    <field name="additional_info"/>
                 </page>
                 <page name="shipping_returns" string="Shipping Returns">
-                    <field name="shipping_return" widget="html"/>
+                    <field name="shipping_return"/>
                 </page>
             </xpath>
             </field>
