@@ -96,6 +96,7 @@ def get_sale_order_line(order_id=None, order_line_id=None):
         solObject = solObject.search([('order_id','=',order_id)])
     if solObject:
         for rec in solObject:
+            category = []
             result = request.env['pando.images'].sudo().search([('product_id', '=', rec.product_id.id)])
             if not result:
                 result = request.env['pando.images'].sudo().search(
@@ -108,6 +109,10 @@ def get_sale_order_line(order_id=None, order_line_id=None):
                         "image_url": j.image_url,
                         'image_name': j.image_name
                     }
+            for z in rec.product_id.public_categ_ids:
+                category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
+                                 "image": base_url.value + '/web/image/product.public.category/' + str(
+                                     z.id) + "/image_1920", })
 
             saleOrderLine.append({
                 'id': rec.id if rec.id != False else "",
@@ -119,6 +124,7 @@ def get_sale_order_line(order_id=None, order_line_id=None):
                 'price_tax': rec.price_tax if rec.price_tax != False else 0.0,
                 'price_total': rec.price_total if rec.price_total != False else 0.0,
                 'quantity': rec.product_uom_qty if rec.product_uom_qty != False else 0.0,
+                "category": category,
                 # "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
                 'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",

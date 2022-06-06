@@ -134,7 +134,7 @@ class PaymentTransaction(models.Model):
                 if order.state == 'draft' and order.in_process and rec.hash_data:
                     try:
                         txns = w.eth.get_transaction(rec.hash_data)
-                        if txns['blockHash'] is not None:
+                        if txns and txns['blockHash'] is not None:
                             data = w.eth.wait_for_transaction_receipt(rec.hash_data)
                             if data['status'] == 1:
                                 create_invoice(rec.id, order)
