@@ -236,6 +236,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp
         }

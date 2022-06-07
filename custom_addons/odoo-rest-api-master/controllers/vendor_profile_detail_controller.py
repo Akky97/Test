@@ -341,7 +341,7 @@ class AuthSignupHome(Website):
                         user.sudo().write(userVals)
                         user.partner_id.sudo().write(partnerVals)
                         user.partner_id.set_to_pending()
-                        res = {"message": "Account Successfully Created", "status_code": 200}
+                        res = {"isSucess": True,"message": "Account Successfully Created", "status_code": 200}
                         vendor_message = f"You are successfully Signed Up"
                         generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
                                               model="res.partner", title="Seller Signup")
@@ -465,7 +465,7 @@ class OdooAPI(http.Controller):
                 generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
                                       model="res.partner", title="Seller Record Update")
 
-                res = {"message": "Record Successfully Updated", "status_code": 200}
+                res = {"isSucess": True, "message": "Record Successfully Updated", "status_code": 200}
                 return return_Response(res)
             else:
                 msg = {"message": "Something Went Wrong", "status_code": 400}
@@ -1078,6 +1078,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "message": "success",
             "status": 200
         }
@@ -1101,6 +1102,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "message": "success",
             "status": 200
         }
@@ -1128,6 +1130,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "message": "Record Updated Successfully",
             "status": 200
         }
@@ -1163,6 +1166,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "message": "Request Send Successfully",
             "status": 200
         }
@@ -1281,6 +1285,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "message": 'success',
             "status": 200
         }
@@ -1344,6 +1349,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
 
         res = {
+            "isSucess": True,
             'message': "Product updated Successfully",
             'status': 200
         }
@@ -1376,7 +1382,7 @@ class OdooAPI(http.Controller):
                 }
                 user.sudo().write(userVals)
                 set_to_reapproval(self=user.partner_id)
-                res = {"message": "Picking Address Created Successfully", "status_code": 200}
+                res = {"isSucess": True,"message": "Picking Address Created Successfully", "status_code": 200}
                 vendor_message = f"Picking Address Created Successfully"
                 generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
                                       model="pickup.address", title="Picking Address Create")
@@ -1409,7 +1415,7 @@ class OdooAPI(http.Controller):
                     picking_address.sudo().write(pickingVals)
                     set_to_reapproval(self=uid.partner_id)
                     # user.partner_id.set_to_pending()
-                    res = {"message": "Picking Address Updated Successfully", "status_code": 200}
+                    res = {"isSucess": True, "message": "Picking Address Updated Successfully", "status_code": 200}
                     vendor_message = "Picking Address Updated Successfully"
                     generate_notification(seller_id=uid.partner_id.id, vendor_message=vendor_message,
                                           model="pickup.address", title="Picking Address Update")
@@ -1481,6 +1487,7 @@ class OdooAPI(http.Controller):
                     'partner_details': get_address(user.partner_id)
                 }
                 res = {
+                    "isSucess": True,
                     'record': record,
                     'status': 200
                 }
@@ -1502,8 +1509,9 @@ class OdooAPI(http.Controller):
             except:
                 jdata = {}
             if jdata:
-                domain.append(('date', '>=', jdata.get('from_date')))
-                domain.append(('date', '<=', jdata.get('to_date')))
+                if jdata.get('from_date') and jdata.get('to_date'):
+                    domain.append(('date', '>=', jdata.get('from_date')))
+                    domain.append(('date', '<=', jdata.get('to_date')))
 
             if "quator" in params and params.get('quator'):
                 from_date = datetime.datetime.now().date()
@@ -1553,6 +1561,66 @@ class OdooAPI(http.Controller):
                     "isSucess": True,
                     'record': temp,
                     'totalAmount': round(total, 2),
+                    'status': 200
+                }
+                return return_Response(res)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
+        except Exception as e:
+            msg = {"message": "Something Went Wrong", "status_code": 400}
+            return return_Response_error(msg)
+
+    @validate_token
+    @http.route(['/api/v1/v/generate_stock_report','/api/v1/v/generate_stock_report/<product_id>'], type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def generate_stock_report(self, product_id=None, **params):
+        try:
+            domain = [('marketplace_seller_id', '=', request.env.user.partner_id.id)]
+            if product_id:
+                domain.append(('product_id', '=', int(product_id)))
+            if 'state' in params:
+                domain.append(('state', '=', params['state']))
+            website = request.env['website'].sudo().browse(1)
+            warehouse = request.env['stock.warehouse'].sudo().search([('company_id', '=', website.company_id.id)], limit=1)
+            if "quator" in params and params.get('quator'):
+                from_date = datetime.datetime.now().date()
+                if params.get('quator') == 'week':
+                    to_date = from_date - timedelta(days=7)
+                if params.get('quator') == 'month':
+                    to_date = from_date - timedelta(days=30)
+                if params.get('quator') == 'q1':
+                    to_date = from_date - timedelta(days=90)
+                if params.get('quator') == 'q2':
+                    to_date = from_date - timedelta(days=180)
+                if params.get('quator') == 'q3':
+                    to_date = from_date - timedelta(days=270)
+                if params.get('quator') == 'q4':
+                    to_date = from_date - timedelta(days=365)
+                if from_date and to_date:
+                    domain.append(('create_date', '>=', from_date))
+                    domain.append(('create_date', '<=', to_date))
+            if domain:
+                records = request.env['marketplace.stock'].sudo().search(domain, order='id desc')
+                temp = []
+                total = 0
+                for rec in records:
+                    vals = {
+                        'id': rec.id,
+                        'product_id': rec.product_id.id,
+                        'productName': rec.product_id.name,
+                        'new_qty': rec.new_quantity,
+                        'location_id': rec.location_id.id,
+                        'locationName': rec.location_id.name,
+                        'state': rec.state,
+                        'stock': rec.product_id.with_context(
+                            warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
+                            warehouse=warehouse.id).virtual_available > 0 else 0.0
+                    }
+                    temp.append(vals)
+                res = {
+                    "isSucess": True,
+                    'record': temp,
+                    'count': len(temp),
                     'status': 200
                 }
                 return return_Response(res)
@@ -1617,7 +1685,7 @@ class OdooAPI(http.Controller):
                     return return_Response_error(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {"message": "Status Updated Successfully", "status": 200}
+        res = {"isSucess": True, "message": "Status Updated Successfully", "status": 200}
         return return_Response(res)
 
     @validate_token
@@ -1637,7 +1705,7 @@ class OdooAPI(http.Controller):
                     return return_Response_error(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {"message": "Status Updated Successfully", "status": 200}
+        res = {"isSucess": True, "message": "Status Updated Successfully", "status": 200}
         return return_Response(res)
 
     @validate_token

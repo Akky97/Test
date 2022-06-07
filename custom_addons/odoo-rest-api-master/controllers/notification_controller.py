@@ -90,6 +90,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_count": record_count,
             "count": len(temp),
             "notifications": temp
@@ -129,6 +130,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "notifications": vals,
             'status': 200
         }
@@ -155,6 +157,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "result": "Record Updated Successfully", "status": 200
         }
         return return_Response(res)

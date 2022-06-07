@@ -45,6 +45,7 @@ class ControllerREST(http.Controller):
             ticket_id = request.env['project.task'].sudo().create(vals)
             if ticket_id:
                 res = {
+                    "isSucess": True,
                     'message': "Ticket created Successfully",
                     'status': 200
                 }
@@ -93,6 +94,7 @@ class ControllerREST(http.Controller):
                         }
                 temp.append(vals)
             res = {
+                "isSucess": True,
                 'data': temp,
                 'message': "Get Successfully ",
                 'status': 200
@@ -133,6 +135,7 @@ class ControllerREST(http.Controller):
                         }
                 temp.append(vals)
             res = {
+                "isSucess": True,
                 'data': temp,
                 'message': "Get Successfully ",
                 'status': 200
@@ -172,6 +175,7 @@ class ControllerREST(http.Controller):
                         }
                 temp.append(vals)
             res = {
+                "isSucess": True,
                 'data': temp,
                 'message': "Get Successfully ",
                 'status': 200
@@ -191,6 +195,7 @@ class ControllerREST(http.Controller):
                         }
                 temp.append(vals)
             res = {
+                "isSucess": True,
                 'data': temp,
                 'message': "Assigned To Data",
                 'status': 200
@@ -211,6 +216,7 @@ class ControllerREST(http.Controller):
                         }
                 temp.append(vals)
             res = {
+                "isSucess": True,
                 'data': temp,
                 'message': "Ticket Type Data",
                 'status': 200
@@ -254,6 +260,7 @@ class ControllerREST(http.Controller):
             ticket_id = request.env['project.task'].sudo().create(vals)
             if ticket_id:
                 res = {
+                    "isSucess": True,
                     'message': "Ticket created Successfully",
                     'status': 200
                 }
@@ -282,6 +289,7 @@ class ControllerREST(http.Controller):
                         }
                 temp.append(vals)
             res = {
+                "isSucess": True,
                 'data': temp,
                 'message': "Sale Order Line Data",
                 'status': 200
