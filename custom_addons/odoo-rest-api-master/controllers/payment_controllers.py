@@ -822,7 +822,7 @@ class WebsiteSale(WebsiteSale):
         return return_Response(res)
 
     @validate_token
-    @http.route(['/api/v1/v/get_return_order', '/api/v1/v/get_return_order/<id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route(['/api/v1/v/get_return_order', '/api/v1/v/get_return_order/<id>'], type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def get_return_order(self, id=None, **params):
         temp = []
         try:
@@ -831,12 +831,21 @@ class WebsiteSale(WebsiteSale):
                 domain.append(('id', '=', int(id)))
             if "state" in params and params.get('state'):
                 domain.append(('state', '=', params.get('state')))
+            try:
+                jdata = json.loads(request.httprequest.stream.read())
+            except:
+                jdata = {}
+            if jdata and jdata.get('from_date') and jdata.get('to_date'):
+                domain.append(('create_date', '>=', jdata.get('from_date')))
+                domain.append(('create_date', '<=', jdata.get('to_date')))
+
             limit = 0
             offset = 0
             if "page" in params and params.get('page'):
                 limit = 5
                 page = int(params["page"])
                 offset = (page - 1) * 5
+
             record_count = request.env['return.policy'].sudo().search_count(domain)
             return_order = request.env['return.policy'].sudo().search(domain, order='id DESC', limit=limit, offset=offset)
             if return_order:
