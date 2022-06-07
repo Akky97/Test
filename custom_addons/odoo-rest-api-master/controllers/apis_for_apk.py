@@ -397,13 +397,15 @@ class WebsiteSale(WebsiteSale):
     @validate_token
     @http.route('/api/v1/apk/save_transaction_details', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def save_transaction_details(self, **params):
+        stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+        stripe.api_key = stripe_key.value
         try:
             try:
                 jdata = json.loads(request.httprequest.stream.read())
             except:
                 jdata = {}
             if jdata:
-                if jdata.get('transaction_id') and jdata.get('payment_intent') :
+                if jdata.get('transaction_id') and jdata.get('payment_intent'):
                     transaction = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
                     intent_data = stripe.PaymentIntent.retrieve(
                         jdata.get('payment_intent'),
