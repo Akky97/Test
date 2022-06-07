@@ -473,6 +473,26 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
+    @validate_token
+    @http.route('/api/v1/v/picking_delete/<id>', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def delete_picking_address(self, id=None, **p):
+        try:
+            if id:
+                record = request.env['pickup.address'].sudo().search([('id', '=', int(id))])
+                if record:
+                    record.sudo().unlink()
+                    res = {
+                        "isSucess": True,
+                        "message": "Record Deleted.",
+                        "status": 200
+                    }
+                    return return_Response(res)
+
+            else:
+                msg = {"message": "Something Went Wrong", "status_code": 400}
+                return return_Response_error(msg)
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
 
     @validate_token
     @http.route('/api/v1/v/get_product_category', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
