@@ -802,7 +802,7 @@ class WebsiteSale(WebsiteSale):
                         return_order.payment_intent,
                     )
                     if res.status == 'succeeded':
-                        amount = int(return_order.order_line.price_unit) * return_order.product_uom_qty * 100
+                        amount = int(return_order.order_line.price_unit * return_order.product_uom_qty) * 100
                         result = stripe.Refund.create(payment_intent=return_order.payment_intent, amount=amount)
                         if result.status == 'succeeded':
                             return_order.refund()
