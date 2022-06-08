@@ -33,7 +33,7 @@ def refund_payment(transaction_id, amount):
     return res
 
 
-def update_transaction_data(transaction_id, from_address, to_address, hash_data, mode):
+def update_transaction_data(transaction_id, from_address, to_address, hash_data, mode, chain_id):
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     try:
         if transaction:
@@ -41,8 +41,19 @@ def update_transaction_data(transaction_id, from_address, to_address, hash_data,
                 'from_address': from_address,
                 'to_address': to_address,
                 'hash_data': hash_data,
-                'mode': mode
+                'mode': mode,
+                'chain_id': chain_id
             })
+            # Test net
+            if chain_id == '0x3':
+                w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+            #     polygon test net
+            if chain_id == '0x13881':
+                w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
+            #     Main net
+            if chain_id == '0x1':
+                w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+
             txns = w.eth.get_transaction(hash_data)
             if not txns:
                 return False
@@ -613,10 +624,20 @@ class WebsiteSale(WebsiteSale):
             jdata = {}
         try:
             if jdata:
-                if not jdata.get('hash_data') or not jdata.get('transaction_id'):
+                if not jdata.get('hash_data') or not jdata.get('transaction_id') or not jdata.get('chain_id'):
                     msg = {"message": "Hash is missing from the parameter.", "status_code": 400}
                     return return_Response_error(msg)
             transaction_id = request.env['payment.transaction'].sudo().search([('id', '=', int(jdata.get('transaction_id')))])
+            # Test net
+            if jdata.get('chain_id') == '0x3':
+                w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+            #     polygon test net
+            if jdata.get('chain_id') == '0x13881':
+                w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
+            #     Main net
+            if jdata.get('chain_id') == '0x1':
+                w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+
             txns = w.eth.get_transaction(jdata.get('hash_data'))
             if not txns:
                 for rec in transaction_id.sale_order_ids:
@@ -687,10 +708,10 @@ class WebsiteSale(WebsiteSale):
                         if jdata.get('mode') == 'Stripe':
                             check = check_transaction_status(int(jdata.get('transaction_id')),device_name, mode=jdata.get('mode'))
                         if jdata.get('mode') == 'Meta Mask':
-                            if not jdata.get('from_address') or not jdata.get('to_address') or not jdata.get('hash_data'):
+                            if not jdata.get('from_address') or not jdata.get('to_address') or not jdata.get('hash_data') or not jdata.get('chain_id'):
                                 msg = {"message": "From Add, To Add and hash is missing.", "status_code": 400}
                                 return return_Response_error(msg)
-                            check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'))
+                            check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'), jdata.get('chain_id'))
                             if transaction.state == 'pending' and check:
                                 order.sudo().write({
                                     'in_process': True
