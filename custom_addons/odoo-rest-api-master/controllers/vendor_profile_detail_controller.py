@@ -70,6 +70,30 @@ def check_gst_number(gst, state_id):
 
     return vals
 
+def get_product_image(product_id):
+    result = request.env['pando.images'].sudo().search([('product_id', '=', product_id.id)])
+    if not result:
+        result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', product_id.product_tmpl_id.id)])
+    images = {}
+    image = []
+    base_image = []
+    for j in result:
+        if j.type == 'multi_image':
+            image.append({"id": j.product_id.id,
+                          "image": j.image_url,
+                          "url": j.image_url,
+                          'name': j.image_name,
+                          })
+        else:
+            base_image = {
+                "id": j.product_id.id,
+                "image_url": j.image_url,
+                'image_name': j.image_name
+            }
+    images['main_image'] = base_image
+    images['extra_image'] = image
+    return images
+
 
 def get_rating_avg(product):
     records = request.env['rating.rating'].sudo().search([('rating_product_id','=',product.id)])
@@ -462,8 +486,14 @@ class OdooAPI(http.Controller):
                 user.sudo().write(userVals)
                 user.partner_id.sudo().write(partnerVals)
                 vendor_message = "Your Profile Is Successfully Updated"
+                base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+                if user.partner_id.is_image_remove:
+                    image = 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1654085542image_1920.png'
+                else:
+                    image = base_url.value + '/web/image/res.partner/' + str(user.partner_id.id) + "/image_1920"
+
                 generate_notification(seller_id=user.partner_id.id, vendor_message=vendor_message,
-                                      model="res.partner", title="Seller Record Update")
+                                      model="res.partner", title="Seller Record Update", image_data=image)
 
                 res = {"isSucess": True, "message": "Record Successfully Updated", "status_code": 200}
                 return return_Response(res)
@@ -759,8 +789,11 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         if idList:
             vendor_message = f"{name} Created Successfully"
-            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
-                                  model="product.template", title="Product Template")
+            image = get_product_image(idList[0])
+            if image['main_image']:
+                generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template", image_data=image['main_image'])
+            else:
+                generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template")
 
         res = {
             "isSucess": True,
@@ -795,7 +828,6 @@ class OdooAPI(http.Controller):
 
         if "status" in params and params.get('status'):
             domain.append(('marketplace_status', 'in', [params['status']]))
-
 
         limit = 0
         offset = 0
@@ -1179,7 +1211,11 @@ class OdooAPI(http.Controller):
                         object.request()
                         vendor_message = f"""Inventory Update Request For {product.name} Sent Successfully""",
                         title = "Requested For Inventory Update"
-                        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="marketplace.stock",title=title)
+                        image = get_product_image(product)
+                        if image['main_image']:
+                            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="marketplace.stock",title=title, image_data=image['main_image'])
+                        else:
+                            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template")
             else:
                 msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
@@ -1355,8 +1391,13 @@ class OdooAPI(http.Controller):
                     resId = record.product_tmpl_id.sudo().write(dict)
                     if resId:
                         vendor_message = f"{record.name} Updated Successfully"
-                        generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
-                                              model="product.template", title="Product Template")
+                        image = get_product_image(record)
+                        if image['main_image']:
+                            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                                  model="product.template", title="Product Template", image_data=image['main_image'])
+                        else:
+                            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
+                                                  model="product.template", title="Product Template")
                         record.product_tmpl_id.reject()
                         record.product_tmpl_id.set_pending()
                 else:

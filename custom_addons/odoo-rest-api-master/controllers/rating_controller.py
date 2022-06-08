@@ -192,7 +192,12 @@ class PortalChatter(PortalChatter):
                     'show_on_about_us': rec.show_on_about_us
                 }
                 if res_id:
-                    vals['image'] = base_url.value + '/web/image/' + str(res_id.id)
+                    if rec.partner_id.is_image_remove:
+                        image = 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1654085542image_1920.png'
+                    else:
+                        image = base_url.value + '/web/image/res.partner/' + str(rec.partner_id.id) + "/image_1920"
+                    # vals['image'] = base_url.value + '/web/image/' + str(res_id.id)
+                    vals['image'] = image
                 temp.append(vals)
 
         except (SyntaxError, QueryFormatError) as e:

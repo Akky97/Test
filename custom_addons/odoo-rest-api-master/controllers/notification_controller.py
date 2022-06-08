@@ -29,7 +29,13 @@ def send_notification(title, message, user, deviceToken, image=None):
                                        ('res_field', '=', 'image_1920'),
                                        ('res_id', 'in', [user.partner_id.id])], limit=1)
         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-        image = base_url.value + '/web/image/' + str(res_id.id)
+        if user.partner_id.is_image_remove:
+            image = 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1654085542image_1920.png'
+        else:
+            image = base_url.value + '/web/image/res.partner/' + str(user.partner_id.id) + "/image_1920"
+
+        # image = base_url.value + '/web/image/' + str(res_id.id)
+        image = image
     if deviceToken:
         for device in deviceToken:
             headers = {

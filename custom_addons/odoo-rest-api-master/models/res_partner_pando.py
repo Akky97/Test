@@ -21,7 +21,11 @@ class ResPartner(models.Model):
                                            ('res_id', 'in', [self.id])])
             # res_id.sudo().write({"public": True})
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-            img = base_url.value + '/web/image/' + str(res_id.id)
+            if self.is_image_remove:
+                img = 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1654085542image_1920.png'
+            else:
+                img = base_url.value + '/web/image/res.partner/' + str(self.id) + "/image_1920"
+
             vals = {"seller_id": self.id,
                     "approve_by": uid,
                     "vendor_message": f"""You are approved by Admin as Seller""",

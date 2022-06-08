@@ -302,6 +302,11 @@ class WebsiteSale(WebsiteSale):
 
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
             for i in records:
+                if i.is_image_remove:
+                    image = 'https://pandomall.s3.ap-southeast-1.amazonaws.com/1654085542image_1920.png'
+                else:
+                    image = base_url.value + '/web/image/res.partner/' + str(i.id) + "/image_1920"
+
                 temp.append({"id": i.id, "name": i.name, "phone": i.phone if i.phone != False else "",
                              "mobile": i.mobile if i.mobile != False else "",
                              "email": i.email if i.email != False else "",
@@ -313,7 +318,8 @@ class WebsiteSale(WebsiteSale):
                              "zip": i.zip if i.zip != False else "",
                              "country_id": i.country_id.id if i.country_id.id != False else "",
                              "country_name": i.country_id.name if i.country_id.name != False else "",
-                             "image": base_url.value + '/web/image/' + str(res_id.id),
+                             # "image": base_url.value + '/web/image/' + str(res_id.id),
+                             "image": image,
                              "type": i.type,
                              "website": i.website if i.website != False else ""})
         except (SyntaxError, QueryFormatError) as e:
