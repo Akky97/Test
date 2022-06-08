@@ -791,7 +791,7 @@ class OdooAPI(http.Controller):
             vendor_message = f"{name} Created Successfully"
             image = get_product_image(idList[0])
             if image['main_image']:
-                generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template", image_data=image['main_image'])
+                generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template", image_data=image['main_image']['image_url'])
             else:
                 generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template")
 
@@ -1213,7 +1213,7 @@ class OdooAPI(http.Controller):
                         title = "Requested For Inventory Update"
                         image = get_product_image(product)
                         if image['main_image']:
-                            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="marketplace.stock",title=title, image_data=image['main_image'])
+                            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="marketplace.stock",title=title, image_data=image['main_image']['image_url'])
                         else:
                             generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template")
             else:
@@ -1394,7 +1394,7 @@ class OdooAPI(http.Controller):
                         image = get_product_image(record)
                         if image['main_image']:
                             generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
-                                                  model="product.template", title="Product Template", image_data=image['main_image'])
+                                                  model="product.template", title="Product Template", image_data=image['main_image']['image_url'])
                         else:
                             generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
                                                   model="product.template", title="Product Template")
