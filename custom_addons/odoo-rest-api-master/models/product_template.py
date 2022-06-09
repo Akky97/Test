@@ -172,8 +172,7 @@ class VariantApprovalWizard(models.TransientModel):
             "vendor_message": f"""Your product {product_id.name} is approved by Admin""",
             "model": "product.template",
             "title": "Product",
-            "image_data": img,
-            'file_url': base_image.get('file_url')
+            "image_data": img
         }
         request.env['notification.center'].sudo().create(vals)
         if not product_id.is_initinal_qty_set and len(product_id.product_variant_ids) == 1:
