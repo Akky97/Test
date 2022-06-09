@@ -796,11 +796,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
         if idList:
             vendor_message = f"{name} Created Successfully"
-            image = get_product_image(idList[0])
-            if image['main_image']:
-                generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template", image_data=image['main_image']['image_url'])
-            else:
-                generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template")
+            generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message, model="product.template", title="Product Template")
 
         res = {
             "isSucess": True,
