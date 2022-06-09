@@ -11,6 +11,9 @@ class PandoImages(models.Model):
     product_id = fields.Many2one('product.product', string='Product')
     type = fields.Selection([('base_image', 'Base Image'), ('multi_image', 'Multi Image')], string='Image Type')
     img_attach = fields.Html('Image', compute="_get_img_html")
+    file_name = fields.Char('File Name')
+    file_hash = fields.Char('File Hash')
+    size = fields.Char('Size')
 
     def _get_img_html(self):
         for elem in self:

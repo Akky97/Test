@@ -22,5 +22,22 @@
             <field name="key">strip_key</field>
             <field name="value">sk_test_51Kg63YHk8ErRzzRMjkcktAlL10lqxtkuAShLk09e0kD8iEE7aGCwoV8tHoDtKICnLlNEc6GEpGdXVFw3QBetvkGW00rsDPcDUV</field>
         </record>
+        <record id="test_net" model="ir.config_parameter">
+            <field name="key">test_net</field>
+            <field name="value">https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e</field>
+        </record>
+        <record id="polygon" model="ir.config_parameter">
+            <field name="key">polygon</field>
+            <field name="value">https://rpc-mumbai.matic.today</field>
+        </record>
+        <record id="admin_address" model="ir.config_parameter">
+            <field name="key">admin_address</field>
+            <field name="value">0x444a9B147095F71ab1854e43F04a147c8bBd7d45</field>
+        </record>
+        <record id="main_net" model="ir.config_parameter">
+            <field name="key">main_net</field>
+            <field name="value">https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e</field>
+        </record>
+
     </data>
 </odoo>

@@ -160,6 +160,9 @@ class VariantApprovalWizard(models.TransientModel):
                     "image_url": j.image_url,
                     'image_name': j.image_name
                 }
+                if j.file_hash:
+                    base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
+
         img = base_image.get(
             'image_url') if 'image_url' in base_image else s3_image.value
         vals = {
@@ -169,7 +172,8 @@ class VariantApprovalWizard(models.TransientModel):
             "vendor_message": f"""Your product {product_id.name} is approved by Admin""",
             "model": "product.template",
             "title": "Product",
-            "image_data": img
+            "image_data": img,
+            'file_url': base_image.get('file_url')
         }
         request.env['notification.center'].sudo().create(vals)
         if not product_id.is_initinal_qty_set and len(product_id.product_variant_ids) == 1:

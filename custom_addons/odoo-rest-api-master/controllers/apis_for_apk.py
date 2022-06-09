@@ -29,6 +29,9 @@ def get_product_data(records):
                     "image_url": j.image_url,
                     'image_name': j.image_name
                 }
+                if j.file_hash:
+                    base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
+
         for c in rec.product_template_attribute_value_ids:
             id.append(c.attribute_id.id)
         variant_name = ''
@@ -54,6 +57,7 @@ def get_product_data(records):
             'price': rec.price,
             "category": category,
             "rating": round(rec.rating_count, 2),
+            "file_url": base_image.get('file_url'),
             'review': request.env['rating.rating'].sudo().search_count([('rating_product_id','=',rec.id)])
 
         })

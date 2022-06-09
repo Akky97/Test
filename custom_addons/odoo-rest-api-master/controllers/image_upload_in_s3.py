@@ -1,4 +1,7 @@
+import json
+
 import boto3
+import requests
 from botocore.exceptions import ClientError
 import os
 import logging
@@ -18,7 +21,14 @@ ts = calendar.timegm(time.gmtime())
 bucket = 'pandomall'
 path = '/home/ubuntu/Pando-Mall/custom_addons/odoo-rest-api-master/static/src/image/'
 
+
 class OdooAPI(http.Controller):
+
+    def ipfs_file_upload(self, file_name):
+        url = 'https://clouddasboard.pandoproject.org/api/v0/add'
+        myfiles = {'file': open(file_name, 'rb')}
+        res = requests.post(url, files=myfiles)
+        return res.text
 
     def upload_file(self, file_name, bucket, object_name):
         """Upload a file to an S3 bucket
@@ -46,6 +56,28 @@ class OdooAPI(http.Controller):
             logging.error(e)
             return False
         return True
+
+    @validate_token
+    @http.route('/api/v1/c/image_upload_ipfs', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def image_upload_in_ipfs(self, **kw):
+        if not kw['file']:
+            error = {"message": "File is not present in the request", "status": 400}
+            return return_Response_error(error)
+        file = kw['file']
+        filename = secure_filename(file.filename)
+        filename = str(ts) + str(filename)
+        file.save(os.path.join(path, filename))
+        if file:
+            res_data = self.ipfs_file_upload(path + filename)
+            if res_data:
+                res_data = {"message": "Image successfully upload",
+                            "result": json.loads(res_data),
+                            "status": 200}
+
+                return return_Response(res_data)
+            if res_data is False:
+                error = {"message": "Image is not uploaded", "status": 400}
+                return return_Response_error(error)
 
     @validate_token
     @http.route('/api/v1/c/image_upload_s3', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
@@ -86,5 +118,31 @@ class OdooAPI(http.Controller):
                 res_data = {"message": "No image found"}
                 return return_Response(res_data)
 
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+
+    @validate_token
+    @http.route('/api/v1/c/get_system_parameter', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    def get_system_parameter(self, **kw):
+        try:
+            jdata = json.loads(request.httprequest.stream.read())
+        except:
+            jdata = {}
+        try:
+            if jdata.get('key'):
+                record = request.env['ir.config_parameter'].sudo().search([('key', '=', jdata.get('key'))], limit=1)
+                if record:
+                    res = {
+                        'key': jdata.get('key'),
+                        'value': record.value,
+                        'status': 200
+                    }
+                    return return_Response(res)
+                else:
+                    msg = {"message": "Something Went Wrong.", "status_code": 400}
+                    return return_Response_error(msg)
+            else:
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)

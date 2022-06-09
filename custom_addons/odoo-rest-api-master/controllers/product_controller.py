@@ -74,17 +74,24 @@ def get_product_details(warehouse, records):
         base_image = {}
         for j in result:
             if j.type == 'multi_image':
-                image.append({"id": j.product_id.id,
+                val = {"id": j.product_id.id,
                               "image": j.image_url,
                               "url": j.image_url,
                               'name': j.image_name,
-                              })
+                              }
+                if j.file_hash:
+                    val['file_url'] = 'https://cloud.pandoproject.org/ipfs/'+j.file_hash
+                image.append(val)
+
             else:
                 base_image = {
                     "id": j.product_id.id,
                     "image_url": j.image_url,
                     'image_name': j.image_name
                 }
+                if j.file_hash:
+                    base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
+
         for z in i.public_categ_ids:
             category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                              "image": base_url.value + '/web/image/product.public.category/' + str(
@@ -137,6 +144,7 @@ def get_product_details(warehouse, records):
                      'url': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image': base_image.get('image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019" ,
                      'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
+                     'file_url': base_image.get('file_url'),
                      'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                      'description': i.description if i.description != False else '',
                      'short_desc': i.description_sale if i.description_sale != False else '',

@@ -124,17 +124,23 @@ def get_product_details(website, warehouse, base_url,records):
         base_image = {}
         for j in result:
             if j.type == 'multi_image':
-                image.append({"id": j.product_id.id,
-                              "image": j.image_url,
-                              "url": j.image_url,
-                              'name': j.image_name,
-                              })
+                val = {"id": j.product_id.id,
+                       "image": j.image_url,
+                       "url": j.image_url,
+                       'name': j.image_name,
+                       }
+                if j.file_hash:
+                    val['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
+                image.append(val)
+
             else:
                 base_image = {
                     "id": j.product_id.id,
                     "image_url": j.image_url,
                     'image_name': j.image_name
                 }
+                if j.file_hash:
+                    base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
 
         for z in i.public_categ_ids:
             category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
@@ -192,6 +198,7 @@ def get_product_details(website, warehouse, base_url,records):
         temp.append({"id": i.id, "name": i.product_tmpl_id.name+variant_name,
                      'url': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
                      'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
+                     'file_url': base_image.get('file_url'),
                      'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
                      'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
                      'description': i.description if i.description != False else '',
@@ -1124,6 +1131,9 @@ class OdooAPI(http.Controller):
                         'image_name': image.get('name'),
                         'product_id': int(jdata.get('product_id')),
                         'type': jdata.get('image_type'),
+                        'file_hash': jdata.get('file_hash') or '',
+                        'file_name': jdata.get('file_name') or '',
+                        'size': jdata.get('size') or ''
                     }
                     object = request.env['pando.images'].sudo().create(dict)
 
@@ -1257,6 +1267,15 @@ class OdooAPI(http.Controller):
                     count += 1
                     total += line.price_total
                 category = []
+                id = []
+                for c in rec.product_id.product_template_attribute_value_ids:
+                    id.append(c.attribute_id.id)
+                variant_name = ''
+                for attr_id in list(set(id)):
+                    for b in rec.product_id.product_template_attribute_value_ids:
+                        if attr_id == b.attribute_id.id:
+                            attribute_name = b.attribute_id.name
+                            variant_name += '(' + b.name + ')'
                 for z in rec.product_id.public_categ_ids:
                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
                                      "image": base_url.value + '/web/image/product.public.category/' + str(
@@ -1265,7 +1284,7 @@ class OdooAPI(http.Controller):
                 vals = {
                     'id': rec.id,
                     'productId': rec.product_id.id,
-                    'productName': rec.product_id.name,
+                    'productName': rec.product_id.name+variant_name,
                     'category': category,
                     'totalOrder': count,
                     'totalAmount': total,
@@ -1597,14 +1616,24 @@ class OdooAPI(http.Controller):
                 total = 0
                 for rec in records:
                     if not rec.exclude_from_invoice_tab:
+                        id = []
+                        for c in rec.product_id.product_template_attribute_value_ids:
+                            id.append(c.attribute_id.id)
+                        variant_name = ''
+                        for attr_id in list(set(id)):
+                            for b in rec.product_id.product_template_attribute_value_ids:
+                                if attr_id == b.attribute_id.id:
+                                    variant_name += '(' + b.name + ')'
+
                         vals = {
                             'id': rec.id,
                             'name': rec.move_id.name,
-                            'productName': rec.name,
+                            'productName': rec.product_id.name+variant_name,
                             'price_unit': rec.price_unit,
                             "qty": rec.quantity,
                             'price_subtotal': rec.price_subtotal,
-                            'price_total': rec.price_total
+                            'price_total': rec.price_total,
+                            'create_date': rec.create_date
                         }
                         tax = []
                         record = request.env['account.move.line'].sudo().search([('product_id', '=', rec.product_id.id), ('move_id', '=', rec.move_id.id)], order='id desc')
@@ -1665,13 +1694,21 @@ class OdooAPI(http.Controller):
                 temp = []
                 total = 0
                 for rec in records:
+                    id = []
+                    for c in rec.product_id.product_template_attribute_value_ids:
+                        id.append(c.attribute_id.id)
+                    variant_name = ''
+                    for attr_id in list(set(id)):
+                        for b in rec.product_id.product_template_attribute_value_ids:
+                            if attr_id == b.attribute_id.id:
+                                variant_name += '(' + b.name + ')'
+
                     vals = {
                         'id': rec.id,
                         'product_id': rec.product_id.id,
-                        'productName': rec.product_id.name,
+                        'productName': rec.product_id.name+variant_name,
+                        'create_date': str(rec.create_date),
                         'new_qty': rec.new_quantity,
-                        'location_id': rec.location_id.id,
-                        'locationName': rec.location_id.name,
                         'state': rec.state,
                         'stock': rec.product_id.with_context(
                             warehouse=warehouse.id).virtual_available if rec.product_id.with_context(
