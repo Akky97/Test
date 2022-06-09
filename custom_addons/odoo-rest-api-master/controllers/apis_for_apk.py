@@ -271,7 +271,8 @@ class WebsiteSale(WebsiteSale):
                                  "rating": 3,
                                  'categ_id': i.categ_id.id if i.categ_id.id != False else '',
                                  'categ_name': i.categ_id.name if i.categ_id.name != False else '',
-                                 "category": category}
+                                 "category": category,
+                                 'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""}
                                 )
 
         except (SyntaxError, QueryFormatError) as e:
