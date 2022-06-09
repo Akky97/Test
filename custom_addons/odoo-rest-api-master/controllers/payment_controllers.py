@@ -221,13 +221,22 @@ def create_invoice(transaction_id, order):
 
 
 def updatePriceList(pricelist, order):
+    msg={}
     if order and pricelist:
         request.session['website_sale_current_pl'] = pricelist
         values = {'pricelist_id': pricelist}
         order.write(values)
         for line in order.order_line:
             if line.exists():
-                order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
+                if line.product_id.is_product_publish and line.product_id.is_published and line.product_id.marketplace_status == 'approved' and line.product_id.type == 'product':
+                    order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
+                else:
+                    if line.product_id.type == 'product':
+                        msg = {"message": f"Product {line.product_id.name} is not Publish or Approve."}
+                        return msg
+                    else:
+                        order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
+    return msg
 
 
 def checkout_redirection(order, tx):
@@ -458,7 +467,13 @@ class WebsiteSale(WebsiteSale):
                 order.order_line._compute_tax_id()
                 request.session['sale_last_order_id'] = order.id
                 pricelist_id = request.session.get('website_sale_current_pl') or website.get_current_pricelist().id
-                updatePriceList(pricelist_id, order)
+                msg = updatePriceList(pricelist_id, order)
+                if msg and 'message' in msg:
+                    res = {
+                        "message": msg.get('message'), "status": 400
+                    }
+                    return return_Response_error(res)
+
             else:
                 res = {
                     "message": f"Something Went Wrong. Please Go To {redirectUrl} ","status":400

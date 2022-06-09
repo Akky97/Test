@@ -1629,7 +1629,7 @@ class OdooAPI(http.Controller):
                             "qty": rec.quantity,
                             'price_subtotal': rec.price_subtotal,
                             'price_total': rec.price_total,
-                            'create_date': rec.create_date
+                            'create_date': str(rec.create_date)
                         }
                         tax = []
                         record = request.env['account.move.line'].sudo().search([('product_id', '=', rec.product_id.id), ('move_id', '=', rec.move_id.id)], order='id desc')
