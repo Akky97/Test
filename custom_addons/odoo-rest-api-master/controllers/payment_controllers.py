@@ -15,44 +15,68 @@ from web3 import Web3
 w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
 
 
+import eth_utils
+
+
+def checksum_encode(addr): # Takes a 20-byte binary address as input
+    hex_addr = addr.hex()
+    checksummed_buffer = ""
+
+    # Treat the hex address as ascii/utf-8 for keccak256 hashing
+    hashed_address = eth_utils.keccak(text=hex_addr).hex()
+
+    # Iterate over each character in the hex address
+    for nibble_index, character in enumerate(hex_addr):
+
+        if character in "0123456789":
+            # We can't upper-case the decimal digits
+            checksummed_buffer += character
+        elif character in "abcdef":
+            # Check if the corresponding hex digit (nibble) in the hash is 8 or higher
+            hashed_address_nibble = int(hashed_address[nibble_index], 16)
+            if hashed_address_nibble > 7:
+                checksummed_buffer += character.upper()
+            else:
+                checksummed_buffer += character
+        else:
+            raise eth_utils.ValidationError(
+                f"Unrecognized hex character {character!r} at position {nibble_index}"
+            )
+
+    return "0x" + checksummed_buffer
+
+
 def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     res = False
-    try:
-        if chain_id == '0x3':
-            w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
-        #     polygon test net
-        if chain_id == '0x13881':
-            w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
-        #     Main net
-        if chain_id == '0x1':
-            w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
-        print('url link', w)
-        web3 = Web3(Web3.HTTPProvider(w))
-        account_1 = acc1
-        private_key1 = pkey
-        account_2 = acc2
-        # get the nonce.  Prevents one from sending the transaction twice
-        nonce = web3.eth.getTransactionCount(account_1)
-        print('nonce data--------------', nonce)
-        # build a transaction in a dictionary
-        tx = {
-            'nonce': nonce,
-            'to': account_2,
-            'value': web3.toWei(tnx_amount, 'ether'),
-            'gas': 2000000,
-            'gasPrice': web3.toWei('50', 'gwei')
-        }
-        print(tx, 'tx--------------')
-        # sign the transaction
-        signed_tx = web3.eth.account.sign_transaction(tx, private_key1)
-        # send transaction
-        tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        res = web3.toHex(tx_hash)
-        # get transaction hash
-        print(res)
-    except:
-        return res
+    # Test Net
+    if chain_id == '0x3':
+        w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+    #     polygon test net
+    if chain_id == '0x13881':
+        w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
+    #     Main net
+    if chain_id == '0x1':
+        w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+    account_1 = acc1
+    private_key1 = pkey
+    account_2 = acc2
+    nonce = w.eth.getTransactionCount(account_1)
+    addr_bytes = eth_utils.to_bytes(hexstr=account_2)
+    checksum_encoded = checksum_encode(addr_bytes)
+    tx = {
+        'nonce': nonce,
+        'to': checksum_encoded,
+        'value': w.toWei(tnx_amount, 'ether'),
+        'gas': 2000000,
+        'gasPrice': w.toWei('50', 'gwei')
+    }
+    signed_tx = w.eth.account.sign_transaction(tx, private_key1)
+    # send transaction
+    tx_hash = w.eth.sendRawTransaction(signed_tx.rawTransaction)
+    res = w.toHex(tx_hash)
     return res
+
+
 def refund_payment(transaction_id, amount):
     stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
     stripe.api_key = stripe_key.value
@@ -861,7 +885,6 @@ class WebsiteSale(WebsiteSale):
     def update_return_order(self, **params):
         stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
         stripe.api_key = stripe_key.value
-
         try:
             jdata = json.loads(request.httprequest.stream.read())
         except:
@@ -889,9 +912,8 @@ class WebsiteSale(WebsiteSale):
                             acc2 = rec.from_address
                             print(pkey,acc2, acc1, 'payment information')
                             if rec.acquirer_id.name == 'Meta Mask':
+                                print(rec.usd_price, 'usd price------')
                                 tnx_amount = (1/rec.usd_price)*(return_order.product_uom_qty * return_order.order_line.price_unit)
-                                tnx_amount = tnx_amount * 1000000000000000000
-                                print('tnx_amount', tnx_amount)
                                 data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, rec.chain_id)
                                 if data:
                                     return_order.refund()
