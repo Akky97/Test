@@ -15,11 +15,19 @@ from web3 import Web3
 w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
 
 
-def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount):
+def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     res = False
     try:
-        ganache_url = 'IMPORTYOURURL'
-        web3 = Web3(Web3.HTTPProvider(ganache_url))
+        if chain_id == '0x3':
+            w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+        #     polygon test net
+        if chain_id == '0x13881':
+            w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
+        #     Main net
+        if chain_id == '0x1':
+            w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+
+        web3 = Web3(Web3.HTTPProvider(w))
         account_1 = acc1
         private_key1 = pkey
         account_2 = acc2
@@ -880,7 +888,7 @@ class WebsiteSale(WebsiteSale):
                             acc2 = rec.from_address
                             if rec.acquirer_id.name == 'Meta Mask':
                                 tnx_amount = (1/rec.usd_price)*(return_order.product_uom_qty * return_order.order_line.price_unit)
-                                data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount)
+                                data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, rec.chain_id)
                                 if data:
                                     return_order.refund()
                                     return_order.payment_info = data
