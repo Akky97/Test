@@ -26,14 +26,14 @@ def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
         #     Main net
         if chain_id == '0x1':
             w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
-
+        print('url link', w)
         web3 = Web3(Web3.HTTPProvider(w))
         account_1 = acc1
         private_key1 = pkey
         account_2 = acc2
         # get the nonce.  Prevents one from sending the transaction twice
         nonce = web3.eth.getTransactionCount(account_1)
-        print(nonce)
+        print('nonce data--------------', nonce)
         # build a transaction in a dictionary
         tx = {
             'nonce': nonce,
@@ -42,6 +42,7 @@ def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
             'gas': 2000000,
             'gasPrice': web3.toWei('50', 'gwei')
         }
+        print(tx, 'tx--------------')
         # sign the transaction
         signed_tx = web3.eth.account.sign_transaction(tx, private_key1)
         # send transaction
@@ -867,7 +868,7 @@ class WebsiteSale(WebsiteSale):
             jdata = {}
         try:
             if not jdata.get('return_id') or not jdata.get('state'):
-                msg = {"message": "Something Went Wrong.", "status_code": 400}
+                msg = {"message": "Something Went Wrong1.", "status_code": 400}
                 return return_Response_error(msg)
             return_order = request.env['return.policy'].sudo().search([('id', '=', int(jdata.get('return_id')))])
             if return_order:
@@ -881,24 +882,26 @@ class WebsiteSale(WebsiteSale):
                     if return_order.order_id.transaction_ids and not return_order.payment_intent:
                         for rec in return_order.order_id.transaction_ids:
                             if not jdata.get('pkey'):
-                                msg = {"message": "Need Primary Key For Transaction", "status_code": 400}
+                                msg = {"message": "Need Primary Key For Transaction2", "status_code": 400}
                                 return return_Response_error(msg)
                             pkey = jdata.get('pkey')
                             acc1 = rec.to_address
                             acc2 = rec.from_address
+                            print(pkey,acc2, acc1, 'payment information')
                             if rec.acquirer_id.name == 'Meta Mask':
                                 tnx_amount = (1/rec.usd_price)*(return_order.product_uom_qty * return_order.order_line.price_unit)
                                 tnx_amount = tnx_amount * 1000000000000000000
+                                print('tnx_amount', tnx_amount)
                                 data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, rec.chain_id)
                                 if data:
                                     return_order.refund()
                                     return_order.payment_info = data
                                     res = {
-                                        "result": 'Refund Successfully Created', 'status': 200
+                                        "result": 'Refund Successfully Created3', 'status': 200
                                     }
                                     return return_Response(res)
                                 else:
-                                    msg = {"message": "Something Went Wrong", "status_code": 400}
+                                    msg = {"message": "Something Went Wrong4", "status_code": 400}
                                     return return_Response_error(msg)
                     if return_order.payment_intent:
                         res = stripe.PaymentIntent.retrieve(
@@ -911,11 +914,11 @@ class WebsiteSale(WebsiteSale):
                                 return_order.refund()
                                 return_order.payment_info = result
                                 res = {
-                                    "result": 'Refund Successfully Created', 'status': 200
+                                    "result": 'Refund Successfully Created5', 'status': 200
                                 }
                                 return return_Response(res)
                             else:
-                                msg = {"message": "Something Went Wrong", "status_code": 400}
+                                msg = {"message": "Something Went Wrong6", "status_code": 400}
                                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
