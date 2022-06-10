@@ -15,6 +15,35 @@ from web3 import Web3
 w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
 
 
+def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount):
+    res = False
+    try:
+        ganache_url = 'IMPORTYOURURL'
+        web3 = Web3(Web3.HTTPProvider(ganache_url))
+        account_1 = acc1
+        private_key1 = pkey
+        account_2 = acc2
+        # get the nonce.  Prevents one from sending the transaction twice
+        nonce = web3.eth.getTransactionCount(account_1)
+        print(nonce)
+        # build a transaction in a dictionary
+        tx = {
+            'nonce': nonce,
+            'to': account_2,
+            'value': web3.toWei(tnx_amount, 'ether'),
+            'gas': 2000000,
+            'gasPrice': web3.toWei('50', 'gwei')
+        }
+        # sign the transaction
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key1)
+        # send transaction
+        tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        res = web3.toHex(tx_hash)
+        # get transaction hash
+        print(res)
+    except:
+        return res
+    return res
 def refund_payment(transaction_id, amount):
     stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
     stripe.api_key = stripe_key.value
@@ -33,26 +62,33 @@ def refund_payment(transaction_id, amount):
     return res
 
 
-def update_transaction_data(transaction_id, from_address, to_address, hash_data, mode, chain_id):
+def update_transaction_data(transaction_id, from_address, to_address, hash_data, mode, chain_id, usd_price):
     transaction = request.env['payment.transaction'].sudo().search([('id', '=', transaction_id)])
     try:
+        wallet = ''
+        # Test net
+        if chain_id == '0x3':
+            wallet = 'Test Net'
+            w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+        #     polygon test net
+        if chain_id == '0x13881':
+            wallet = 'Polygon'
+            w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
+        #     Main net
+        if chain_id == '0x1':
+            wallet = 'Main Net'
+            w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+
         if transaction:
             transaction.sudo().write({
                 'from_address': from_address,
                 'to_address': to_address,
                 'hash_data': hash_data,
                 'mode': mode,
-                'chain_id': chain_id
+                'chain_id': chain_id,
+                'usd_price': usd_price,
+                'wallet': wallet
             })
-            # Test net
-            if chain_id == '0x3':
-                w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
-            #     polygon test net
-            if chain_id == '0x13881':
-                w = Web3(Web3.HTTPProvider('https://rpc-mumbai.matic.today'))
-            #     Main net
-            if chain_id == '0x1':
-                w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
 
             txns = w.eth.get_transaction(hash_data)
             if not txns:
@@ -132,8 +168,8 @@ def payment_validate(transaction_id,order):
     transaction = request.env['payment.transaction'].sudo().search([('id','=',transaction_id)])
     if transaction:
         res = transaction.sudo().write({
-            'state':'done',
-            'date':datetime.datetime.now()
+            'state': 'done',
+            'date': datetime.datetime.now()
         })
         if res:
             res = order.action_confirm()
@@ -151,7 +187,7 @@ def create_transaction(acquirer_id):
     # website = request.website
     website = request.env['website'].sudo().browse(1)
     partner = request.env.user.partner_id
-    order = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'),
+    order = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'),
                                                      ('partner_id', '=', partner.id),
                                                      ('website_id', '=', website.id)],
                                                     order='write_date DESC', limit=1)
@@ -169,7 +205,7 @@ def create_transaction(acquirer_id):
             if cart_qty > avl_qty:
                 available_qty = avl_qty if avl_qty > 0 else 0
                 message = f'You ask for {cart_qty} products but only {available_qty} is available'
-                values['message']=message
+                values['message'] = message
                 return values
     # # Delivery Method Check
     # if not order.is_all_service and not order.delivery_set:
@@ -308,7 +344,7 @@ def checkout_data(order):
             shippingAddress = []
             for i in shippings:
                 shippingAddress.append(get_address(i))
-    sale_order= {
+    sale_order = {
         'id': order.id,
         'name': order.name if order.name != False else "",
         'order_line': get_sale_order_line(order_id=order.id),
@@ -332,10 +368,10 @@ def create_new_address(params):
     value = {}
     partnerObj = request.env['res.partner'].sudo()
     if all(item in params.keys() for item in ["name", "street", "city", "country_id", "state_id", "zip"]):
-        country_id = request.env['res.country'].sudo().search([('id','=',int(params['country_id']))])
+        country_id = request.env['res.country'].sudo().search([('id', '=', int(params['country_id']))])
         if country_id:
             if "mobile" in params and "email" in params:
-                res = partnerObj.search([('mobile', '=', params['mobile']),('email', '=', params['email'])])
+                res = partnerObj.search([('mobile', '=', params['mobile']), ('email', '=', params['email'])])
                 if res:
                     value["message"] = "Email Or Mobile Number Already Exists"
                 else:
@@ -368,7 +404,7 @@ class WebsiteSale(WebsiteSale):
                     return return_Response_error(res)
                 website = request.env['website'].sudo().browse(1)
                 partner = request.env.user.partner_id
-                order_id = request.env['sale.order'].sudo().search([('in_process', '=', False),('state', '=', 'draft'), ('partner_id', '=', partner.id), ('website_id', '=', website.id)], order='write_date DESC', limit=1)
+                order_id = request.env['sale.order'].sudo().search([('in_process', '=', False), ('state', '=', 'draft'), ('partner_id', '=', partner.id), ('website_id', '=', website.id)], order='write_date DESC', limit=1)
                 if jdata.get('delivery_id'):
                     SaleOrderLine = request.env['sale.order.line']
                     delivery_lines = request.env['sale.order.line'].sudo().search([('order_id', 'in', order_id.ids), ('is_delivery', '=', True)])
@@ -723,10 +759,10 @@ class WebsiteSale(WebsiteSale):
                         if jdata.get('mode') == 'Stripe':
                             check = check_transaction_status(int(jdata.get('transaction_id')),device_name, mode=jdata.get('mode'))
                         if jdata.get('mode') == 'Meta Mask':
-                            if not jdata.get('from_address') or not jdata.get('to_address') or not jdata.get('hash_data') or not jdata.get('chain_id'):
+                            if not jdata.get('from_address') or not jdata.get('to_address') or not jdata.get('hash_data') or not jdata.get('chain_id') and jdata.get('usd_price'):
                                 msg = {"message": "From Add, To Add and hash is missing.", "status_code": 400}
                                 return return_Response_error(msg)
-                            check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'), jdata.get('chain_id'))
+                            check = update_transaction_data(int(jdata.get('transaction_id')),jdata.get('from_address'), jdata.get('to_address'), jdata.get('hash_data'), jdata.get('mode'), jdata.get('chain_id'), jdata.get('usd_price'))
                             if transaction.state == 'pending' and check:
                                 order.sudo().write({
                                     'in_process': True
@@ -834,22 +870,44 @@ class WebsiteSale(WebsiteSale):
                 if jdata.get('state') == 'in-stock':
                     return_order.update_stock()
                 if jdata.get('state') == 'refund':
-                    res = stripe.PaymentIntent.retrieve(
-                        return_order.payment_intent,
-                    )
-                    if res.status == 'succeeded':
-                        amount = int(return_order.order_line.price_unit * return_order.product_uom_qty) * 100
-                        result = stripe.Refund.create(payment_intent=return_order.payment_intent, amount=amount)
-                        if result.status == 'succeeded':
-                            return_order.refund()
-                            return_order.payment_info = result
-                            res = {
-                                "result": 'Refund Successfully Created', 'status': 200
-                            }
-                            return return_Response(res)
-                        else:
-                            msg = {"message": "Something Went Wrong", "status_code": 400}
-                            return return_Response_error(msg)
+                    if return_order.order_id.transaction_ids and not return_order.payment_intent:
+                        for rec in return_order.order_id.transaction_ids:
+                            if not jdata.get('pkey'):
+                                msg = {"message": "Need Primary Key For Transaction", "status_code": 400}
+                                return return_Response_error(msg)
+                            pkey = jdata.get('pkey')
+                            acc1 = rec.to_address
+                            acc2 = rec.from_address
+                            if rec.acquirer_id.name == 'Meta Mask':
+                                tnx_amount = (1/rec.usd_price)*(return_order.product_uom_qty * return_order.order_line.price_unit)
+                                data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount)
+                                if data:
+                                    return_order.refund()
+                                    return_order.payment_info = data
+                                    res = {
+                                        "result": 'Refund Successfully Created', 'status': 200
+                                    }
+                                    return return_Response(res)
+                                else:
+                                    msg = {"message": "Something Went Wrong", "status_code": 400}
+                                    return return_Response_error(msg)
+                    if return_order.payment_intent:
+                        res = stripe.PaymentIntent.retrieve(
+                            return_order.payment_intent,
+                        )
+                        if res.status == 'succeeded':
+                            amount = int(return_order.order_line.price_unit * return_order.product_uom_qty) * 100
+                            result = stripe.Refund.create(payment_intent=return_order.payment_intent, amount=amount)
+                            if result.status == 'succeeded':
+                                return_order.refund()
+                                return_order.payment_info = result
+                                res = {
+                                    "result": 'Refund Successfully Created', 'status': 200
+                                }
+                                return return_Response(res)
+                            else:
+                                msg = {"message": "Something Went Wrong", "status_code": 400}
+                                return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {

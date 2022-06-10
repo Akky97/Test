@@ -422,6 +422,7 @@ class SaleOrderController(http.Controller):
                 }
                 for rec in records.transaction_ids:
                     value['payment_mode'] = rec.acquirer_id.name
+                    value['wallet'] = rec.wallet
                     value['payment_status'] = rec.state
                     if value['payment_mode'] == 'Stripe':
                         value['payment_transaction_id'] = rec.payment_intent or ''

@@ -126,6 +126,8 @@ class PaymentTransaction(models.Model):
     hash_data = fields.Char('Hash Data')
     mode = fields.Selection([('Stripe', 'Stripe'), ('Meta Mask', 'Meta Mask')], string='Mode Of Payment')
     chain_id = fields.Text('Chain Id')
+    usd_price = fields.Float('Unit Price')
+    wallet = fields.Char('Wallet')
     def meta_mask_confirm_sale_order(self):
         record = self.env['payment.transaction'].sudo().search([('state', '=', 'pending'), ('acquirer_id.name', '=', 'Meta Mask')], order='id desc')
         for rec in record:
