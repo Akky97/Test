@@ -888,6 +888,7 @@ class WebsiteSale(WebsiteSale):
                             acc2 = rec.from_address
                             if rec.acquirer_id.name == 'Meta Mask':
                                 tnx_amount = (1/rec.usd_price)*(return_order.product_uom_qty * return_order.order_line.price_unit)
+                                tnx_amount = tnx_amount * 1000000000000000000
                                 data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, rec.chain_id)
                                 if data:
                                     return_order.refund()
