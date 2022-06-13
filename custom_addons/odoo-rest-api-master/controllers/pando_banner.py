@@ -90,6 +90,9 @@ class PandoBanner(http.Controller):
                             return return_Response_error(msg)
                         result = request.env['delivery.tracking'].sudo().create(vals)
                         if result:
+                            resultlist = request.env['sale.order.line'].sudo().search([('product_id.marketplace_seller_id', '=', seller), ('order_id', '=', order.id)])
+                            for i in resultlist:
+                                i.sudo().write({'shipping_Details': 'shipped'})
                             res = {
                                 "result": 'Delivery Created Successfully', 'status': 200
                             }
@@ -185,6 +188,10 @@ class PandoBanner(http.Controller):
                 if rec:
                     if rec.is_received:
                         vals = {'is_received': True, 'tracking_location': jdata.get('trackingLocation')}
+                        resultlist = request.env['sale.order.line'].sudo().search(
+                            [('product_id.marketplace_seller_id', '=', tracking.seller_id.id), ('order_id', '=', tracking.order_id.id)])
+                        for i in resultlist:
+                            i.sudo().write({'shipping_Details': 'delivered'})
                     else:
                         vals = {'tracking_location': jdata.get('trackingLocation')}
                     tracking.sudo().write(vals)

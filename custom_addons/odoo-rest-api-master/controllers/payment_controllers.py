@@ -57,12 +57,38 @@ def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     #     Main net
     if chain_id == '0x1':
         w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
+
     account_1 = acc1
     private_key1 = pkey
     account_2 = acc2
     nonce = w.eth.getTransactionCount(account_1)
     addr_bytes = eth_utils.to_bytes(hexstr=account_2)
     checksum_encoded = checksum_encode(addr_bytes)
+    balance = w.eth.get_balance(checksum_encoded)
+    ether_value = w.fromWei(balance, 'ether')
+    if tnx_amount > ether_value:
+        template = request.env.ref('odoo-rest-api-master.send_otp_email_template', raise_if_not_found=False)
+        outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
+        if outgoing_server_name:
+            template.email_from = outgoing_server_name
+            template.email_to = request.env.user.login
+            template.body_html = f"""<![CDATA[
+                                                       <div class="container-fluid">
+            <div class="row" style="background: #5297f8; border-radius: 5px; margin: 0px; padding-left: 40px;"><a title="Pando Store" href="%20https://pandostores.com" target="_blank"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/image/Pando_logo+1.png" width="278" height="59" /></a></div>
+            <div>
+            <p>Dear {request.env.user.partner_id.name}</p>
+            <br />
+            <h2>Your Transaction Can not be completed due to insufficient balance/h2>
+            <br />
+            <p><strong> In case you have not requested this action, please contact us. </strong></p>
+            <p><strong>Phone number :-</strong> +65 6589 8807</p>
+            </div>
+            <br />
+            <div style="text-align: center; background: #EEF5FF; padding: 15px;"><a href="https://pandostores.com/"> https://pandostores.com </a></div>
+            </div>"""
+            template.sudo().send_mail(3, force_send=True)
+        return res
+
     tx = {
         'nonce': nonce,
         'to': checksum_encoded,
@@ -923,7 +949,7 @@ class WebsiteSale(WebsiteSale):
                                     }
                                     return return_Response(res)
                                 else:
-                                    msg = {"message": "Something Went Wrong4", "status_code": 400}
+                                    msg = {"message": "Your Can not have insufficient balance.", "status_code": 400}
                                     return return_Response_error(msg)
                     if return_order.payment_intent:
                         res = stripe.PaymentIntent.retrieve(
