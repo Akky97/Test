@@ -3,7 +3,55 @@ from odoo.http import request
 from .sale_order_list_view import *
 _logger = logging.getLogger(__name__)
 
+def get_order_lines(order_id,seller_id):
+    sol = request.env['sale.order.line'].sudo().search([('order_id', '=', order_id), ('product_id.marketplace_seller_id', '=', seller_id)])
+    temp = []
+    for line in sol:
+        result = request.env['pando.images'].sudo().search([('product_id', '=', line.product_id.id)])
+        if not result:
+            result = request.env['pando.images'].sudo().search(
+                [('product_id.product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
+        base_image = {}
+        for j in result:
+            if j.type == 'multi_image':
+                base_image = {
+                    "id": j.product_id.id,
+                    "image_url": j.image_url,
+                    'image_name': j.image_name
+                }
+                if j.file_hash:
+                    base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
 
+        id = []
+        for c in line.product_id.product_template_attribute_value_ids:
+            id.append(c.attribute_id.id)
+        variant_name = ''
+        for attr_id in list(set(id)):
+            for b in line.product_id.product_template_attribute_value_ids:
+                if attr_id == b.attribute_id.id:
+                    variant_name += '(' + b.name + ')'
+
+        val = {
+            'name': line.product_id.name + variant_name,
+            'url': base_image.get(
+                'image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+            'image': base_image.get(
+                'image_url') if 'image_url' in base_image else "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019",
+            'image_name': base_image.get('image_name') if 'image_name' in base_image else '',
+            'file_url': base_image.get('file_url'),
+            'price_unit': line.price_unit if line.price_unit != False else 0.0,
+            'price_subtotal': line.price_subtotal if line.price_subtotal != False else 0.0,
+            'price_tax': line.price_tax if line.price_tax != False else 0.0,
+            'price_total': line.price_total if line.price_total != False else 0.0,
+            'tax_id': [{i.id:i.name} for i in line.tax_id],
+            'quantity': line.product_uom_qty if line.product_uom_qty != False else 0.0,
+            'qty_delivered': line.qty_delivered if line.qty_delivered != False else 0.0,
+            'qty_invoiced': line.qty_invoiced if line.qty_invoiced != False else 0.0,
+            "marketplace_seller_id": line.marketplace_seller_id.id,
+            "marketplace_seller_name": line.marketplace_seller_id.name
+        }
+        temp.append(val)
+    return temp
 def deliveryLine(line):
     temp = []
     line = request.env['delivery.address'].sudo().search([('id', 'in', line.ids)], order='id desc')
@@ -144,6 +192,7 @@ class PandoBanner(http.Controller):
                             'is_dispatch': track.is_dispatch,
                             'is_received': track.is_received,
                             'trackingLocation': track.tracking_location,
+                            'orderline': get_order_lines(track.order_id.id,track.seller_id.id),
                             'deliveryLine': deliveryLine(track.deliveryLine)
                         }
                         temp.append(vals)

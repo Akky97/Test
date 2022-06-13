@@ -484,6 +484,7 @@ class WebsiteSale(WebsiteSale):
         except KeyError as e:
             msg = "The model `%s` does not exist." % model
             return error_response(e, msg)
+        website = request.env['website'].sudo().browse(1)
         try:
             if "country_id" in params and params.get('country_id'):
                 domain.append(('country_id', '=', int(params.get('country_id'))))
@@ -514,7 +515,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "products": product, "status": 200
+            "products": product, "status": 200, 'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
         }
         return return_Response(res)
 

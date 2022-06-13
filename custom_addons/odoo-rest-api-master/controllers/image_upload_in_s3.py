@@ -91,10 +91,15 @@ class OdooAPI(http.Controller):
         file.save(os.path.join(path, filename))
         if file:
             res_data = self.upload_file(path + filename, bucket, filename)
+            data = self.ipfs_file_upload(path + filename)
             if res_data is True:
                 res_data = {"message": "Image successfully upload",
                             "image_path": "https://pandomall.s3.ap-southeast-1.amazonaws.com/" + str(filename),
-                            "filename":filename}
+                            "filename": filename,
+                            "messagehash": "Image successfully upload",
+                             "result": json.loads(res_data),
+                             "status": 200
+                            }
 
                 return return_Response(res_data)
             if res_data is False:
