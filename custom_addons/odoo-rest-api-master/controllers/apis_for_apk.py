@@ -64,28 +64,28 @@ def get_product_data(records):
     return temp
 
 
-def get_rating_avg(product):
-    records = request.env['rating.rating'].sudo().search([('rating_product_id','=',product.id)])
-    if records:
-        rating_total = 0
-        count = 0
-        for rec in records:
-            count += 1
-            rating_total += rec.rating
-        return (rating_total/count)
-    else:
-        return 0
-
-
-def _compute_sales_count(self):
-    count =0
-    date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
-                                                                  time.min))
-    res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale','done','paid'])])
-    if res:
-        for r in res:
-            count += r.product_uom_qty
-    return count
+# def get_rating_avg(product):
+#     records = request.env['rating.rating'].sudo().search([('rating_product_id','=',product.id)])
+#     if records:
+#         rating_total = 0
+#         count = 0
+#         for rec in records:
+#             count += 1
+#             rating_total += rec.rating
+#         return (rating_total/count)
+#     else:
+#         return 0
+#
+#
+# def _compute_sales_count(self):
+#     count =0
+#     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+#                                                                   time.min))
+#     res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale','done','paid'])])
+#     if res:
+#         for r in res:
+#             count += r.product_uom_qty
+#     return count
 
 
 def get_sale_order_line(order_id=None, order_line_id=None):
