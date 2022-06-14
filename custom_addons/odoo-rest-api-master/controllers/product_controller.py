@@ -17,22 +17,32 @@ def _compute_sales_count(self):
     count =0
     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
                                                                   time.min))
-    res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale', 'done', 'paid'])])
-    if res:
-        for r in res:
-            count += r.product_uom_qty
-    return count
+    # res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale', 'done', 'paid'])])
+    cr = request.env.cr
+    query = f"SELECT SUM(product_uom_qty) FROM sale_report WHERE product_id={self.id} and date>='{date_from}' and state IN {tuple(['sale', 'done', 'paid'])}"
+    cr.execute(query)
+    data = cr.dictfetchall()
+    print(data, 'sales counttttttttttttttttttttttttttt')
+    if data and data[0]['sum']:
+        # for r in res:
+        #     count += r.product_uom_qty
+        return data[0]['sum']
+    return 0
 
 
 def get_rating_avg(product):
-    records = request.env['rating.rating'].sudo().search([('rating_product_id', '=', product.id)])
-    if records:
-        rating_total = 0
-        count = 0
-        for rec in records:
-            count += 1
-            rating_total += rec.rating
-        return (rating_total/count)
+    cr = request.env.cr
+    cr.execute(f'SELECT COUNT(*), SUM(rating) FROM rating_rating WHERE rating_product_id={product.id}')
+    data = cr.dictfetchall()
+    if data and data[0]['sum'] and data[0]['count']:
+    # records = request.env['rating.rating'].sudo().search([('rating_product_id', '=', product.id)])
+    # if records:
+    #     rating_total = 0
+    #     count = 0
+    #     for rec in records:
+    #         count += 1
+    #         rating_total += rec.rating
+        return (data[0]['sum']/data[0]['count'])
     else:
         return 0
 
