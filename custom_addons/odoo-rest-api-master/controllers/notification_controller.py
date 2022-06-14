@@ -167,3 +167,26 @@ class OdooAPI(http.Controller):
             "result": "Record Updated Successfully", "status": 200
         }
         return return_Response(res)
+
+    @validate_token
+    @http.route('/api/v1/c/social.media.links', type='http', auth='public',
+                methods=['GET'], csrf=False, cors='*')
+    def social_media_links(self, **params):
+        model = 'marketplace.social.media'
+        try:
+            social_media_links = request.env[model].sudo().search([('name', 'in',
+                                                                    ['Facebook', 'Twitter', 'Instagram'])])
+            temp = []
+            for i in social_media_links:
+                temp.append({"name": i.name,
+                             "base_url": i.base_url
+                             })
+
+        except (SyntaxError, QueryFormatError) as e:
+            return error_response(e, e.msg)
+        res = {
+            "count": len(temp),
+            "records": temp,
+            "status": 200
+        }
+        return return_Response(res)
