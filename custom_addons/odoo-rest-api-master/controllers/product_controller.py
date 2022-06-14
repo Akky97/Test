@@ -13,38 +13,37 @@ import psycopg2
 _logger = logging.getLogger(__name__)
 
 
-def _compute_sales_count(self):
-    count =0
-    date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
-                                                                  time.min))
-    # res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale', 'done', 'paid'])])
-    cr = request.env.cr
-    query = f"SELECT SUM(product_uom_qty) FROM sale_report WHERE product_id={self.id} and date>='{date_from}' and state IN {tuple(['sale', 'done', 'paid'])}"
-    cr.execute(query)
-    data = cr.dictfetchall()
-    print(data, 'sales counttttttttttttttttttttttttttt')
-    if data and data[0]['sum']:
-        # for r in res:
-        #     count += r.product_uom_qty
-        return data[0]['sum']
-    return 0
-
-
-def get_rating_avg(product):
-    cr = request.env.cr
-    cr.execute(f'SELECT COUNT(*), SUM(rating) FROM rating_rating WHERE rating_product_id={product.id}')
-    data = cr.dictfetchall()
-    if data and data[0]['sum'] and data[0]['count']:
-    # records = request.env['rating.rating'].sudo().search([('rating_product_id', '=', product.id)])
-    # if records:
-    #     rating_total = 0
-    #     count = 0
-    #     for rec in records:
-    #         count += 1
-    #         rating_total += rec.rating
-        return (data[0]['sum']/data[0]['count'])
-    else:
-        return 0
+# def _compute_sales_count(self):
+#     count =0
+#     date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+#                                                                   time.min))
+#     # res = request.env['sale.report'].sudo().search([('product_id','=',self.id),('date', '>=', date_from),('state', 'in', ['sale', 'done', 'paid'])])
+#     cr = request.env.cr
+#     query = f"SELECT SUM(product_uom_qty) FROM sale_report WHERE product_id={self.id} and date>='{date_from}' and state IN {tuple(['sale', 'done', 'paid'])}"
+#     cr.execute(query)
+#     data = cr.dictfetchall()
+#     if data and data[0]['sum']:
+#         # for r in res:
+#         #     count += r.product_uom_qty
+#         return data[0]['sum']
+#     return 0
+#
+#
+# def get_rating_avg(product):
+#     cr = request.env.cr
+#     cr.execute(f'SELECT COUNT(*), SUM(rating) FROM rating_rating WHERE rating_product_id={product.id}')
+#     data = cr.dictfetchall()
+#     if data and data[0]['sum'] and data[0]['count']:
+#     # records = request.env['rating.rating'].sudo().search([('rating_product_id', '=', product.id)])
+#     # if records:
+#     #     rating_total = 0
+#     #     count = 0
+#     #     for rec in records:
+#     #         count += 1
+#     #         rating_total += rec.rating
+#         return (data[0]['sum']/data[0]['count'])
+#     else:
+#         return 0
 
 
 def get_rating_permission(partner_id,product):
@@ -64,23 +63,23 @@ def get_product_details(warehouse, records):
         category = []
         variant = []
         sellers = []
-        try:
-            db_name = odoo.tools.config.get('db_name')
-            db_registry = registry(db_name)
-            # with db_registry.cursor() as cr:
-            cr, uid = db_registry.cursor(), request.session.uid
-            cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-            Model = request.env(cr, uid)['product.product']
-            prod = Model.search([('id', '=', i.id)])
-            # prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-            prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod), 'rating_count': get_rating_avg(prod)})
-            cr.commit()
-            cr.close()
-        except psycopg2.Error:
-            pass
-        result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
-        if not result:
-            result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
+        # try:
+        #     db_name = odoo.tools.config.get('db_name')
+        #     db_registry = registry(db_name)
+        #     # with db_registry.cursor() as cr:
+        #     cr, uid = db_registry.cursor(), request.session.uid
+        #     cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+        #     Model = request.env(cr, uid)['product.product']
+        #     prod = Model.search([('id', '=', i.id)])
+        #     # prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+        #     prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod), 'rating_count': get_rating_avg(prod)})
+        #     cr.commit()
+        #     cr.close()
+        # except psycopg2.Error:
+        #     pass
+        result = request.env['pando.images'].sudo().search(['|', ('product_id', '=', i.id), ('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
+        # if not result:
+        #     result = request.env['pando.images'].sudo().search([('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
         base_image = {}
         for j in result:
             if j.type == 'multi_image':
@@ -236,24 +235,22 @@ class OdooAPI(http.Controller):
 
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
-        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
-            for res in records:
-                try:
-                    db_name = odoo.tools.config.get('db_name')
-                    db_registry = registry(db_name)
-                    # with db_registry.cursor() as cr:
-                    cr, uid = db_registry.cursor(), request.session.uid
-                    cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-                    Model = request.env(cr, uid)['product.product']
-                    prod = Model.search([('id', '=', res.id)])
-                    # prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-                    prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod), 'rating_count': get_rating_avg(prod)})
-                    cr.commit()
-                    cr.close()
-                except psycopg2.Error:
-                    pass
+        # if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale')or ("orderBy" in params and params['orderBy'] == 'rating'):
+            # for res in records:
+                # try:
+                #     db_name = odoo.tools.config.get('db_name')
+                #     db_registry = registry(db_name)
+                #     cr, uid = db_registry.cursor(), request.session.uid
+                #     cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                #     Model = request.env(cr, uid)['product.product']
+                #     prod = Model.search([('id', '=', res.id)])
+                #     prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod), 'rating_count': get_rating_avg(prod)})
+                #     cr.commit()
+                #     cr.close()
+                # except psycopg2.Error:
+                #     pass
 
-            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+            # records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -458,22 +455,22 @@ class OdooAPI(http.Controller):
             domain.append(('product_template_attribute_value_ids.product_attribute_value_id', 'in', jdata.get('attr')))
         record_count = request.env[model].sudo().search_count(domain)
         records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
-        if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
-            for res in records:
-                try:
-                    db_name = odoo.tools.config.get('db_name')
-                    db_registry = registry(db_name)
-                    # with db_registry.cursor() as cr:
-                    cr, uid = db_registry.cursor(), request.session.uid
-                    cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-                    Model = request.env(cr, uid)['product.product']
-                    prod = Model.search([('id', '=', res.id)])
-                    prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-                    cr.commit()
-                    cr.close()
-                except psycopg2.Error:
-                    pass
-            records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+        # if ("orderBy" in params and params['orderBy'] == 'featured') or ("orderBy" in params and params['orderBy'] == 'sale'):
+        #     for res in records:
+        #         try:
+        #             db_name = odoo.tools.config.get('db_name')
+        #             db_registry = registry(db_name)
+        #             # with db_registry.cursor() as cr:
+        #             cr, uid = db_registry.cursor(), request.session.uid
+        #             cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+        #             Model = request.env(cr, uid)['product.product']
+        #             prod = Model.search([('id', '=', res.id)])
+        #             prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+        #             cr.commit()
+        #             cr.close()
+        #         except psycopg2.Error:
+        #             pass
+        #     records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
         prev_page = None
         next_page = None
         total_page_number = 1
@@ -482,102 +479,7 @@ class OdooAPI(http.Controller):
         try:
             warehouse = request.env['stock.warehouse'].sudo().search(
                 [('company_id', '=', website.company_id.id)], limit=1)
-            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-            temp = []
             temp = get_product_details(warehouse, records)
-            # for i in records:
-            #     image = []
-            #     category = []
-            #     variant = []
-            #     sellers = []
-            #     _compute_sales_count(self=i)
-            #     i.sale_count_pando = i.sales_count
-            #     for j in i.product_template_image_ids:
-            #         image.append({"id": j.id, "name": j.name,
-            #                       "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-            #                       'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-            #                       })
-            #     for z in i.public_categ_ids:
-            #         category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
-            #                          "image": base_url.value + '/web/image/product.public.category/' + str(
-            #                              z.id) + "/image_1920", })
-            #     product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
-            #     for k in product_var:
-            #         values = []
-            #         attribute_name = ''
-            #         id = []
-            #         data = []
-            #         for c in k.product_template_attribute_value_ids:
-            #             id.append(c.attribute_id.id)
-            #         for attr_id in list(set(id)):
-            #             for b in k.product_template_attribute_value_ids:
-            #                 if attr_id == b.attribute_id.id:
-            #                     attribute_name = b.attribute_id.name
-            #                     if attribute_name.lower() == 'color':
-            #                         values.append({"color": b.product_attribute_value_id.name,
-            #                                        "color_name": b.product_attribute_value_id.html_color})
-            #                     else:
-            #                         values.append({"id": b.id, "name": b.name, "slug": None,
-            #                                        "pivot": {"components_variants_variant_id": k.id,
-            #                                                  "component_id": b.id}})
-            #             data.append({attribute_name: values})
-            #             values = []
-            #         res_data = {"id": k.id, "price": k.list_price,
-            #                     "pivot": {"product_id": i.id, "component_id": k.id}}
-            #
-            #         if len(data) != 0:
-            #             for dic in data:
-            #                 res = list(dic.items())[0]
-            #
-            #                 # if len
-            #                 if res[0].lower() == 'color':
-            #                     res_data.update(
-            #                         {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
-            #                 else:
-            #                     res_data.update(dic)
-            #
-            #             variant.append(res_data)
-            #         else:
-            #             pass
-            #
-            #     for n in i.seller_ids:
-            #         sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
-            #
-            #     temp.append({"id": i.id, "name": i.name,
-            #                  'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-            #                  'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-            #                  'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
-            #                  'description': i.description if i.description != False else '',
-            #                  'short_desc': i.description_sale if i.description_sale != False else '',
-            #                  'categ_id': i.categ_id.id if i.categ_id.id != False else '',
-            #                  'categ_name': i.categ_id.name if i.categ_id.name != False else '',
-            #                  "category": category,
-            #                  "create_uid": i.create_uid.id if i.create_uid.id != False else '',
-            #                  "create_name": i.create_uid.name if i.create_uid.name != False else '',
-            #                  "write_uid": i.write_uid.id if i.write_uid.id != False else '',
-            #                  "write_name": i.write_uid.name if i.write_uid.name != False else '',
-            #                  "variants": variant,
-            #                  # "stock": i.qty_available,
-            #                  "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
-            #                      warehouse=warehouse.id).virtual_available > 0 else 0.0,
-            #                  "sm_pictures": image,
-            #                  "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
-            #                  "seller_ids": sellers,
-            #                  "slug": i.id,
-            #                  "top": True if i.website_ribbon_id.html == 'Trending' else None,
-            #                  "new": True if i.website_ribbon_id.html == 'New' else None,
-            #                  "author": "Pando-Stores",
-            #                  "sold": i.sales_count,
-            #                  "review": 2,
-            #                  "rating": 3,
-            #                  "marketplace_seller_id": i.marketplace_seller_id.id,
-            #                  "marketplace_seller_name": i.marketplace_seller_id.name,
-            #                  "additional_info": i.additional_info if i.additional_info else '',
-            #                  "shipping_return": i.shipping_return if i.shipping_return else '',
-            #                  "pictures": [
-            #                      {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-            #                       "image": base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920"}]
-            #                  })
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
 
@@ -640,19 +542,19 @@ class OdooAPI(http.Controller):
                     domain.append(attr)
                 search_product = request.env['product.product'].sudo().search(domain)
                 for res in search_product:
-                    try:
-                        db_name = odoo.tools.config.get('db_name')
-                        db_registry = registry(db_name)
-                        # with db_registry.cursor() as cr:
-                        cr, uid = db_registry.cursor(), request.session.uid
-                        cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-                        Model = request.env(cr, uid)['product.product']
-                        prod = Model.search([('id', '=', res.id)])
-                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-                        cr.commit()
-                        cr.close()
-                    except psycopg2.Error:
-                        pass
+                    # try:
+                    #     db_name = odoo.tools.config.get('db_name')
+                    #     db_registry = registry(db_name)
+                    #     # with db_registry.cursor() as cr:
+                    #     cr, uid = db_registry.cursor(), request.session.uid
+                    #     cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+                    #     Model = request.env(cr, uid)['product.product']
+                    #     prod = Model.search([('id', '=', res.id)])
+                    #     prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+                    #     cr.commit()
+                    #     cr.close()
+                    # except psycopg2.Error:
+                    #     pass
                     total_count += res.sale_count_pando
                 # j.total_sold_count = total_count
                 try:
@@ -799,145 +701,145 @@ class OdooAPI(http.Controller):
         return return_Response(res)
 
 
-    def get_product_list(self,lst):
-        pro = []
-        record=[]
-        for rec in lst:
-            if pro:
-                domain = [('product_attribute_value_id', '=', rec), ('product_tmpl_id', 'in', pro)]
-            else:
-                domain = [('product_attribute_value_id', '=', rec)]
-            model = 'product.template.attribute.value'
-            record = request.env[model].sudo().search(domain).product_tmpl_id.ids
-            if record:
-                pro = record
-            else:
-                return record
-        return record
+    # def get_product_list(self,lst):
+    #     pro = []
+    #     record=[]
+    #     for rec in lst:
+    #         if pro:
+    #             domain = [('product_attribute_value_id', '=', rec), ('product_tmpl_id', 'in', pro)]
+    #         else:
+    #             domain = [('product_attribute_value_id', '=', rec)]
+    #         model = 'product.template.attribute.value'
+    #         record = request.env[model].sudo().search(domain).product_tmpl_id.ids
+    #         if record:
+    #             pro = record
+    #         else:
+    #             return record
+    #     return record
 
-    @http.route('/api/v1/c/product.attribute.filter', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
-    def product_attribute_filter(self, **params):
-        try:
-            record = []
-            try:
-                jdata = json.loads(request.httprequest.stream.read())
-            except:
-                jdata = {}
-            if jdata:
-                lst = jdata.get('attr')
-                record = self.get_product_list(lst)
-            records = request.env['product.product'].sudo().search([('product_tmpl_id','in',record)])
-            website = request.env['website'].sudo().browse(1)
-            warehouse = request.env['stock.warehouse'].sudo().search(
-                [('company_id', '=', website.company_id.id)], limit=1)
-            base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-            temp = []
-            for i in records:
-                l = i.product_template_attribute_value_ids.product_attribute_value_id.ids
-                if all(item in lst for item in l) or all(item in l for item in lst):
-                    image = []
-                    category = []
-                    variant = []
-                    sellers = []
-                    _compute_sales_count(self=i)
-                    i.sale_count_pando = i.sales_count
-                    for j in i.product_template_image_ids:
-                        image.append({"id": j.id, "name": j.name,
-                                      "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                      'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
-                                      })
-                    for z in i.public_categ_ids:
-                        category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
-                                         "image": base_url.value + '/web/image/product.public.category/' + str(
-                                             z.id) + "/image_1920", })
-                    product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
-                    for k in product_var:
-                        values = []
-                        attribute_name = ''
-                        id = []
-                        data = []
-                        for c in k.product_template_attribute_value_ids:
-                            id.append(c.attribute_id.id)
-                        for attr_id in list(set(id)):
-                            for b in k.product_template_attribute_value_ids:
-                                if attr_id == b.attribute_id.id:
-                                    attribute_name = b.attribute_id.name
-                                    if attribute_name.lower() == 'color':
-                                        values.append({"color": b.product_attribute_value_id.name,
-                                                       "color_name": b.product_attribute_value_id.html_color})
-                                    else:
-                                        values.append({"id": b.id, "name": b.name, "slug": None,
-                                                       "pivot": {"components_variants_variant_id": k.id,
-                                                                 "component_id": b.id}})
-                            data.append({attribute_name: values})
-                            values = []
-                        res_data = {"id": k.id, "price": k.list_price,
-                                    "pivot": {"product_id": i.id, "component_id": k.id}}
-
-                        if len(data) != 0:
-                            for dic in data:
-                                res = list(dic.items())[0]
-
-                                # if len
-                                if res[0].lower() == 'color':
-                                    res_data.update(
-                                        {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
-                                else:
-                                    res_data.update(dic)
-
-                            variant.append(res_data)
-                        else:
-                            pass
-
-                    for n in i.seller_ids:
-                        sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
-
-                    temp.append({"id": i.id, "name": i.name,
-                                 'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                 'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                 'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
-                                 'description': i.description if i.description != False else '',
-                                 'short_desc': i.description_sale if i.description_sale != False else '',
-                                 'categ_id': i.categ_id.id if i.categ_id.id != False else '',
-                                 'categ_name': i.categ_id.name if i.categ_id.name != False else '',
-                                 "category": category,
-                                 "create_uid": i.create_uid.id if i.create_uid.id != False else '',
-                                 "create_name": i.create_uid.name if i.create_uid.name != False else '',
-                                 "write_uid": i.write_uid.id if i.write_uid.id != False else '',
-                                 "write_name": i.write_uid.name if i.write_uid.name != False else '',
-                                 "variants": variant,
-                                 # "stock":i.qty_available,
-                                 "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
-                                     warehouse=warehouse.id).virtual_available > 0 else 0.0,
-                                 "sm_pictures": image,
-                                 "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
-                                 "seller_ids": sellers,
-                                 "slug": i.id,
-                                 "top": True if i.website_ribbon_id.html == 'Trending' else None,
-                                 "new": True if i.website_ribbon_id.html == 'New' else None,
-                                 "author": "Pando-Stores",
-                                 "sold": i.sales_count,
-                                 "review": 2,
-                                 "rating": 3,
-                                 "additional_info": i.additional_info if i.additional_info else '',
-                                 "shipping_return": i.shipping_return if i.shipping_return else '',
-                                 "pictures": [
-                                     {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
-                                      "image": base_url.value + '/web/image/product.product/' + str(
-                                          i.id) + "/image_1920"}],
-                                 "aaaa":i.product_template_attribute_value_ids.ids
-                                 })
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
-        res = {
-            "total_count": len(temp),
-            "count": len(temp),
-            "prev": None,
-            "current": 1,
-            "next": None,
-            "total_pages": 1,
-            "products": temp
-        }
-        return return_Response(res)
+    # @http.route('/api/v1/c/product.attribute.filter', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
+    # def product_attribute_filter(self, **params):
+    #     try:
+    #         record = []
+    #         try:
+    #             jdata = json.loads(request.httprequest.stream.read())
+    #         except:
+    #             jdata = {}
+    #         if jdata:
+    #             lst = jdata.get('attr')
+    #             record = self.get_product_list(lst)
+    #         records = request.env['product.product'].sudo().search([('product_tmpl_id','in',record)])
+    #         website = request.env['website'].sudo().browse(1)
+    #         warehouse = request.env['stock.warehouse'].sudo().search(
+    #             [('company_id', '=', website.company_id.id)], limit=1)
+    #         base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
+    #         temp = []
+    #         for i in records:
+    #             l = i.product_template_attribute_value_ids.product_attribute_value_id.ids
+    #             if all(item in lst for item in l) or all(item in l for item in lst):
+    #                 image = []
+    #                 category = []
+    #                 variant = []
+    #                 sellers = []
+    #                 # _compute_sales_count(self=i)
+    #                 i.sale_count_pando = i.sales_count
+    #                 for j in i.product_template_image_ids:
+    #                     image.append({"id": j.id, "name": j.name,
+    #                                   "image": base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+    #                                   'url': base_url.value + '/web/image/product.image/' + str(j.id) + "/image_1920",
+    #                                   })
+    #                 for z in i.public_categ_ids:
+    #                     category.append({"id": z.id, "name": z.name, "slug": z.name.lower().replace(" ", "-"),
+    #                                      "image": base_url.value + '/web/image/product.public.category/' + str(
+    #                                          z.id) + "/image_1920", })
+    #                 product_var = request.env['product.product'].sudo().search([('id', '=', int(i.id))])
+    #                 for k in product_var:
+    #                     values = []
+    #                     attribute_name = ''
+    #                     id = []
+    #                     data = []
+    #                     for c in k.product_template_attribute_value_ids:
+    #                         id.append(c.attribute_id.id)
+    #                     for attr_id in list(set(id)):
+    #                         for b in k.product_template_attribute_value_ids:
+    #                             if attr_id == b.attribute_id.id:
+    #                                 attribute_name = b.attribute_id.name
+    #                                 if attribute_name.lower() == 'color':
+    #                                     values.append({"color": b.product_attribute_value_id.name,
+    #                                                    "color_name": b.product_attribute_value_id.html_color})
+    #                                 else:
+    #                                     values.append({"id": b.id, "name": b.name, "slug": None,
+    #                                                    "pivot": {"components_variants_variant_id": k.id,
+    #                                                              "component_id": b.id}})
+    #                         data.append({attribute_name: values})
+    #                         values = []
+    #                     res_data = {"id": k.id, "price": k.list_price,
+    #                                 "pivot": {"product_id": i.id, "component_id": k.id}}
+    #
+    #                     if len(data) != 0:
+    #                         for dic in data:
+    #                             res = list(dic.items())[0]
+    #
+    #                             # if len
+    #                             if res[0].lower() == 'color':
+    #                                 res_data.update(
+    #                                     {"color": res[1][0].get('color'), "color_name": res[1][0].get('color_name')})
+    #                             else:
+    #                                 res_data.update(dic)
+    #
+    #                         variant.append(res_data)
+    #                     else:
+    #                         pass
+    #
+    #                 for n in i.seller_ids:
+    #                     sellers.append({"id": n.id, "vendor": n.name.name, "vendor_id": n.name.id})
+    #
+    #                 temp.append({"id": i.id, "name": i.name,
+    #                              'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+    #                              'image': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+    #                              'type': i.type, 'sale_price': i.list_price, "price": i.standard_price,
+    #                              'description': i.description if i.description != False else '',
+    #                              'short_desc': i.description_sale if i.description_sale != False else '',
+    #                              'categ_id': i.categ_id.id if i.categ_id.id != False else '',
+    #                              'categ_name': i.categ_id.name if i.categ_id.name != False else '',
+    #                              "category": category,
+    #                              "create_uid": i.create_uid.id if i.create_uid.id != False else '',
+    #                              "create_name": i.create_uid.name if i.create_uid.name != False else '',
+    #                              "write_uid": i.write_uid.id if i.write_uid.id != False else '',
+    #                              "write_name": i.write_uid.name if i.write_uid.name != False else '',
+    #                              "variants": variant,
+    #                              # "stock":i.qty_available,
+    #                              "stock": i.with_context(warehouse=warehouse.id).virtual_available if i.with_context(
+    #                                  warehouse=warehouse.id).virtual_available > 0 else 0.0,
+    #                              "sm_pictures": image,
+    #                              "featured": i.website_ribbon_id.html if i.website_ribbon_id.html != False else '',
+    #                              "seller_ids": sellers,
+    #                              "slug": i.id,
+    #                              "top": True if i.website_ribbon_id.html == 'Trending' else None,
+    #                              "new": True if i.website_ribbon_id.html == 'New' else None,
+    #                              "author": "Pando-Stores",
+    #                              "sold": i.sales_count,
+    #                              "review": 2,
+    #                              "rating": 3,
+    #                              "additional_info": i.additional_info if i.additional_info else '',
+    #                              "shipping_return": i.shipping_return if i.shipping_return else '',
+    #                              "pictures": [
+    #                                  {'url': base_url.value + '/web/image/product.product/' + str(i.id) + "/image_1920",
+    #                                   "image": base_url.value + '/web/image/product.product/' + str(
+    #                                       i.id) + "/image_1920"}],
+    #                              "aaaa":i.product_template_attribute_value_ids.ids
+    #                              })
+    #     except (SyntaxError, QueryFormatError) as e:
+    #         return error_response(e, e.msg)
+    #     res = {
+    #         "total_count": len(temp),
+    #         "count": len(temp),
+    #         "prev": None,
+    #         "current": 1,
+    #         "next": None,
+    #         "total_pages": 1,
+    #         "products": temp
+    #     }
+    #     return return_Response(res)
 
     

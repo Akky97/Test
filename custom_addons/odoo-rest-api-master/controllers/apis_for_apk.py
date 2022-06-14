@@ -489,19 +489,19 @@ class WebsiteSale(WebsiteSale):
             if "country_id" in params and params.get('country_id'):
                 domain.append(('country_id', '=', int(params.get('country_id'))))
             product = {}
-            records = request.env[model].sudo().search(domain)
-            for rec in records:
-                try:
-                    db_name = odoo.tools.config.get('db_name')
-                    db_registry = registry(db_name)
-                    with db_registry.cursor() as cr:
-                        env = api.Environment(cr, SUPERUSER_ID, {})
-                        prod = env['product.product'].sudo().browse([rec.id])
-                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=rec), 'rating_count':get_rating_avg(rec)})
-                        cr.commit()
-                        cr.close()
-                except psycopg2.Error:
-                    pass
+            # records = request.env[model].sudo().search(domain)
+            # for rec in records:
+            #     try:
+            #         db_name = odoo.tools.config.get('db_name')
+            #         db_registry = registry(db_name)
+            #         with db_registry.cursor() as cr:
+            #             env = api.Environment(cr, SUPERUSER_ID, {})
+            #             prod = env['product.product'].sudo().browse([rec.id])
+            #             prod.sudo().write({'sale_count_pando': _compute_sales_count(self=rec), 'rating_count':get_rating_avg(rec)})
+            #             cr.commit()
+            #             cr.close()
+            #     except psycopg2.Error:
+            #         pass
 
                 # if request.env.user.id != 4:
                 #     rec.sudo().write({'sale_count_pando': _compute_sales_count(self=rec), 'rating_count':get_rating_avg(rec)})

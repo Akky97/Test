@@ -14,4 +14,16 @@
         <field name="numbercall">-1</field>
         <field eval="False" name="doall" />
     </record>
+
+    <record id="product_update_scheduler_action" model="ir.cron">
+        <field name="name">Update Product Count and rating</field>
+        <field name="model_id" ref="model_product_product"/>
+        <field name="state">code</field>
+        <field name="code">model.update_product_sale_count_and_rating()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">8</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field eval="False" name="doall" />
+    </record>
 </odoo>

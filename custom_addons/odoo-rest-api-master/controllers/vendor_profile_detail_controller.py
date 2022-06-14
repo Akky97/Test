@@ -850,25 +850,25 @@ class OdooAPI(http.Controller):
                 [('company_id', '=', website.company_id.id)], limit=1)
 
             base_url = request.env['ir.config_parameter'].sudo().search([('key', '=', 'web.base.url')], limit=1)
-            if ("orderBy" in params and params['orderBy'] == 'featured') or (
-                    "orderBy" in params and params['orderBy'] == 'sale'):
-                for res in records:
-                    try:
-                        db_name = odoo.tools.config.get('db_name')
-                        db_registry = registry(db_name)
-                        # with db_registry.cursor() as cr:
-                        cr, uid = db_registry.cursor(), request.session.uid
-                        cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-                        Model = request.env(cr, uid)['product.product']
-                        prod = Model.search([('id', '=', res.id)])
-                        prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
-                        cr.commit()
-                        cr.close()
-                    except psycopg2.Error:
-                        pass
-                    # _compute_sales_count(self=res)
-                    # res.sale_count_pando = res.sales_count
-                records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
+            # if ("orderBy" in params and params['orderBy'] == 'featured') or (
+            #         "orderBy" in params and params['orderBy'] == 'sale'):
+            #     for res in records:
+            #         try:
+            #             db_name = odoo.tools.config.get('db_name')
+            #             db_registry = registry(db_name)
+            #             # with db_registry.cursor() as cr:
+            #             cr, uid = db_registry.cursor(), request.session.uid
+            #             cr._cnx.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+            #             Model = request.env(cr, uid)['product.product']
+            #             prod = Model.search([('id', '=', res.id)])
+            #             prod.sudo().write({'sale_count_pando': _compute_sales_count(self=prod)})
+            #             cr.commit()
+            #             cr.close()
+            #         except psycopg2.Error:
+            #             pass
+            #         # _compute_sales_count(self=res)
+            #         # res.sale_count_pando = res.sales_count
+            #     records = request.env[model].sudo().search(domain, order=search, limit=limit, offset=offset)
 
             temp = get_product_details(website, warehouse, base_url, records)
         except (SyntaxError, QueryFormatError) as e:

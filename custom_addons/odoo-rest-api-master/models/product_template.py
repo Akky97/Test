@@ -2,7 +2,7 @@ import datetime
 
 from odoo import api, fields, models, _
 from odoo.http import request, route, Controller
-
+from datetime import timedelta, time
 from web3 import Web3
 
 w = Web3(Web3.HTTPProvider('https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e'))
@@ -76,6 +76,34 @@ class ProductProduct(models.Model):
     sale_count_pando = fields.Float(string='Product Sale Count')
     is_product_publish = fields.Boolean('Product Publish', default=True)
     rating_count = fields.Float('Rating Count')
+
+    def _compute_sales_count(self, id):
+        date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+                                                                      time.min))
+        cr = self.env.cr
+        query = f"SELECT SUM(product_uom_qty) FROM sale_report WHERE product_id={id} and date>='{date_from}' and state IN {tuple(['sale', 'done', 'paid'])}"
+        cr.execute(query)
+        data = cr.dictfetchall()
+        if data and data[0]['sum']:
+            return data[0]['sum']
+        return 0
+
+    def get_rating_avg(self,product):
+        cr = request.env.cr
+        cr.execute(f'SELECT COUNT(*), SUM(rating) FROM rating_rating WHERE rating_product_id={product}')
+        data = cr.dictfetchall()
+        if data and data[0]['sum'] and data[0]['count']:
+            return (data[0]['sum'] / data[0]['count'])
+        else:
+            return 0
+
+    def update_product_sale_count_and_rating(self):
+        records = self.env['product.product'].sudo().search([])
+        for res in records:
+            res.sudo().write(
+                {'sale_count_pando': self._compute_sales_count(res.id), 'rating_count': self.get_rating_avg(res.id)})
+
+
 
 
 def payment_validate(transaction_id, order):
