@@ -425,7 +425,8 @@ class SaleOrderController(http.Controller):
                     if rec.wallet == 'Polygon':
                         value['wallet'] = rec.wallet
                     else:
-                        value['wallet'] = 'Eather'
+                        if rec.wallet:
+                            value['wallet'] = 'Etherium'
                     value['payment_status'] = rec.state
                     if value['payment_mode'] == 'Stripe':
                         value['payment_transaction_id'] = rec.payment_intent or ''
