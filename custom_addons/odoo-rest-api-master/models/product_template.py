@@ -69,6 +69,25 @@ class ProductTemplate(models.Model):
             else:
                 elem.img_attach = '<img src="%s" style="float:right;height:70px;width: 100px;"/>' % "https://pandomall.s3.ap-southeast-1.amazonaws.com/1650525013noimage.png"
 
+def _compute_sales_count(id):
+    date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+                                                                  time.min))
+    cr = request.env.cr
+    query = f"SELECT SUM(product_uom_qty) FROM sale_report WHERE product_id={id} and date>='{date_from}' and state IN {tuple(['sale', 'done', 'paid'])}"
+    cr.execute(query)
+    data = cr.dictfetchall()
+    if data and data[0]['sum']:
+        return data[0]['sum']
+    return 0
+
+def get_rating_avg(product):
+    cr = request.env.cr
+    cr.execute(f'SELECT COUNT(*), SUM(rating) FROM rating_rating WHERE rating_product_id={product}')
+    data = cr.dictfetchall()
+    if data and data[0]['sum'] and data[0]['count']:
+        return (data[0]['sum'] / data[0]['count'])
+    else:
+        return 0
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -77,31 +96,12 @@ class ProductProduct(models.Model):
     is_product_publish = fields.Boolean('Product Publish', default=True)
     rating_count = fields.Float('Rating Count')
 
-    def _compute_sales_count(self, id):
-        date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
-                                                                      time.min))
-        cr = self.env.cr
-        query = f"SELECT SUM(product_uom_qty) FROM sale_report WHERE product_id={id} and date>='{date_from}' and state IN {tuple(['sale', 'done', 'paid'])}"
-        cr.execute(query)
-        data = cr.dictfetchall()
-        if data and data[0]['sum']:
-            return data[0]['sum']
-        return 0
-
-    def get_rating_avg(self,product):
-        cr = request.env.cr
-        cr.execute(f'SELECT COUNT(*), SUM(rating) FROM rating_rating WHERE rating_product_id={product}')
-        data = cr.dictfetchall()
-        if data and data[0]['sum'] and data[0]['count']:
-            return (data[0]['sum'] / data[0]['count'])
-        else:
-            return 0
 
     def update_product_sale_count_and_rating(self):
         records = self.env['product.product'].sudo().search([])
         for res in records:
             res.sudo().write(
-                {'sale_count_pando': self._compute_sales_count(res.id), 'rating_count': self.get_rating_avg(res.id)})
+                {'sale_count_pando': _compute_sales_count(res.id), 'rating_count': get_rating_avg(res.id)})
 
 
 
