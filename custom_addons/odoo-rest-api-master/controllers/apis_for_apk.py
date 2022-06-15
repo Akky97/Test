@@ -131,6 +131,7 @@ def get_sale_order_line(order_id=None, order_line_id=None):
                 "category": category,
                 # "image": base_url.value + '/web/image/product.product/' + str(rec.product_id.id) + "/image_1920",
                 'image': base_image.get('image_url') if 'image_url' in base_image else s3_image.value,
+                'symbol': rec.order_id.currency_id.symbol if rec.order_id.currency_id.symbol != False else ""
                 # 'qty_delivered': rec.qty_delivered if rec.qty_delivered != False else "",
                 # 'qty_invoiced': rec.qty_invoiced if rec.qty_invoiced != False else ""
             })
