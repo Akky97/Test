@@ -117,10 +117,8 @@ def get_product_details(website, warehouse, base_url,records):
         variant = []
         sellers = []
         taxs = []
-        result = request.env['pando.images'].sudo().search([('product_id', '=', i.id)])
-        if not result:
-            result = request.env['pando.images'].sudo().search(
-                [('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
+        result = request.env['pando.images'].sudo().search(
+            ['|', ('product_id', '=', i.id), ('product_id.product_tmpl_id', '=', i.product_tmpl_id.id)])
         base_image = {}
         for j in result:
             if j.type == 'multi_image':
@@ -132,13 +130,17 @@ def get_product_details(website, warehouse, base_url,records):
                 if j.file_hash:
                     val['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
                 image.append(val)
-
             else:
                 base_image = {
                     "id": j.product_id.id,
                     "image_url": j.image_url,
                     'image_name': j.image_name
                 }
+                image.append({"id": j.product_id.id,
+                              "image": j.image_url,
+                              "url": j.image_url,
+                              'name': j.image_name,
+                              })
                 if j.file_hash:
                     base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
 

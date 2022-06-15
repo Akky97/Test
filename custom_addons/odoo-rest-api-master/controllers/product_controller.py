@@ -98,6 +98,11 @@ def get_product_details(warehouse, records):
                     "image_url": j.image_url,
                     'image_name': j.image_name
                 }
+                image.append({"id": j.product_id.id,
+                              "image": j.image_url,
+                              "url": j.image_url,
+                              'name': j.image_name,
+                              })
                 if j.file_hash:
                     base_image['file_url'] = 'https://cloud.pandoproject.org/ipfs/' + j.file_hash
 
