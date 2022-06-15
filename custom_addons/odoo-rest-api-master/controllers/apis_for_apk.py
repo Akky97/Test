@@ -17,10 +17,10 @@ def get_product_data(records):
     for rec in records:
         id = []
         category = []
-        result = request.env['pando.images'].sudo().search(['|', ('product_id', '=', rec.id), ('product_id.product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)])
-        if not result:
-            result = request.env['pando.images'].sudo().search(
-                [('product_id.product_tmpl_id', '=', rec.product_tmpl_id.id)])
+        result = request.env['pando.images'].sudo().search(['|', ('product_id', '=', rec.id), ('product_id.product_tmpl_id', '=', rec.product_tmpl_id.id)])
+        # if not result:
+        #     result = request.env['pando.images'].sudo().search(
+        #         [('product_id.product_tmpl_id', '=', rec.product_tmpl_id.id)])
         base_image = {}
         for j in result:
             if j.type != 'multi_image':
