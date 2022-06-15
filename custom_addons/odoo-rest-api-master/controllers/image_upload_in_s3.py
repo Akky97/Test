@@ -97,7 +97,7 @@ class OdooAPI(http.Controller):
                             "image_path": "https://pandomall.s3.ap-southeast-1.amazonaws.com/" + str(filename),
                             "filename": filename,
                             # "messagehash": "Image successfully upload",
-                             "result": json.loads(res_data),
+                             "result": json.loads(data),
                              "status": 200
                             }
 

@@ -1339,6 +1339,7 @@ class OdooAPI(http.Controller):
 
     @http.route('/api/v1/v/product.status', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def product_status(self, **params):
+        message = ""
         try:
             try:
                 jdata = json.loads(request.httprequest.stream.read())
@@ -1353,13 +1354,15 @@ class OdooAPI(http.Controller):
                 publish_state = product.is_product_publish
                 if publish_state:
                     product.is_product_publish = False
+                    message = "Product is Unpublished"
                 else:
                     product.is_product_publish = True
+                    message = "Product is Published"
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
             "isSucess": True,
-            "message": 'success',
+            "message": message,
             "status": 200
         }
         return return_Response(res)
