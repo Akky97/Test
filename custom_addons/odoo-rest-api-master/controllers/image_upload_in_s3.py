@@ -10,7 +10,9 @@ from odoo.http import request
 from .exceptions import QueryFormatError
 from .error_or_response_parser import *
 from werkzeug.utils import secure_filename
+from odoo.tools import partition, collections, frozendict, lazy_property, image_process
 
+import  base64
 _logger = logging.getLogger(__name__)
 import calendar;
 import time;
@@ -20,6 +22,7 @@ ts = calendar.timegm(time.gmtime())
 
 bucket = 'pandomall'
 path = '/home/ubuntu/Pando-Mall/custom_addons/odoo-rest-api-master/static/src/image/'
+path2 = '/home/ubuntu/Pando-Mall/custom_addons/odoo-rest-api-master/static/src/image/image2/'
 
 
 class OdooAPI(http.Controller):
@@ -89,9 +92,19 @@ class OdooAPI(http.Controller):
         filename = secure_filename(file.filename)
         filename = str(ts) + str(filename)
         file.save(os.path.join(path, filename))
+        file_text = open(path + filename, 'rb')
+        file_read = file_text.read()
+        file_encode = base64.encodebytes(file_read)
+        file2 = image_process(file_encode, size=(250, 250))
+        file2 = base64.decodebytes(file2)
+        completeName = os.path.join(path2, filename)
+        file1 = open(completeName, "wb")
+        file1.write(file2)
         if file:
-            res_data = self.upload_file(path + filename, bucket, filename)
-            data = self.ipfs_file_upload(path + filename)
+            res_data = self.upload_file(path2 + filename, bucket, filename)
+            # res_data = self.upload_file(path + filename, bucket, filename)
+            data = self.ipfs_file_upload(path2 + filename)
+            # data = self.ipfs_file_upload(path + filename)
             if res_data is True:
                 res_data = {"message": "Image successfully upload",
                             "image_path": "https://pandomall.s3.ap-southeast-1.amazonaws.com/" + str(filename),

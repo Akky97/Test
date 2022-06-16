@@ -46,6 +46,29 @@ def checksum_encode(addr): # Takes a 20-byte binary address as input
     return "0x" + checksummed_buffer
 
 
+def _send_mail(message):
+    template = request.env.ref('odoo-rest-api-master.send_otp_email_template', raise_if_not_found=False)
+    outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
+    if outgoing_server_name:
+        template.email_from = outgoing_server_name
+        template.email_to = request.env.user.login
+        template.body_html = f"""<![CDATA[
+                                                           <div class="container-fluid">
+                <div class="row" style="background: #5297f8; border-radius: 5px; margin: 0px; padding-left: 40px;"><a title="Pando Store" href="%20https://pandostores.com" target="_blank"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/image/Pando_logo+1.png" width="278" height="59" /></a></div>
+                <div>
+                <p>Dear {request.env.user.partner_id.name}</p>
+                <br />
+                <h2>{message}/h2>
+                <br />
+                <p><strong> In case you have not requested this action, please contact us. </strong></p>
+                <p><strong>Phone number :-</strong> +65 6589 8807</p>
+                </div>
+                <br />
+                <div style="text-align: center; background: #EEF5FF; padding: 15px;"><a href="https://pandostores.com/"> https://pandostores.com </a></div>
+                </div>"""
+        template.sudo().send_mail(3, force_send=True)
+
+
 def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     res = False
     # Test Net
@@ -67,26 +90,7 @@ def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     balance = w.eth.get_balance(checksum_encoded)
     ether_value = w.fromWei(balance, 'ether')
     if tnx_amount > ether_value:
-        template = request.env.ref('odoo-rest-api-master.send_otp_email_template', raise_if_not_found=False)
-        outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
-        if outgoing_server_name:
-            template.email_from = outgoing_server_name
-            template.email_to = request.env.user.login
-            template.body_html = f"""<![CDATA[
-                                                       <div class="container-fluid">
-            <div class="row" style="background: #5297f8; border-radius: 5px; margin: 0px; padding-left: 40px;"><a title="Pando Store" href="%20https://pandostores.com" target="_blank"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/image/Pando_logo+1.png" width="278" height="59" /></a></div>
-            <div>
-            <p>Dear {request.env.user.partner_id.name}</p>
-            <br />
-            <h2>Your Transaction Can not be completed due to insufficient balance/h2>
-            <br />
-            <p><strong> In case you have not requested this action, please contact us. </strong></p>
-            <p><strong>Phone number :-</strong> +65 6589 8807</p>
-            </div>
-            <br />
-            <div style="text-align: center; background: #EEF5FF; padding: 15px;"><a href="https://pandostores.com/"> https://pandostores.com </a></div>
-            </div>"""
-            template.sudo().send_mail(3, force_send=True)
+        _send_mail('Your Transaction Can not be completed due to insufficient balance')
         return res
 
     tx = {
@@ -947,6 +951,16 @@ class WebsiteSale(WebsiteSale):
                                 if data:
                                     return_order.refund()
                                     return_order.payment_info = data
+                                    _send_mail('Your Refund has been initiated by supplier and the amount will be credited within 2-3 working days')
+                                    vendor_message = f"""Refund Initiated Successfully"""
+                                    generate_notification(seller_id=return_order.order_id.partner_id.id,
+                                                          vendor_message=vendor_message,
+                                                          model="return.policy", title="Amount Refund")
+                                    user = return_order.order_id.partner_id.user_id
+                                    tokenObject = request.env['device.token'].sudo()
+                                    tokens = tokenObject.search([('user_id', '=', user.id)])
+                                    send_notification("Amount Refund", vendor_message, user, tokens, None)
+
                                     res = {
                                         "result": 'Refund Successfully Created3', 'status': 200
                                     }
@@ -1089,33 +1103,33 @@ class WebsiteSale(WebsiteSale):
         }
         return return_Response(res)
 
-    @validate_token
-    @http.route(['/api/v1/c/transaction_list/<order_id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
-    def transaction_list(self, order_id=None, **params):
-        temp = []
-        try:
-            if not id:
-                msg = {"message": "OrderId is missing from parameter", "status_code": 400}
-                return return_Response_error(msg)
-            domain = [('sale_order_ids', '=', int(order_id))]
-            return_order = request.env['payment.transaction'].sudo().search(domain, order='id DESC')
-            if return_order:
-                for rec in return_order:
-                    temp.append({
-                        'id': rec.id,
-                        'amount': rec.amount,
-                        'state': rec.state,
-                        'payment_method_id': rec.acquirer_id.id,
-                        'payment_mode': rec.acquirer_id.name,
-                        'from_address': rec.from_address,
-                        'to_address': rec.to_address,
-                        'hash_data': rec.hash_data,
-                        'payment_intent': rec.payment_intent
-                    })
-        except (SyntaxError, QueryFormatError) as e:
-            return error_response(e, e.msg)
-        res = {
-            "isSuccess": True,
-            "record": temp, "count": len(temp), 'status': 200
-        }
-        return return_Response(res)
+    # @validate_token
+    # @http.route(['/api/v1/c/transaction_list/<order_id>'], type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    # def transaction_list(self, order_id=None, **params):
+    #     temp = []
+    #     try:
+    #         if not id:
+    #             msg = {"message": "OrderId is missing from parameter", "status_code": 400}
+    #             return return_Response_error(msg)
+    #         domain = [('sale_order_ids', '=', int(order_id))]
+    #         return_order = request.env['payment.transaction'].sudo().search(domain, order='id DESC')
+    #         if return_order:
+    #             for rec in return_order:
+    #                 temp.append({
+    #                     'id': rec.id,
+    #                     'amount': rec.amount,
+    #                     'state': rec.state,
+    #                     'payment_method_id': rec.acquirer_id.id,
+    #                     'payment_mode': rec.acquirer_id.name,
+    #                     'from_address': rec.from_address,
+    #                     'to_address': rec.to_address,
+    #                     'hash_data': rec.hash_data,
+    #                     'payment_intent': rec.payment_intent
+    #                 })
+    #     except (SyntaxError, QueryFormatError) as e:
+    #         return error_response(e, e.msg)
+    #     res = {
+    #         "isSuccess": True,
+    #         "record": temp, "count": len(temp), 'status': 200
+    #     }
+    #     return return_Response(res)

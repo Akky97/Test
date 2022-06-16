@@ -574,11 +574,11 @@ class WebsiteSale(WebsiteSale):
                     sale_order = sale_get_order(self=website, partner_id=request.env.user.partner_id.id, force_create=True, website=website.id)
                     vendor_message = f"""{sale_order.name} Order Place Successfully"""
                     generate_notification(seller_id=request.env.user.partner_id.id, vendor_message=vendor_message,
-                                          model="sale.order", title="Sale Order Created")
+                                          model="sale.order", title="Order Created")
                     user = request.env.user
                     tokenObject = request.env['device.token'].sudo()
                     tokens = tokenObject.search([('user_id', '=', user.id)])
-                    send_notification("Sale Order Created", vendor_message, user, tokens, None)
+                    send_notification("Order Created", vendor_message, user, tokens, None)
 
                 if product_id:
                     if set_qty > 0:
