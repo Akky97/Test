@@ -917,6 +917,7 @@ class WebsiteSale(WebsiteSale):
     @http.route('/api/v1/v/update_return_order', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
     def update_return_order(self, **params):
         stripe_key = request.env['ir.config_parameter'].sudo().search([('key', '=', 'strip_key')], limit=1)
+        pkey = request.env['ir.config_parameter'].sudo().search([('key', '=', 'pkey')], limit=1)
         stripe.api_key = stripe_key.value
         try:
             jdata = json.loads(request.httprequest.stream.read())
@@ -924,7 +925,7 @@ class WebsiteSale(WebsiteSale):
             jdata = {}
         try:
             if not jdata.get('return_id') or not jdata.get('state'):
-                msg = {"message": "Something Went Wrong1.", "status_code": 400}
+                msg = {"message": "Something Went Wrong.", "status_code": 400}
                 return return_Response_error(msg)
             return_order = request.env['return.policy'].sudo().search([('id', '=', int(jdata.get('return_id')))])
             if return_order:
@@ -937,15 +938,10 @@ class WebsiteSale(WebsiteSale):
                 if jdata.get('state') == 'refund':
                     if return_order.order_id.transaction_ids and not return_order.payment_intent:
                         for rec in return_order.order_id.transaction_ids:
-                            if not jdata.get('pkey'):
-                                msg = {"message": "Need Primary Key For Transaction2", "status_code": 400}
-                                return return_Response_error(msg)
-                            pkey = jdata.get('pkey')
+                            pkey = pkey.value
                             acc1 = rec.to_address
                             acc2 = rec.from_address
-                            print(pkey,acc2, acc1, 'payment information')
                             if rec.acquirer_id.name == 'Meta Mask':
-                                print(rec.usd_price, 'usd price------')
                                 tnx_amount = (1/rec.usd_price)*(return_order.product_uom_qty * return_order.order_line.price_unit)
                                 data = refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, rec.chain_id)
                                 if data:
@@ -962,7 +958,7 @@ class WebsiteSale(WebsiteSale):
                                     send_notification("Amount Refund", vendor_message, user, tokens, None)
 
                                     res = {
-                                        "result": 'Refund Successfully Created3', 'status': 200
+                                        "result": 'Refund Successfully Created', 'status': 200
                                     }
                                     return return_Response(res)
                                 else:
@@ -979,11 +975,11 @@ class WebsiteSale(WebsiteSale):
                                 return_order.refund()
                                 return_order.payment_info = result
                                 res = {
-                                    "result": 'Refund Successfully Created5', 'status': 200
+                                    "result": 'Refund Successfully Created', 'status': 200
                                 }
                                 return return_Response(res)
                             else:
-                                msg = {"message": "Something Went Wrong6", "status_code": 400}
+                                msg = {"message": "Something Went Wrong", "status_code": 400}
                                 return return_Response_error(msg)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)

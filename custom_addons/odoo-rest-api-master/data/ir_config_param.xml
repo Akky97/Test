@@ -38,6 +38,10 @@
             <field name="key">main_net</field>
             <field name="value">https://ropsten.infura.io/v3/fe062e39f4fa40f581182b1de50ad71e</field>
         </record>
+        <record id="pkey" model="ir.config_parameter">
+            <field name="key">pkey</field>
+            <field name="value">9ea1bf42d32ce127fcced1ed958354738eb60dfa8f2cc4c4c24ceceda2d4b55e</field>
+        </record>
 
     </data>
 </odoo>
