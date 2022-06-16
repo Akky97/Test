@@ -28,6 +28,7 @@ class WebsiteCategory(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(polularCategoryList),
             "result": polularCategoryList
         }
@@ -77,6 +78,7 @@ class WebsiteCategory(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "message": 'Record Created Successfully',
             "status": 200
         }

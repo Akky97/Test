@@ -1746,7 +1746,7 @@ class OdooAPI(http.Controller):
             domain = [('marketplace_seller_id', '=', user), ('is_product_publish', '=', True),
                       ('is_published', '=', True), ('type', '=', 'product'),
                       ('marketplace_status', 'in', ['approved'])]
-            records = request.env['product.product'].sudo().search(domain)
+            records = request.env['product.product'].sudo().search(domain, limit=5)
             count_list = []
             for res in records:
                 count_list.append({'id': res.id, 'name': res.name, 'count': _compute_sales_count(self=res, from_date=from_date, to_date=to_date)})

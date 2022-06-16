@@ -30,7 +30,7 @@ class OdooAPI(http.Controller):
                     }
             request.env['mailing.contact'].sudo().create(vals)
             res = {
-                'message': 'Record Created Successfully',
+                'message': 'Record Created Successfully',"isSucess": True,
                 'status': 200
             }
             return return_Response(res)

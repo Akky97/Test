@@ -144,6 +144,7 @@ class PortalChatter(PortalChatter):
                                 'rating_product_id': product_id.id
                             })
                             res = {
+                                "isSucess": True,
                                 'message': 'success',
                                 'status': 200
                             }
@@ -203,6 +204,7 @@ class PortalChatter(PortalChatter):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_count": rating_count,
             'count': len(temp),
             'ratingList': temp,

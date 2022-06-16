@@ -92,6 +92,7 @@ class PandoBanner(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(bannerList),
             "result": bannerList
         }
@@ -142,7 +143,7 @@ class PandoBanner(http.Controller):
                             for i in resultlist:
                                 i.sudo().write({'shipping_Details': 'shipped'})
                             res = {
-                                "result": 'Delivery Created Successfully', 'status': 200
+                                "result": 'Delivery Created Successfully', "isSucess": True, 'status': 200
                             }
                             return return_Response(res)
                         else:
@@ -205,6 +206,7 @@ class PandoBanner(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp,
             'status': 200
@@ -244,7 +246,7 @@ class PandoBanner(http.Controller):
                     else:
                         vals = {'tracking_location': jdata.get('trackingLocation')}
                     tracking.sudo().write(vals)
-                    res = {"message": "Delivery Status Updated", "status_code": 200}
+                    res = {"message": "Delivery Status Updated", "isSucess": True, "status_code": 200}
                     return return_Response(res)
                 else:
                     msg = {"message": "Something Went Wrong", "status_code": 400}

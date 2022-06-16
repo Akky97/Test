@@ -439,6 +439,7 @@ class SaleOrderController(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "result": value,
             "status":200
         }
@@ -506,6 +507,7 @@ class SaleOrderController(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_count":record_count,
             "count": len(sale_order_data),
             "result": sale_order_data
@@ -542,7 +544,7 @@ class WebsiteSale(WebsiteSale):
 
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {"result": sale_order}
+        res = {"isSucess": True,"result": sale_order}
         return return_Response(res)
 
     @validate_token
@@ -606,7 +608,7 @@ class WebsiteSale(WebsiteSale):
                 return return_Response_error(error)
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
-        res = {"result": 'Updated Cart Successfully', "status": 200}
+        res = {"isSucess": True,"result": 'Updated Cart Successfully', "status": 200}
         return return_Response(res)
 
     @validate_token
@@ -650,7 +652,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "message": 'Product Added Successfully', 'count': count, 'status': 200
+            "message": 'Product Added Successfully', 'count': count,"isSucess": True, 'status': 200
         }
         return return_Response(res)
 
@@ -680,7 +682,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'Product Deleted Successfully', "status": 200
+            "result": 'Product Deleted Successfully',"isSucess": True, "status": 200
         }
         return return_Response(res)
 
@@ -815,6 +817,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp
         }
@@ -893,7 +896,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "message": 'New Address Created Successfully', 'status': 200
+            "message": 'New Address Created Successfully',"isSucess": True, 'status': 200
         }
         return return_Response(res)
 
@@ -954,7 +957,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "message": 'New Address Created Successfully', 'status': 200
+            "message": 'New Address Created Successfully',"isSucess": True, 'status': 200
         }
         return return_Response(res)
 
@@ -974,7 +977,7 @@ class CustomerPortal(CustomerPortal):
                                      download=True)
             else:
                 res = {
-                    "message": "No Data Found.", "status": 400
+                    "message": "No Data Found.","isSucess": True, "status": 400
                 }
                 return return_Response_error(res)
 

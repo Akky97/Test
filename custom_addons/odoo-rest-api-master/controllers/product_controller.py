@@ -268,6 +268,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "total_count": record_count,
             "count": len(temp),
             "prev": prev_page,
@@ -406,6 +407,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "prev": prev_page,
             "current": current_page,
@@ -489,6 +491,7 @@ class OdooAPI(http.Controller):
             return error_response(e, e.msg)
 
         res = {
+            "isSucess": True,
             "total_count": record_count,
             "count": len(temp),
             "prev": prev_page,
@@ -602,6 +605,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "prev": prev_page,
             "current": current_page,
@@ -668,6 +672,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "products": temp,
             'symbol': website.company_id.currency_id.symbol if website.company_id.currency_id.symbol != False else ""
@@ -700,6 +705,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(attr),
             "result": attr
         }

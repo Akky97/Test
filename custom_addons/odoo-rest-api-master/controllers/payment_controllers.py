@@ -494,6 +494,7 @@ class WebsiteSale(WebsiteSale):
                         'delivery_message': delivery_id.fixed_price})
                     if r:
                         res = {
+                            "isSucess": True,
                             "message": 'Shipping Method Updated Successfully',
                             "status": 200
                         }
@@ -537,6 +538,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "result": values,
             "status": 200
         }
@@ -578,7 +580,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "redirect": 'success', "status": 200
+            "redirect": 'success',"isSucess": True, "status": 200
         }
         return return_Response(res)
 
@@ -607,7 +609,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'Shipping Address Updated Successfully','status':200,
+            "result": 'Shipping Address Updated Successfully',"isSucess": True,'status':200,
         }
         return return_Response(res)
 
@@ -680,6 +682,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "result": values
         }
         return return_Response(res)
@@ -720,7 +723,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": finalResult, 'status':200
+            "result": finalResult,"isSucess": True, 'status':200
         }
         return return_Response(res)
 
@@ -757,7 +760,7 @@ class WebsiteSale(WebsiteSale):
             if txns['value'] == 0:
                 for rec in transaction_id.sale_order_ids:
                     rec.action_cancel()
-                msg = {"message": "Transaction Canceled", "status_code": 300}
+                msg = {"message": "Transaction Canceled","isSucess": True, "status_code": 300}
                 return return_Response(msg)
             if txns['blockHash'] is None:
                 if not transaction_id.state == 'pending':
@@ -840,7 +843,7 @@ class WebsiteSale(WebsiteSale):
                         tokens = tokenObject.search([('user_id', '=', user.id)])
                         if tokens:
                             send_notification("Sale Order Confirmed", vendor_message, user, tokens, None)
-                        res = {"payment_method":transaction.acquirer_id.name,"payment_intent": transaction.payment_intent,"message": 'Success', 'status': 200}
+                        res = {"payment_method":transaction.acquirer_id.name,"payment_intent": transaction.payment_intent,"message": 'Success',"isSucess": True, 'status': 200}
                         return return_Response(res)
                     else:
                         msg = {"message": "Something Went Wrong.", "status_code": 400}
@@ -896,7 +899,7 @@ class WebsiteSale(WebsiteSale):
                 result = request.env['return.policy'].sudo().create(vals)
                 if result:
                     res = {
-                        "result": 'Return Order Created Successfully', 'status': 200
+                        "result": 'Return Order Created Successfully', "isSucess": True, 'status': 200
                     }
                     return return_Response(res)
                 else:
@@ -971,7 +974,7 @@ class WebsiteSale(WebsiteSale):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": 'Success', 'status': 200
+            "result": 'Success', "isSucess": True, 'status': 200
         }
         return return_Response(res)
 

@@ -77,6 +77,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
+            "isSucess": True,
             "count": len(temp),
             "result": temp
         }
@@ -156,7 +157,7 @@ class OdooAPI(http.Controller):
         send_notification("Address", vendor_message, user, tokens, base_url.value + '/web/image/res.partner/' + str(user.partner_id.id) + "/image_1920")
 
         res = {
-            "result": "Record Updated Successfully", "status": 200
+            "result": "Record Updated Successfully", "isSucess": True, "status": 200
         }
         return return_Response(res)
 
@@ -171,7 +172,7 @@ class OdooAPI(http.Controller):
         except (SyntaxError, QueryFormatError) as e:
             return error_response(e, e.msg)
         res = {
-            "result": "Profile Image Deleted Successfully", "status": 200
+            "result": "Profile Image Deleted Successfully", "isSucess": True, "status": 200
         }
         return return_Response(res)
 
@@ -205,7 +206,7 @@ class OdooAPI(http.Controller):
                               model="res.partner", title="Address")
 
         res = {
-            "result": "Record Deleted Successfully", "status": 200
+            "result": "Record Deleted Successfully", "isSucess": True, "status": 200
         }
         return return_Response(res)
 
