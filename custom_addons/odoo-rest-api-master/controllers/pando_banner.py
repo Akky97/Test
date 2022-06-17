@@ -1,6 +1,7 @@
 from odoo import http, _, exceptions
 from odoo.http import request
 from .sale_order_list_view import *
+from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
 def get_order_lines(order_id,seller_id):
@@ -194,8 +195,15 @@ class PandoBanner(http.Controller):
                             'is_received': track.is_received,
                             'trackingLocation': track.tracking_location,
                             'orderline': get_order_lines(track.order_id.id,track.seller_id.id),
-                            'deliveryLine': deliveryLine(track.deliveryLine)
+                            'deliveryLine': deliveryLine(track.deliveryLine),
+                            'expected_delivery_date': str(track.dispatch_date.date() + timedelta(7))
                         }
+                        if track.is_received:
+                            vals['delivery_status'] = 3
+                        elif track.is_dispatch and len(vals['deliveryLine']) > 1:
+                            vals['delivery_status'] = 2
+                        else:
+                            vals['delivery_status'] = 1
                         temp.append(vals)
                 else:
                     msg = {"message": "Something Went Wrong.", "status_code": 400}

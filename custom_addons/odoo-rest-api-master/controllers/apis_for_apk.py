@@ -138,7 +138,6 @@ def get_sale_order_line(order_id=None, order_line_id=None):
             count += 1
         request.session['count'] = count
         # saleOrderLine['count'] = count
-    print('sale order line details', saleOrderLine)
     return saleOrderLine
 
 def updatePriceListAPK(pricelist, order):

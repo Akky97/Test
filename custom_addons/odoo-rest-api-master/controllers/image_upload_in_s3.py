@@ -95,7 +95,7 @@ class OdooAPI(http.Controller):
         file_text = open(path + filename, 'rb')
         file_read = file_text.read()
         file_encode = base64.encodebytes(file_read)
-        file2 = image_process(file_encode, size=(250, 250))
+        file2 = image_process(file_encode, size=(500, 500))
         file2 = base64.decodebytes(file2)
         completeName = os.path.join(path2, filename)
         file1 = open(completeName, "wb")
