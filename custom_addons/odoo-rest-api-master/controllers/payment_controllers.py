@@ -69,6 +69,7 @@ def _send_mail(message):
         template.sudo().send_mail(3, force_send=True)
 
 
+
 def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     res = False
     # Test Net
@@ -452,6 +453,21 @@ def create_new_address(params):
 
 
 class WebsiteSale(WebsiteSale):
+
+    def admin_balance_check(self):
+        admin_address = request.env['ir.config_parameter'].sudo().search([('key', '=', 'admin_address')], limit=1).value
+        pkey = request.env['ir.config_parameter'].sudo().search([('key', '=', 'pkey')], limit=1).value
+        try:
+            addr_bytes = eth_utils.to_bytes(hexstr=admin_address)
+            checksum_encoded = checksum_encode(addr_bytes)
+            balance = w.eth.get_balance(checksum_encoded)
+            ether_value = w.fromWei(balance, 'ether')
+            print(ether_value)
+            if ether_value < 1:
+                _send_mail('You have less then 1 Ether in your account. Please add some ether in your accoun.')
+        except Exception as e:
+            res = {"message": "Something Went Wrong.", "status": 400}
+            return return_Response_error(res)
 
     @validate_token
     @http.route('/api/v1/c/update_shipping_method', type='http', auth='public', methods=['POST'], csrf=False, cors='*')
@@ -938,6 +954,7 @@ class WebsiteSale(WebsiteSale):
                 if jdata.get('state') == 'refund':
                     if return_order.order_id.transaction_ids and not return_order.payment_intent:
                         for rec in return_order.order_id.transaction_ids:
+                            self.admin_balance_check()
                             pkey = pkey.value
                             acc1 = rec.to_address
                             acc2 = rec.from_address
