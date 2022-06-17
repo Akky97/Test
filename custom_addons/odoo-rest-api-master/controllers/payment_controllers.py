@@ -46,17 +46,17 @@ def checksum_encode(addr): # Takes a 20-byte binary address as input
     return "0x" + checksummed_buffer
 
 
-def _send_mail(message):
+def _send_mail(user,message):
     template = request.env.ref('odoo-rest-api-master.send_otp_email_template', raise_if_not_found=False)
     outgoing_server_name = request.env['ir.mail_server'].sudo().search([], limit=1).name
     if outgoing_server_name:
         template.email_from = outgoing_server_name
-        template.email_to = request.env.user.login
+        template.email_to = user.login
         template.body_html = f"""<![CDATA[
                                                            <div class="container-fluid">
                 <div class="row" style="background: #5297f8; border-radius: 5px; margin: 0px; padding-left: 40px;"><a title="Pando Store" href="%20https://pandostores.com" target="_blank"><img src="https://stagingbackend.pandostores.com/odoo-rest-api-master/static/src/image/Pando_logo+1.png" width="278" height="59" /></a></div>
                 <div>
-                <p>Dear {request.env.user.partner_id.name}</p>
+                <p>Dear {user.partner_id.name}</p>
                 <br />
                 <h2>{message}/h2>
                 <br />
@@ -91,7 +91,7 @@ def refund_payment_by_metamask(acc1, acc2, pkey, tnx_amount, chain_id):
     balance = w.eth.get_balance(checksum_encoded)
     ether_value = w.fromWei(balance, 'ether')
     if tnx_amount > ether_value:
-        _send_mail('Your Transaction Can not be completed due to insufficient balance')
+        _send_mail(request.env.user,'Your Transaction Can not be completed due to insufficient balance')
         return res
 
     tx = {
@@ -122,7 +122,6 @@ def refund_payment(transaction_id, amount):
                 amount = int(transaction.amount) * 100
             res = stripe.Refund.create(payment_intent=transaction.payment_intent, amount=amount)
             # res = stripe.Refund.create(payment_intent=transaction.payment_intent)
-            print(res)
     return res
 
 
@@ -462,9 +461,8 @@ class WebsiteSale(WebsiteSale):
             checksum_encoded = checksum_encode(addr_bytes)
             balance = w.eth.get_balance(checksum_encoded)
             ether_value = w.fromWei(balance, 'ether')
-            print(ether_value)
             if ether_value < 1:
-                _send_mail('You have less then 1 Ether in your account. Please add some ether in your accoun.')
+                _send_mail(request.env.user,"You're account balance is too low. Please add some ether in your accoun.")
         except Exception as e:
             res = {"message": "Something Went Wrong.", "status": 400}
             return return_Response_error(res)
@@ -964,7 +962,7 @@ class WebsiteSale(WebsiteSale):
                                 if data:
                                     return_order.refund()
                                     return_order.payment_info = data
-                                    _send_mail('Your Refund has been initiated by supplier and the amount will be credited within 2-3 working days')
+                                    _send_mail(return_order.order_id.partner_id.user_id,'Your Refund has been initiated by supplier and the amount will be credited within 2-3 working days')
                                     vendor_message = f"""Refund Initiated Successfully"""
                                     generate_notification(seller_id=return_order.order_id.partner_id.id,
                                                           vendor_message=vendor_message,
