@@ -58,7 +58,7 @@ def _send_mail(user,message):
                 <div>
                 <p>Dear {user.partner_id.name}</p>
                 <br />
-                <h2>{message}/h2>
+                <p>{message}</p>
                 <br />
                 <p><strong> In case you have not requested this action, please contact us. </strong></p>
                 <p><strong>Phone number :-</strong> +65 6589 8807</p>
