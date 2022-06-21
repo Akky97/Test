@@ -1177,7 +1177,7 @@ class OdooAPI(http.Controller):
             except:
                 jdata = {}
             if jdata:
-                if not jdata.get('product_id') or not jdata.get('image_name') or jdata.get('image'):
+                if not jdata.get('product_id') or not jdata.get('image_name') or not jdata.get('image'):
                     msg = {"message": "Something Went Wrong.", "status_code": 400}
                     return return_Response_error(msg)
 
