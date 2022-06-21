@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <template id="ecom_signin_frontend" name="ecom singin frontend (portal)" inherit_id="portal.assets_frontend">
-        <xpath expr="." position="inside">
-            <script type="application/javascript"
-                    src="/ecom_lms/static/src/js/ecom_frontend.js"/>
-        </xpath>
-    </template>
-</odoo>
