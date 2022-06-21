@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+procurement_table,procurement.table,model_procurement_table,,1,1,1,1
+procurement_order_line_table,procurement.order.line.table,model_procurement_order_line_table,,1,1,1,1

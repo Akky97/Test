@@ -1,0 +1,45 @@
+<odoo>
+    <record id="procurement_table_form" model="ir.ui.view">
+        <field name="name">procurement.table.form</field>
+        <field name="model">procurement.table</field>
+        <field name="arch" type="xml">
+            <form string="banner">
+                <sheet>
+                    <group>
+                        <group><field name="executive" /></group>
+                        <group><field name="date" /></group>
+                    </group>
+                    <group>
+                        <field name="procurementTableLine" widget="section_and_note_one2many" mode="tree" >
+                            <tree string="Procurement Table Lines" editable="bottom">
+<!--                                <field name="sol"/>-->
+                                <field name="product_id"/>
+                                <field name="product_uom_qty"/>
+                                <field name="qty_update_by_manager"/>
+                                <field name="sub_total"/>
+                                <field name="tax_amount"/>
+                                <field name="total_amount"/>
+                                <field name="date"/>
+                                <field name="assigned_to"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="procurement_table" model="ir.actions.act_window">
+        <field name="name">Procurement Table View</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">procurement.table</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Record's Are Available
+            </p>
+        </field>
+    </record>
+<menuitem id="procurement_table_id" name="Procurement" action="procurement_table"  parent="website.menu_website_global_configuration" groups="base.group_user"/>
+
+</odoo>
