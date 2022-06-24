@@ -435,6 +435,7 @@ class WebsiteSale(WebsiteSale):
         res = {"isSucess": True, "message": 'Order Locked Successfully', "status": 200}
         return return_Response(res)
 
+
     @http.route('/api/update_procurement_data', type='http', auth='public', methods=['GET'], csrf=False,
                 cors='*')
     def update_procurement_data(self, **params):

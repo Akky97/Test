@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Odoo REST API",
+    'name': "My Mandi Odoo REST API",
 
     'summary': """
-        Odoo REST API""",
+        My Mandi Odoo REST API""",
 
     'description': """
-        Odoo REST API
+        My Mandi Odoo REST API
     """,
 
     'author': "Yezileli Ilomo",
@@ -23,12 +23,14 @@
 
     # always loaded
     'data': [
-        'data/ir_config_param.xml'
+        'data/ir_config_param.xml',
+        'security/security.xml',
+        'views/res_users.xml',
+        'views/procurement_table.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
-        'security/security.xml'
+        'demo/demo.xml'
     ],
 
     "application": True,
