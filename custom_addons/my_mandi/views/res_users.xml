@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//notebook//page[@name='access_rights']" position="inside">
                     <group string="User Role">
-<!--                        <field name="user_type"/>-->
+                        <field name="user_type"/>
                     </group>
                 </xpath>
 
