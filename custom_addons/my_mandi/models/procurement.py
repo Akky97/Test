@@ -7,6 +7,7 @@ class procurementTable(models.Model):
     _name = "procurement.table"
     _description = "Item Sale History"
 
+    executive = fields.Many2one('res.partner', string='Executive')
     procurementTableLine = fields.One2many('procurement.order.line.table', 'procurement_table_id',  string='procurementLine')
     date = fields.Date(string='Date', default=datetime.datetime.now().date())
 

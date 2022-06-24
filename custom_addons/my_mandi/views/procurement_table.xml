@@ -1,34 +1,40 @@
 <odoo>
-    <record id="procurement_table_form" model="ir.ui.view">
-        <field name="name">procurement.table.form</field>
-        <field name="model">procurement.table</field>
-        <field name="arch" type="xml">
-            <form string="banner">
-                <sheet>
-                    <group>
-                        <group><field name="date" /></group>
-                    </group>
-                    <group>
-                        <field name="procurementTableLine" widget="section_and_note_one2many" mode="tree" >
-                            <tree string="Procurement Table Lines" editable="bottom">
-                                <field name="product_id"/>
-                                <field name="product_uom_qty"/>
-                                <field name="qty_update_by_manager"/>
-                                <field name="sub_total"/>
-                                <field name="tax_amount"/>
-                                <field name="total_amount"/>
-                                <field name="date"/>
-                                <field name="assigned_to"/>
-                                <field name="procurementExecutiveLine"  mode="tree" >
-                                    <tree string="Procurement Executive Task">
-                                        <field name="demand_qty"/>
-                                        <field name="bought_qty"/>
-                                        <field name="grade"/>
-                                        <field name="state"/>
-                                    </tree>
-                                </field>
-                            </tree>
-                        </field>
+<!--    <record id="procurement_table_form" model="ir.ui.view">-->
+<!--        <field name="name">procurement.table.form</field>-->
+<!--        <field name="model">procurement.table</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form string="banner">-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <group><field name="date" /></group>-->
+<!--                    </group>-->
+<!--                    <group>-->
+<!--                        <field name="procurementTableLine" widget="section_and_note_one2many" mode="tree" >-->
+<!--                            <tree string="Procurement Table Lines" editable="bottom">-->
+<!--                                <field name="product_id"/>-->
+<!--                                <field name="product_uom_qty"/>-->
+<!--                                <field name="qty_update_by_manager"/>-->
+<!--                                <field name="sub_total"/>-->
+<!--                                <field name="tax_amount"/>-->
+<!--                                <field name="total_amount"/>-->
+<!--                                <field name="date"/>-->
+<!--                                <field name="assigned_to"/>-->
+<!--                                <field name="procurementExecutiveLine"  mode="tree" >-->
+<!--                                    <tree string="Procurement Executive Task">-->
+<!--                                        <field name="demand_qty"/>-->
+<!--                                        <field name="bought_qty"/>-->
+<!--                                        <field name="grade"/>-->
+<!--                                        <field name="state"/>-->
+<!--                                    </tree>-->
+<!--                                </field>-->
+<!--                            </tree>-->
+<!--                        </field>-->
+<!--                -->
+<!--                    </group>-->
+<!--                </sheet>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
 
                     </group>
                 </sheet>
